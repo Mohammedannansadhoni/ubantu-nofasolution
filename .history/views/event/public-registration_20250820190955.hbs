@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{event.eventName}} - Registration</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+    }
+
+    header, footer {
+      background: #fff;
+      flex-shrink: 0;
+      border: 1px solid #ccc;
+      display: none; /* Hidden by default, shown by JS if exists in design */
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+    }
+
+    header {
+      height: 15%;
+    }
+
+    header img {
+      max-height: 80%;
+      max-width: 90%;
+      object-fit: contain;
+    }
+
+    footer {
+      height: 15%;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .canvas-container {
+      flex: 1;
+      padding: 20px;
+      background-color: #fff;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow-y: auto;
+      transition: all 0.3s ease;
+    }
+
+    .registration-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      min-height: 100%;
+    }
+
+    .registration-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      padding: 48px 36px 36px 36px;
+      max-width: 500px;
+      width: 100%;
+      border: 1.5px solid #e0e0e0;
+    }
+
+    .event-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #222;
+    }
+
+    .event-header {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-weight: 500;
+      margin-bottom: 5px;
+      color: #222;
+      display: block;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #cfd8dc;
+      border-radius: 7px;
+      font-size: 1rem;
+      background: #f7fafd;
+      transition: border 0.2s;
+      box-sizing: border-box;
+    }
+
+    .form-control:focus {
+      border: 1.5px solid #0a1931;
+      outline: none;
+    }
+
+    .btn-submit {
+      background: #0a1931;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 14px 0;
+      width: 100%;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: #1a2951;
+    }
+
+    .required {
+      color: #d32f2f;
+    }
+
+    .form-note {
+      font-size: 0.97em;
+      color: #888;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .event-footer {
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 22px;
+      color: #666;
+    }
+
+    @media (max-width: 600px) {
+      .registration-card {
+        padding: 24px 16px;
+        max-width: 95vw;
+      }
+    }
+
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <!-- Header section - will be shown/hidden by JavaScript -->
+    <header id="header"></header>
+    
+    <!-- Main content area -->
+    <div class="canvas-container" id="canvas">
+      <div class="registration-container">
+        <div class="registration-card">
+          <div class="loading" id="loading">Loading registration form...</div>
+          
+          <!-- This will be populated by JavaScript -->
+          <div id="registration-content" style="display: none;">
+            <div class="event-title" id="eventTitle">{{event.eventName}}</div>
+            <div class="event-header" id="eventHeader">Welcome to Registration</div>
+
+            <form action="/event/{{eventId}}/public-register" method="POST" id="registrationForm">
+              {{#each fields}}
+                <div class="form-group">
+                  <label for="{{this.fieldName}}">{{this.fieldLabel}}{{#if this.fieldMandatory}} <span class="required">*</span>{{/if}}</label>
+                  {{#if (eq this.fieldType "email")}}
+                    <input type="email" id="{{this.fieldName}}" name="{{this.fieldName}}" class="form-control" {{#if this.fieldMandatory}}required{{/if}}>
+                  {{else if (eq this.fieldType "tel")}}
+                    <input type="tel" id="{{this.fieldName}}" name="{{this.fieldName}}" class="form-control" {{#if this.fieldMandatory}}required{{/if}}>
+                  {{else if (eq this.fieldType "url")}}
+                    <input type="url" id="{{this.fieldName}}" name="{{this.fieldName}}" class="form-control" {{#if this.fieldMandatory}}required{{/if}}>
+                  {{else if (eq this.fieldType "titles")}}
+                    <select id="{{this.fieldName}}" name="{{this.fieldName}}" class="form-control" {{#if this.fieldMandatory}}required{{/if}}>
+                      <option value="">Select Title</option>
+                      <option value="Mr">Mr</option>
+                      <option value="Mrs">Mrs</option>
+                      <option value="Ms">Ms</option>
+                      <option value="Dr">Dr</option>
+                      <option value="Prof">Prof</option>
+                    </select>
+                  {{else if (eq this.fieldType "countries")}}
+                    <select id="{{this.fieldName}}" name="{{this.fieldName}}" class="form-control" {{#if this.fieldMandatory}}required{{/if}}>
+                      <option value="">Select Country</option>
+                      {{#each ../countries}}
+                        <option value="{{this.countryName}}">{{this.countryName}}</option>
+                      {{/each}}
+                    </select>
+                  {{else if (eq this.fieldType "badgeCategories")}}
+                    <select id="{{this.fieldName}}" name="{{this.fieldName}}" class="form-control" {{#if this.fieldMandatory}}required{{/if}}>
+                      <option value="">Select Badge Category</option>
+                      {{#each ../badgeCategories}}
+                        <option value="{{this.categoryName}}">{{this.categoryName}}</option>
+                      {{/each}}
+                    </select>
+                  {{else}}
+                    <input type="text" id="{{this.fieldName}}" name="{{this.fieldName}}" class="form-control" {{#if this.fieldMandatory}}required{{/if}}>
+                  {{/if}}
+                </div>
+              {{/each}}
+
+              <div class="form-note" id="formNote">Please provide accurate information. You will receive a confirmation email at the provided email address.</div>
+              <button type="submit" class="btn-submit">REGISTER</button>
+            </form>
+
+            <div class="event-footer" id="eventFooter">Thank you for registering!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer section - will be shown/hidden by JavaScript -->
+    <footer id="footer"></footer>
+  </div>
+
+  <script>
+    const eventId = "{{eventId}}";
+    const header = document.getElementById("header");
+    const footer = document.getElementById("footer");
+    const canvas = document.getElementById("canvas");
+    const loading = document.getElementById("loading");
+    const registrationContent = document.getElementById("registration-content");
+    const eventTitle = document.getElementById("eventTitle");
+    const eventHeader = document.getElementById("eventHeader");
+    const eventFooter = document.getElementById("eventFooter");
+
+    // Fetch and apply saved design
+    fetch(`/event-designs/${eventId}/design.json`)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('No saved design found');
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log('✅ Loaded saved design:', data);
+        
+        // Apply header design
+        if (data.header && data.header.exists) {
+          header.style.display = "flex";
+          header.style.justifyContent = data.header.logoAlignment || "center";
+
+          if (data.header.logo) {
+            const img = document.createElement("img");
+            img.src = data.header.logo;
+            img.style.maxHeight = "80%";
+            img.style.maxWidth = "90%";
+            img.style.objectFit = "contain";
+            header.appendChild(img);
+          }
+        } else {
+          header.style.display = "none";
+        }
+
+        // Apply footer design
+        if (data.footer && data.footer.exists) {
+          footer.style.display = "flex";
+          footer.innerText = data.footer.content || "";
+        } else {
+          footer.style.display = "none";
+        }
+
+        // Apply background image to canvas
+        if (data.background) {
+          canvas.style.backgroundImage = `url(${data.background})`;
+          canvas.style.backgroundSize = "cover";
+          canvas.style.backgroundPosition = "center";
+          canvas.style.backgroundRepeat = "no-repeat";
+        }
+
+        // Apply content customizations
+        if (data.content) {
+          if (data.content.eventTitle) {
+            eventTitle.innerText = data.content.eventTitle;
+          }
+          if (data.content.eventHeader) {
+            eventHeader.innerText = data.content.eventHeader;
+          }
+          if (data.content.eventFooter) {
+            eventFooter.innerText = data.content.eventFooter;
+          }
+        }
+
+        // Show the registration form
+        loading.style.display = "none";
+        registrationContent.style.display = "block";
+        
+      })
+      .catch(err => {
+        console.warn('No saved design found, using defaults:', err);
+        
+        // Show default form without custom design
+        loading.style.display = "none";
+        registrationContent.style.display = "block";
+        header.style.display = "none";
+        footer.style.display = "none";
+      });
+
+    // Handle form submission
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const submitBtn = this.querySelector('.btn-submit');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Submitting...';
+      submitBtn.disabled = true;
+
+      const formData = new FormData(this);
+
+      fetch(this.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert('Registration successful!');
+          if (data.redirectUrl) {
+            window.location.href = data.redirectUrl;
+          }
+        } else {
+          throw new Error(data.message || 'Registration failed');
+        }
+      })
+      .catch(error => {
+        console.error('Registration error:', error);
+        alert('Registration failed. Please try again.');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      });
+    });
+  </script>
+</body>
+</html>
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+
+    [contenteditable="true"]:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    [contenteditable="true"]:focus {
+      background: rgba(102, 126, 234, 0.15);
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+    }
+
+    .canvas-container {
+      flex: 1;
+      padding: 20px;
+      min-height: 400px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #ffffff;
+      transition: all 0.3s ease;
+    }
+
+    /* Full-page canvas styling */
+    .page-wrapper.full-page-mode .canvas-container {
+      width: 100vw;
+      height: 100vh;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      background-attachment: fixed;
+    }
+
+    .page-wrapper.full-page-mode .canvas-content {
+      padding: 80px 20px 20px 20px; /* Top padding for toolbar */
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Hide headers/footers in full-page mode */
+    .page-wrapper.full-page-mode header,
+    .page-wrapper.full-page-mode footer {
+      display: none;
+    }
+
+    .canvas-content {
+      padding: 20px;
+      color: #000;
+    }
+
+    .resizable-logo-wrapper {
+      display: inline-block;
+      position: relative;
+      resize: both;
+      overflow: hidden;
+      min-width: 50px;
+      min-height: 50px;
+      max-width: 90%;
+      max-height: 300px;
+      border: 2px dashed #ccc;
+      margin: auto;
+    }
+
+    .resizable-logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .resizable-logo-wrapper::after {
+      content: "Click to upload";
+      position: absolute;
+      bottom: 4px;
+      right: 6px;
+      font-size: 10px;
+      color: #888;
+    }
+
+    .logo-upload {
+      display: none;
+    }
+
+    .canvas-container *:focus {
+      outline: 2px dashed blue;
+    }
+
+    /* Registration form styles */
+    .registration-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .registration-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      padding: 48px 36px 36px 36px;
+      max-width: 440px;
+      width: 100%;
+      border: 1.5px solid #e0e0e0;
+    }
+
+    .event-logo {
+      max-width: 110px;
+      margin: 0 auto 18px auto;
+      display: block;
+    }
+
+    .event-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+      color: #222;
+    }
+
+    .event-header {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 18px;
+      color: #333;
+    }
+
+    .registration-form label {
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #222;
+      display: block;
+    }
+
+    .registration-form input,
+    .registration-form select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid #cfd8dc;
+      border-radius: 7px;
+      margin-bottom: 20px;
+      font-size: 1.07rem;
+      background: #f7fafd;
+      transition: border 0.2s;
+    }
+
+    .registration-form input:focus,
+    .registration-form select:focus {
+      border: 1.5px solid #0a1931;
+      outline: none;
+    }
+
+    .registration-form input[type="submit"] {
+      background: #0a1931;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.13rem;
+      font-weight: 700;
+      padding: 14px 0;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(10, 25, 49, 0.08);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .registration-form input[type="submit"]:hover {
+      background: #1a2951;
+    }
+
+    .registration-form .required {
+      color: #d32f2f;
+      margin-left: 2px;
+    }
+
+    .registration-form .form-note {
+      font-size: 0.97em;
+      color: #888;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .event-footer {
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 22px;
+      color: #666;
+    }
+
+    @media (max-width: 600px) {
+      .registration-card {
+        padding: 24px 8px 18px 8px;
+        max-width: 98vw;
+      }
+    }
+
+    /* Reorder mode styles - Creative Design */
+    .form-field {
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    
+
+  </style>
+</head>
+<body>
+
+ 
+  <!-- Page Container -->
+  <div class="page-wrapper" id="pageWrapper">
+
+    <div class="canvas-container" id="canvas">
+      <div class="canvas-content" contenteditable="false">
+        <div class="registration-container">
+          <div class="registration-card">
+            <img src="https://via.placeholder.com/110x60?text=Logo" class="event-logo" alt="Event Logo" contenteditable="false">
+            <div class="event-title" contenteditable="true">{{#if event.eventName}}{{event.eventName}}{{else}}Sample Event Name{{/if}}</div>
+            <div class="event-header" contenteditable="true">Welcome to Our Event Registration</div>
+
+            <form class="registration-form" action="/event/{{eventId}}/public-register" method="POST">
+              <div class="reorder-instructions">
+                ✨ Reorder Mode Active! Drag any field up or down to rearrange the form layout. Click "Exit Reorder Mode" when done.
+              </div>
+              
+              {{#each fields}}
+                <div class="form-field" data-field-name="{{this.fieldName}}" data-field-order="{{@index}}">
+                  <div class="field-order-indicator">{{add @index 1}}</div>
+                  {{formField this.fieldName this.fieldLabel this.fieldType this.fieldValue this.fieldMandatory ../badgeCategories this.dropdownOptions}}
+                </div>
+              {{/each}}
+
+              <div class="form-note" contenteditable="true">Please provide the correct email address you would like to receive your confirmation email.</div>
+              <input type="submit" value="REGISTER">
+            </form>
+
+            <div class="event-footer" contenteditable="true">Thank you for registering!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+ 
+
+</body>
+</html>

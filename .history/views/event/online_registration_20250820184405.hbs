@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Page Editor</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .toolbar {
+      display: flex;
+      padding: 10px;
+      background: #ffffff;
+      border-bottom: 1px solid #ccc;
+      gap: 10px;
+      flex-wrap: wrap;
+      z-index: 2000;
+      position: relative;
+    }
+
+    .toolbar select,
+    .toolbar input[type="file"],
+    .toolbar button {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 50px);
+      margin: 0;
+    }
+
+    header, footer {
+      background: #fff;
+      flex-shrink: 0;
+      z-index: 100;
+      border: 1px solid #ccc;
+    }
+
+    header {
+      height: 15%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    header img {
+      max-height: 80%;
+      max-width: 90%;
+      object-fit: contain;
+    }
+
+    footer {
+      height: 15%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .canvas-container {
+      flex: 1;
+      padding: 20px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #ffffff;
+      transition: all 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .canvas-content {
+      padding: 20px;
+      color: #000;
+    }
+
+    /* Editable content styling */
+    [contenteditable="true"] {
+      outline: none;
+      transition: all 0.3s ease;
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+
+    [contenteditable="true"]:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    [contenteditable="true"]:focus {
+      background: rgba(102, 126, 234, 0.15);
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <select id="dropdown">
+      <option value="">Select Option</option>
+      <option value="header">Add Header</option>
+      <option value="footer">Add Footer</option>
+      <option value="both">Add Both</option>
+      <option value="removeHeader">Remove Header</option>
+      <option value="removeFooter">Remove Footer</option>
+    </select>
+
+    <input type="file" accept="image/*" id="uploadImg" title="Upload Background Image">
+
+    <select id="alignment">
+      <option value="">Align</option>
+      <option value="left">Left</option>
+      <option value="center">Center</option>
+      <option value="right">Right</option>
+    </select>
+
+    <button id="saveDesign">💾 Save Design</button>
+  </div>
+
+  <div class="page-wrapper" id="pageWrapper">
+    <!-- Header gets inserted here -->
+    
+    <div class="canvas-container" id="canvas">
+      <div class="canvas-content" contenteditable="true">
+        <h2>Welcome to the Event</h2>
+        <p>Edit this content to design your page body. Background image applies here.</p>
+      </div>
+    </div>
+    
+    <!-- Footer gets inserted here -->
+  </div>
+
+  <script>
+    const dropdown = document.getElementById("dropdown");
+    const pageWrapper = document.getElementById("pageWrapper");
+    const canvas = document.getElementById("canvas");
+    const uploadImg = document.getElementById("uploadImg");
+
+    dropdown.addEventListener("change", () => {
+      const value = dropdown.value;
+
+      if (value === "header") {
+        addHeader();
+      } else if (value === "footer") {
+        addFooter();
+      } else if (value === "both") {
+        addHeader();
+        addFooter();
+      } else if (value === "removeHeader") {
+        removeHeader();
+      } else if (value === "removeFooter") {
+        removeFooter();
+      }
+      dropdown.value = "";
+    });
+
+    function addHeader() {
+      if (!document.querySelector("header")) {
+        const header = document.createElement("header");
+        const logo = document.createElement("img");
+        logo.src = "https://via.placeholder.com/300x80?text=Logo";
+        header.appendChild(logo);
+        pageWrapper.insertBefore(header, canvas);
+      }
+    }
+
+    function addFooter() {
+      if (!document.querySelector("footer")) {
+        const footer = document.createElement("footer");
+        footer.setAttribute("contenteditable", "true");
+        footer.innerText = "Footer Text - Edit me";
+        pageWrapper.appendChild(footer);
+      }
+    }
+
+    function removeHeader() {
+      const header = document.querySelector("header");
+      if (header) header.remove();
+    }
+
+    function removeFooter() {
+      const footer = document.querySelector("footer");
+      if (footer) footer.remove();
+    }
+
+    // Background image upload (applies only to canvas, not header/footer)
+    uploadImg.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          canvas.style.backgroundImage = `url(${event.target.result})`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+</body>
+</html>

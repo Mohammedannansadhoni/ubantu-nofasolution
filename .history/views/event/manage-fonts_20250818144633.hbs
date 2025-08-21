@@ -1,0 +1,408 @@
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h2>Manage Fonts</h2>
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{else}}
+            {{#if messages}}
+                {{#each messages}}
+                    <div class="alert alert-success">{{this}}</div>
+                {{/each}}
+            {{/if}}
+        {{/if}}
+        
+        <form id="fontUploadForm" action="/event/manage-fonts" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="fontType">Font Type</label>
+                <select class="form-control" id="fontType" name="fontType" required>
+                    <option value="">Select Font Type</option>
+                    <option value="google">Google Fonts (API Link)</option>
+                    <option value="google-file">Google Fonts (Upload File)</option>
+                    <option value="custom">Custom Font File</option>
+                </select>
+                <small class="form-text text-muted">Choose how you want to add your font.</small>
+            </div>
+            <div class="form-group">
+                <label for="fontName">Font Name</label>
+                <input type="text" class="form-control" id="fontName" name="fontName" required>
+                <small class="form-text text-muted">Enter a display name for the font (e.g., "Roboto Bold", "My Custom Font").</small>
+            </div>
+            <div class="form-group" id="googleFontGroup" style="display:none;">
+                <label for="fontApi">Google Fonts API Link</label>
+                <input type="text" class="form-control" id="fontApi" name="fontApi" placeholder="https://fonts.googleapis.com/css?family=Roboto:400,700">
+                <small class="form-text text-muted">
+                    <strong>How to get Google Fonts API link:</strong><br>
+                    1. Go to <a href="https://fonts.google.com" target="_blank">Google Fonts</a><br>
+                    2. Select your font and styles<br>
+                    3. Click "View selected families" in top right<br>
+                    4. Copy the link from "&lt;link&gt;" section (starts with https://fonts.googleapis.com/css...)
+                </small>
+            </div>
+            <div class="form-group" id="googleFileGroup" style="display:none;">
+                <label for="googleFontFile">Upload Google Font File</label>
+                <input type="file" class="form-control" id="googleFontFile" name="googleFontFile" accept=".ttf,.woff,.woff2,.otf">
+                <small class="form-text text-muted">
+                    <strong>Google Font Files:</strong> Upload downloaded Google Font files (.ttf, .woff, .woff2, .otf)<br>
+                    You can download Google Fonts from <a href="https://fonts.google.com" target="_blank">fonts.google.com</a> by clicking "Download family"
+                </small>
+            </div>
+            <div class="form-group" id="customFontGroup" style="display:none;">
+                <label for="customFontFile">Upload Custom Font File</label>
+                <input type="file" class="form-control" id="customFontFile" name="customFontFile" accept=".ttf,.woff,.woff2,.otf">
+                <small class="form-text text-muted">
+                    <strong>Custom Font Files:</strong> Upload your own font files (.ttf, .woff, .woff2, .otf)<br>
+                    Make sure you have the right to use the font.
+                </small>
+            </div>
+            <button type="submit" class="btn btn-success">Add Font</button>
+        </form>
+        
+        <!-- Quick Test Section -->
+        <div style="background: #f8f9fa; padding: 15px; margin: 20px 0; border-radius: 5px;">
+            <h4>Quick Test - Add Font Directly</h4>
+            <p>If the form above isn't working, try these direct links to test font creation:</p>
+            <a href="/event/add-simple-font/Arial%20Test" class="btn btn-info btn-sm">Add Test Font (Arial)</a>
+            <a href="/event/add-simple-font/Roboto%20Test" class="btn btn-info btn-sm">Add Test Font (Roboto)</a>
+            <a href="/event/test-fonts" class="btn btn-warning btn-sm" target="_blank">View All Fonts (JSON)</a>
+            <a href="/event/cleanup-fonts" class="btn btn-danger btn-sm">Clean Invalid Fonts</a>
+        </div>
+        
+        <hr>
+        <h3>Font Family List</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Font Name</th>
+                    <th>Type</th>
+                    <th>Sample</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each fonts}}
+                <tr>
+                    <td>{{fontName}}</td>
+                    <td>
+                        {{#if googleFontApi}}
+                            <span class="label label-info">Google Font</span>
+                        {{else}}
+                            <span class="label label-success">Custom Font</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        {{#if googleFontApi}}
+                            <link href="{{googleFontApi}}" rel="stylesheet">
+                            <span style="font-family: '{{fontFamily}}', sans-serif; font-size: 16px;">Sample Text 123</span>
+                        {{/if}}
+                        {{#if fontFile}}
+                            <style>
+                                @font-face { 
+                                    font-family: '{{fontFamily}}'; 
+                                    src: url('/uploads/fonts/{{fontFile}}'); 
+                                }
+                            </style>
+                            <span style="font-family: '{{fontFamily}}'; font-size: 16px;">Sample Text 123</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        <button class="btn btn-info btn-sm preview-font" data-font-family="{{fontFamily}}" data-font-name="{{fontName}}" data-font-api="{{googleFontApi}}" data-font-file="{{fontFile}}">
+                            <i class="fa fa-eye"></i> Preview
+                        </button>
+                        <a href="/event/delete-font/{{_id}}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this font?')">
+                            <i class="fa fa-trash"></i> Delete
+                        </a>
+                    </td>
+                </tr>
+                {{/each}}
+                {{#unless fonts}}
+                <tr>
+                    <td colspan="4" class="text-center">No custom fonts added yet</td>
+                </tr>
+                {{/unless}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Font Preview Modal -->
+<div class="modal fade" id="fontPreviewModal" tabindex="-1" role="dialog" aria-labelledby="fontPreviewModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="fontPreviewModalLabel">Font Preview</h4>
+            </div>
+            <div class="modal-body">
+                <div id="fontPreviewContent">
+                    <h3 id="previewFontName" style="margin-bottom: 20px;"></h3>
+                    <div id="previewText" style="margin-bottom: 20px;">
+                        <div style="font-size: 12px; margin-bottom: 10px;">Size 12px: The quick brown fox jumps over the lazy dog</div>
+                        <div style="font-size: 16px; margin-bottom: 10px;">Size 16px: The quick brown fox jumps over the lazy dog</div>
+                        <div style="font-size: 20px; margin-bottom: 10px;">Size 20px: The quick brown fox jumps over the lazy dog</div>
+                        <div style="font-size: 24px; margin-bottom: 10px;">Size 24px: The quick brown fox jumps over the lazy dog</div>
+                        <div style="font-size: 32px; margin-bottom: 10px;">Size 32px: The quick brown fox jumps over the lazy dog</div>
+                        <div style="font-size: 48px; margin-bottom: 10px;">Size 48px: ABCDEFG abcdefg 123456</div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <strong>Custom Text Preview:</strong>
+                        <textarea id="customPreviewText" class="form-control" rows="2" placeholder="Type your own text to preview...">Your Company Name
+Badge Text Sample</textarea>
+                        <div id="customPreviewDisplay" style="font-size: 24px; margin-top: 10px; padding: 10px; border: 1px solid #ddd; min-height: 60px;">
+                            Your Company Name<br>Badge Text Sample
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Use vanilla JavaScript if jQuery is not available
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded - initializing font management');
+    
+    var fontTypeSelect = document.getElementById('fontType');
+    var googleFontGroup = document.getElementById('googleFontGroup');
+    var googleFileGroup = document.getElementById('googleFileGroup');
+    var customFontGroup = document.getElementById('customFontGroup');
+    
+    console.log('Elements found:', {
+        fontTypeSelect: !!fontTypeSelect,
+        googleFontGroup: !!googleFontGroup,
+        googleFileGroup: !!googleFileGroup,
+        customFontGroup: !!customFontGroup
+    });
+    
+    if (fontTypeSelect) {
+        fontTypeSelect.addEventListener('change', function() {
+            var selectedType = this.value;
+            console.log('Font type changed to:', selectedType);
+            
+            // Hide all groups first
+            if (googleFontGroup) googleFontGroup.style.display = 'none';
+            if (googleFileGroup) googleFileGroup.style.display = 'none';
+            if (customFontGroup) customFontGroup.style.display = 'none';
+            
+            // Remove all required attributes
+            var fontApiInput = document.getElementById('fontApi');
+            var googleFontFileInput = document.getElementById('googleFontFile');
+            var customFontFileInput = document.getElementById('customFontFile');
+            
+            if (fontApiInput) fontApiInput.removeAttribute('required');
+            if (googleFontFileInput) googleFontFileInput.removeAttribute('required');
+            if (customFontFileInput) customFontFileInput.removeAttribute('required');
+            
+            if (selectedType === 'google') {
+                if (googleFontGroup) {
+                    googleFontGroup.style.display = 'block';
+                    console.log('Showing Google Font group');
+                }
+                if (fontApiInput) fontApiInput.setAttribute('required', 'required');
+            } else if (selectedType === 'google-file') {
+                if (googleFileGroup) {
+                    googleFileGroup.style.display = 'block';
+                    console.log('Showing Google File group');
+                }
+                if (googleFontFileInput) googleFontFileInput.setAttribute('required', 'required');
+            } else if (selectedType === 'custom') {
+                if (customFontGroup) {
+                    customFontGroup.style.display = 'block';
+                    console.log('Showing Custom Font group');
+                }
+                if (customFontFileInput) customFontFileInput.setAttribute('required', 'required');
+            }
+        });
+    } else {
+        console.error('Font type select element not found!');
+    }
+
+    // Font preview functionality with fallback for jQuery
+    var previewButtons = document.querySelectorAll('.preview-font');
+    previewButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var fontFamily = this.getAttribute('data-font-family');
+            var fontName = this.getAttribute('data-font-name');
+            var fontApi = this.getAttribute('data-font-api');
+            var fontFile = this.getAttribute('data-font-file');
+            
+            // Set font name in modal
+            var previewFontNameEl = document.getElementById('previewFontName');
+            if (previewFontNameEl) {
+                previewFontNameEl.textContent = fontName;
+            }
+            
+            // Load font if it's a Google font
+            if (fontApi) {
+                // Remove any existing preview font links
+                var existingLinks = document.querySelectorAll('link[data-preview-font]');
+                existingLinks.forEach(function(link) {
+                    link.remove();
+                });
+                
+                // Add new font link
+                var link = document.createElement('link');
+                link.href = fontApi;
+                link.rel = 'stylesheet';
+                link.setAttribute('data-preview-font', 'true');
+                document.head.appendChild(link);
+            }
+            
+            // Apply font to preview text
+            var previewTextDivs = document.querySelectorAll('#previewText div, #customPreviewDisplay');
+            previewTextDivs.forEach(function(div) {
+                div.style.fontFamily = fontFamily + ', sans-serif';
+            });
+            
+            // Show modal (try both jQuery and Bootstrap methods)
+            if (typeof $ !== 'undefined') {
+                $('#fontPreviewModal').modal('show');
+            } else if (typeof bootstrap !== 'undefined') {
+                var modal = new bootstrap.Modal(document.getElementById('fontPreviewModal'));
+                modal.show();
+            }
+        });
+    });
+
+    // Custom text preview
+    var customPreviewText = document.getElementById('customPreviewText');
+    var customPreviewDisplay = document.getElementById('customPreviewDisplay');
+    
+    if (customPreviewText && customPreviewDisplay) {
+        customPreviewText.addEventListener('input', function() {
+            var customText = this.value;
+            customPreviewDisplay.innerHTML = customText.replace(/\n/g, '<br>');
+        });
+    }
+});
+
+// Fallback jQuery code for compatibility
+if (typeof $ !== 'undefined') {
+    $(document).ready(function() {
+        console.log('jQuery version - Manage fonts page loaded');
+        
+        $('#fontType').change(function() {
+            var selectedType = $(this).val();
+            console.log('Font type changed to:', selectedType);
+            
+            // Hide all groups first
+            $('#googleFontGroup, #googleFileGroup, #customFontGroup').hide();
+            
+            // Remove all required attributes
+            $('#fontApi, #googleFontFile, #customFontFile').prop('required', false);
+            
+            if(selectedType === 'google') {
+                $('#googleFontGroup').show();
+                $('#fontApi').prop('required', true);
+                console.log('Showing Google Font API group');
+            } else if(selectedType === 'google-file') {
+                $('#googleFileGroup').show();
+                $('#googleFontFile').prop('required', true);
+                console.log('Showing Google Font File group');
+            } else if(selectedType === 'custom') {
+                $('#customFontGroup').show();
+                $('#customFontFile').prop('required', true);
+                console.log('Showing Custom Font group');
+            }
+        });
+
+        // Add form submission debugging
+        $('#fontUploadForm').on('submit', function(e) {
+            console.log('Form submission started');
+            
+            var formData = {
+                fontType: $('#fontType').val(),
+                fontName: $('#fontName').val(),
+                fontApi: $('#fontApi').val(),
+                googleFontFile: $('#googleFontFile')[0]?.files[0]?.name || 'No file',
+                customFontFile: $('#customFontFile')[0]?.files[0]?.name || 'No file'
+            };
+            
+            console.log('Form data being submitted:', formData);
+            
+            // Check if required fields are filled
+            if(!formData.fontType) {
+                console.error('Font type not selected');
+                alert('Please select a font type');
+                e.preventDefault();
+                return false;
+            }
+            
+            if(!formData.fontName || formData.fontName.trim() === '') {
+                console.error('Font name is empty');
+                alert('Please enter a font name');
+                e.preventDefault();
+                return false;
+            }
+            
+            if(formData.fontType === 'google' && (!formData.fontApi || formData.fontApi.trim() === '')) {
+                console.error('Google Font API link is empty');
+                alert('Please enter Google Font API link');
+                e.preventDefault();
+                return false;
+            }
+            
+            if(formData.fontType === 'google-file' && formData.googleFontFile === 'No file') {
+                console.error('Google Font file not selected');
+                alert('Please select a Google Font file');
+                e.preventDefault();
+                return false;
+            }
+            
+            if(formData.fontType === 'custom' && formData.customFontFile === 'No file') {
+                console.error('Custom font file not selected');
+                alert('Please select a custom font file');
+                e.preventDefault();
+                return false;
+            }
+            
+            console.log('Form validation passed, submitting...');
+            // Let the form submit normally
+        });
+
+        // Font preview functionality
+        $('.preview-font').on('click', function() {
+            var fontFamily = $(this).data('font-family');
+            var fontName = $(this).data('font-name');
+            var fontApi = $(this).data('font-api');
+            var fontFile = $(this).data('font-file');
+            
+            // Set font name in modal
+            $('#previewFontName').text(fontName);
+            
+            // Load font if it's a Google font
+            if(fontApi) {
+                // Remove any existing preview font links
+                $('link[data-preview-font]').remove();
+                // Add new font link
+                $('<link>').attr({
+                    href: fontApi,
+                    rel: 'stylesheet',
+                    'data-preview-font': 'true'
+                }).appendTo('head');
+            }
+            
+            // Apply font to preview text
+            $('#previewText div, #customPreviewDisplay').css('font-family', fontFamily + ', sans-serif');
+            
+            // Show modal
+            $('#fontPreviewModal').modal('show');
+        });
+
+        // Custom text preview
+        $('#customPreviewText').on('input', function() {
+            var customText = $(this).val();
+            $('#customPreviewDisplay').html(customText.replace(/\n/g, '<br>'));
+        });
+    });
+}
+</script>

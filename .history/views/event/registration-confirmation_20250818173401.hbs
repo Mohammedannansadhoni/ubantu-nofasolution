@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration {{#if success}}Confirmed{{else}}Status{{/if}} - {{event.eventName}}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .confirmation-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      max-width: 600px;
+      width: 100%;
+      overflow: hidden;
+      animation: slideUp 0.6s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .confirmation-header {
+      background: {{#if success}}linear-gradient(135deg, #4caf50 0%, #45a049 100%){{else}}linear-gradient(135deg, #f44336 0%, #d32f2f 100%){{/if}};
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+      position: relative;
+    }
+
+    .confirmation-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+      opacity: 0.3;
+    }
+
+    .status-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .confirmation-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .confirmation-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+
+    .confirmation-content {
+      padding: 40px 30px;
+    }
+
+    .event-info {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+      border-left: 4px solid {{#if success}}#4caf50{{else}}#f44336{{/if}};
+    }
+
+    .event-name {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .event-date {
+      color: #666;
+      font-size: 1rem;
+    }
+
+    {{#if registration}}
+    .registration-details {
+      background: #fff;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+
+    .registration-details h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f3f4;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #555;
+    }
+
+    .detail-value {
+      color: #333;
+      text-align: right;
+    }
+    {{/if}}
+
+    .action-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    .message-text {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    /* Responsive design */
+    @media (max-width: 600px) {
+      .confirmation-container {
+        margin: 10px;
+        border-radius: 16px;
+      }
+      
+      .confirmation-header {
+        padding: 30px 20px;
+      }
+      
+      .confirmation-content {
+        padding: 30px 20px;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+    }
+
+    /* Success animations */
+    .success-checkmark {
+      animation: checkmark 0.6s ease-in-out;
+    }
+
+    @keyframes checkmark {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <div class="confirmation-container">
+    <div class="confirmation-header">
+      <div class="status-icon {{#if success}}success-checkmark{{/if}}">
+        {{#if success}}✅{{else}}❌{{/if}}
+      </div>
+      <h1 class="confirmation-title">
+        {{#if success}}Registration Confirmed!{{else}}Registration Issue{{/if}}
+      </h1>
+      <p class="confirmation-subtitle">{{message}}</p>
+    </div>
+
+    <div class="confirmation-content">
+      <div class="event-info">
+        <div class="event-name">{{event.eventName}}</div>
+        {{#if event.eventDate}}
+          <div class="event-date">Event Date: {{event.eventDate}}</div>
+        {{/if}}
+      </div>
+
+      {{#if registration}}
+        <div class="registration-details">
+          <h3>Registration Details</h3>
+          <div class="detail-row">
+            <span class="detail-label">Registration ID:</span>
+            <span class="detail-value">#{{registration.registrationId}}</span>
+          </div>
+          {{#if registration.fullName}}
+            <div class="detail-row">
+              <span class="detail-label">Name:</span>
+              <span class="detail-value">{{registration.fullName}}</span>
+            </div>
+          {{/if}}
+          {{#if registration.email}}
+            <div class="detail-row">
+              <span class="detail-label">Email:</span>
+              <span class="detail-value">{{registration.email}}</span>
+            </div>
+          {{/if}}
+          {{#if registration.companyName}}
+            <div class="detail-row">
+              <span class="detail-label">Company:</span>
+              <span class="detail-value">{{registration.companyName}}</span>
+            </div>
+          {{/if}}
+          <div class="detail-row">
+            <span class="detail-label">Registration Date:</span>
+            <span class="detail-value">{{formatDate registration.regDate}}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <span class="detail-value">{{registration.status}}</span>
+          </div>
+        </div>
+      {{/if}}
+
+      <div class="message-text">
+        {{#if success}}
+          {{#if registration.email}}
+            A confirmation email has been sent to <strong>{{registration.email}}</strong> with your registration details.
+          {{else}}
+            Please save your registration ID for future reference.
+          {{/if}}
+        {{else}}
+          If you continue to experience issues, please contact the event organizers.
+        {{/if}}
+      </div>
+
+      <div class="action-buttons">
+        {{#if success}}
+          <a href="/event/public-registration/{{event._id}}" class="btn btn-secondary">Register Another</a>
+          <button onclick="window.print()" class="btn btn-primary">Print Confirmation</button>
+        {{else}}
+          <a href="/event/public-registration/{{event._id}}" class="btn btn-primary">Try Again</a>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Auto-print on successful registration if requested
+    {{#if success}}
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('print') === 'true') {
+        setTimeout(() => window.print(), 1000);
+      }
+    {{/if}}
+  </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+
+{{!-- Load custom fonts --}}
+{{#if customFonts}}
+    {{#each customFonts}}
+        {{#if googleFontApi}}
+            <link href="{{googleFontApi}}" rel="stylesheet">
+        {{/if}}
+        {{#if fontFile}}
+            <style>
+                @font-face { 
+                    font-family: '{{fontFamily}}'; 
+                    src: url('/uploads/fonts/{{fontFile}}'); 
+                }
+            </style>
+        {{/if}}
+    {{/each}}
+{{/if}}
+
+
+<div class="row">
+    
+
+    <div class="col-md-8">
+
+
+        <!-- A5 paper size -->
+        <!--
+            Equivalent A5 paper dimensions in pixels at 300 DPI and 72 DPI respectively are: 
+            1748 pixels x 2480 pixels (print resolution) 
+            420 pixels x 595 pixels (screen resolution)
+        -->
+   
+
+        <div id="badgeCanvas" style="
+            width: 559px;
+            height:794px;
+        ">
+
+            {{#each fields}}
+            <span id="{{this.fieldName}}" class="canvas" style="position:absolute; ">
+                {{toUpperCase this.fieldLabel}}
+            </span>
+
+            {{/each}} 
+
+       
+
+            {{#if showBarcode}}
+            <img id="barcode" src="/images/barcode.png" style="
+            position:absolute;
+            left: {{barcodeLeft}};
+            top: {{barcodeTop}};
+            " >
+            {{/if}}
+
+        </div>        
+        
+
+
+
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+
+$(document).ready(function(){
+    {{#if showBarcode}}
+      JsBarcode("#barcode", "12345678901234", {
+      format: "CODE128",
+      width: 2,
+      height:40,
+      margin: 5,
+      textMargin: 0,
+      fontSize: 16,
+      displayValue: true
+      });
+    {{/if}}
+
+var fields = [];
+
+ var topIndex=0;
+
+    {{#each fields}}
+    $("#{{this.fieldName}}").css('left', '{{this.fieldLeft}}px' );
+    $("#{{this.fieldName}}").css('top', '{{this.fieldTop}}px'  );
+    $("#{{this.fieldName}}").css('font-family','{{this.fieldFontFamily}}');
+    $("#{{this.fieldName}}").css('font-size','{{this.fieldFontSize}}px' );
+    $("#{{this.fieldName}}").css('font-weight','{{this.fieldFontWeight}}');
+    $("#{{this.fieldName}}").css('font-style','{{this.fieldFontStyle}}');
+    $("#{{this.fieldName}}").css('text-align','{{this.fieldTextAlign}}');
+    $("#{{this.fieldName}}").css('width','{{this.fieldWidth}}px');
+    $("#{{this.fieldName}}").css({'transform': 'rotate({{this.fieldRotate}}deg)'  });
+
+    /*
+    if('{{this.fieldTextAlign}}'=='center'){
+        $("#{{this.fieldName}}").css('display','inline');
+        $("#{{this.fieldName}}").css('left','16px');
+        $("#{{this.fieldName}}").css('float','none');
+        $("#{{this.fieldName}}").css('position','absolute');
+        $("#{{this.fieldName}}").css('width','557px');
+    }
+    else if('{{this.fieldTextAlign}}'=='left'){
+        $("#{{this.fieldName}}").css('display','inline');
+        $("#{{this.fieldName}}").css('float','none');
+        $("#{{this.fieldName}}").css('position','absolute');
+        $("#{{this.fieldName}}").css('width','auto');
+    }
+    else if('{{this.fieldTextAlign}}'=='right'){
+        $("#{{this.fieldName}}").css('display','inline');
+        $("#{{this.fieldName}}").css('left','16px');
+        $("#{{this.fieldName}}").css('float','none');
+        $("#{{this.fieldName}}").css('position','absolute');
+        $("#{{this.fieldName}}").css('width','557px');
+    }
+    */
+
+
+
+    fields.push('{{this.fieldName}}');
+
+    {{/each}}
+
+    {{#if showBarcode}}
+
+        $("#barcode").css('left', '{{barcodeLeft}}px' );
+        $("#barcode").css('top', '{{barcodeTop}}px'  );
+
+
+        fields.push('barcode');
+    {{/if}}
+
+
+    //window.print();
+      
+    //setTimeout(function(){ window.close(); }, 500);
+});
+
+      
+</script>

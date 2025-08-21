@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{#if pageType}}{{#eq pageType 'confirmation'}}Confirmation{{else}}Registration{{/eq}}{{else}}Registration{{/if}} Page Designer - {{event.eventName}}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            background: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+        
+        .designer-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
+        
+        .canvas-area {
+            flex: 1;
+            background: white;
+            margin: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            position: relative;
+            overflow: auto;
+        }
+        
+        .canvas {
+            min-height: 100%;
+            padding: 40px;
+            background: white;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            background: #f9f9f9;
+        }
+        
+        .component-group {
+            border-bottom: 1px solid #eee;
+        }
+        
+        .component-group-header {
+            padding: 15px 20px;
+            background: #f9f9f9;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        .component-group-content {
+            padding: 10px;
+            display: none;
+        }
+        
+        .component-group.active .component-group-content {
+            display: block;
+        }
+        
+        .component-item {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        .component-item:hover {
+            background: #f0f0f0;
+            border-color: #007bff;
+        }
+        
+        .save-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .droppable-area {
+            min-height: 50px;
+            margin: 10px 0;
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            color: #999;
+            transition: all 0.2s;
+        }
+        
+        .droppable-area.drag-over {
+            border-color: #007bff;
+            background: #f0f8ff;
+        }
+        
+        .canvas-element {
+            margin: 10px 0;
+            position: relative;
+            border: 1px solid transparent;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        .canvas-element:hover {
+            border-color: #007bff;
+        }
+        
+        .canvas-element.selected {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+        
+        .element-controls {
+            position: absolute;
+            top: -30px;
+            right: 0;
+            background: #007bff;
+            border-radius: 4px;
+            padding: 5px;
+            display: none;
+        }
+        
+        .canvas-element:hover .element-controls,
+        .canvas-element.selected .element-controls {
+            display: block;
+        }
+        
+        .element-controls button {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 2px 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .properties-panel {
+            position: fixed;
+            right: 20px;
+            top: 100px;
+            width: 280px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            display: none;
+            max-height: 70vh;
+            overflow-y: auto;
+            z-index: 999;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="designer-container">
+        <!-- Sidebar with components -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h4>Page Elements</h4>
+                <p class="text-muted">Drag elements to the canvas</p>
+            </div>
+            
+            <!-- Page Layout -->
+            <div class="component-group active">
+                <button class="component-group-header">
+                    <i class="fa fa-layout"></i> Page Layout
+                </button>
+                <div class="component-group-content">
+                    <button class="component-item" data-component="header">
+                        <i class="fa fa-header"></i> Header Section
+                    </button>
+                    <button class="component-item" data-component="container">
+                        <i class="fa fa-square-o"></i> Container
+                    </button>
+                    <button class="component-item" data-component="row">
+                        <i class="fa fa-columns"></i> Row
+                    </button>
+                    <button class="component-item" data-component="column">
+                        <i class="fa fa-column"></i> Column
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Content Elements -->
+            <div class="component-group">
+                <button class="component-group-header">
+                    <i class="fa fa-text-width"></i> Content
+                </button>
+                <div class="component-group-content">
+                    <button class="component-item" data-component="heading">
+                        <i class="fa fa-header"></i> Heading
+                    </button>
+                    <button class="component-item" data-component="text">
+                        <i class="fa fa-paragraph"></i> Text Block
+                    </button>
+                    <button class="component-item" data-component="image">
+                        <i class="fa fa-image"></i> Image
+                    </button>
+                    <button class="component-item" data-component="divider">
+                        <i class="fa fa-minus"></i> Divider
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Form Elements -->
+            <div class="component-group">
+                <button class="component-group-header">
+                    <i class="fa fa-wpforms"></i> Registration Form
+                </button>
+                <div class="component-group-content">
+                    <button class="component-item" data-component="form-start">
+                        <i class="fa fa-play"></i> Form Start
+                    </button>
+                    {{#each event.eventFields}}
+                    {{#if showInOnlineRegistration}}
+                    <button class="component-item" data-component="form-field" data-field-id="{{_id}}" data-field-type="{{fieldType}}">
+                        <i class="fa fa-{{#eq fieldType 'text'}}font{{/eq}}{{#eq fieldType 'email'}}envelope{{/eq}}{{#eq fieldType 'number'}}hashtag{{/eq}}{{#eq fieldType 'select'}}list{{/eq}}{{#eq fieldType 'textarea'}}align-left{{/eq}}{{#eq fieldType 'checkbox'}}check-square{{/eq}}{{#eq fieldType 'radio'}}dot-circle-o{{/eq}}{{#eq fieldType 'date'}}calendar{{/eq}}{{#eq fieldType 'file'}}upload{{/eq}}"></i> {{fieldName}}
+                    </button>
+                    {{/if}}
+                    {{/each}}
+                    <button class="component-item" data-component="submit-button">
+                        <i class="fa fa-paper-plane"></i> Submit Button
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Canvas Area -->
+        <div class="canvas-area">
+            <div class="canvas" id="canvas">
+                <div class="droppable-area" id="main-drop-area">
+                    <i class="fa fa-plus-circle"></i><br>
+                    Drag elements here to start building your registration page
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Save Controls -->
+    <div class="save-controls">
+        <button class="btn btn-primary" id="preview-btn">
+            <i class="fa fa-eye"></i> Preview
+        </button>
+        <button class="btn btn-success" id="save-btn">
+            <i class="fa fa-save"></i> Save Design
+        </button>
+        <button class="btn btn-secondary" onclick="window.close()">
+            <i class="fa fa-times"></i> Close
+        </button>
+    </div>
+    
+    <!-- Properties Panel -->
+    <div class="properties-panel" id="properties-panel">
+        <h5>Element Properties</h5>
+        <div id="properties-content">
+            <!-- Properties will be loaded here -->
+        </div>
+        <button class="btn btn-primary btn-sm" id="apply-properties">Apply Changes</button>
+        <button class="btn btn-secondary btn-sm" onclick="closePropertiesPanel()">Cancel</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        let selectedElement = null;
+        let elementCounter = 0;
+        
+        $(document).ready(function() {
+            initializeDesigner();
+        });
+        
+        function initializeDesigner() {
+            // Toggle component groups
+            $('.component-group-header').click(function() {
+                $(this).parent().toggleClass('active');
+            });
+            
+            // Make components draggable
+            $('.component-item').draggable({
+                helper: 'clone',
+                revert: 'invalid',
+                start: function(event, ui) {
+                    ui.helper.css('z-index', 1000);
+                }
+            });
+            
+            // Make canvas droppable
+            $('#canvas').droppable({
+                accept: '.component-item',
+                drop: function(event, ui) {
+                    addElement(ui.draggable.data('component'), ui.draggable, ui.position);
+                }
+            });
+            
+            // Save functionality
+            $('#save-btn').click(saveDesign);
+            $('#preview-btn').click(previewPage);
+        }
+        
+        function addElement(componentType, source, position) {
+            elementCounter++;
+            let elementId = componentType + '_' + elementCounter;
+            let element = createElementHTML(componentType, elementId, source);
+            
+            if (element) {
+                // Remove the placeholder if it exists
+                $('#main-drop-area').hide();
+                
+                // Add element to canvas
+                $('#canvas').append(element);
+                
+                // Make element selectable and editable
+                setupElementInteractions(elementId);
+            }
+        }
+        
+        function createElementHTML(type, id, source) {
+            let html = '';
+            
+            switch(type) {
+                case 'header':
+                    html = `
+                        <div class="canvas-element" id="${id}" data-type="header">
+                            <div class="element-controls">
+                                <button onclick="editElement('${id}')"><i class="fa fa-edit"></i></button>
+                                <button onclick="deleteElement('${id}')"><i class="fa fa-trash"></i></button>
+                            </div>
+                            <div class="page-header text-center">
+                                <h1>{{event.eventName}}</h1>
+                                <p class="lead">Event Registration</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'heading':
+                    html = `
+                        <div class="canvas-element" id="${id}" data-type="heading">
+                            <div class="element-controls">
+                                <button onclick="editElement('${id}')"><i class="fa fa-edit"></i></button>
+                                <button onclick="deleteElement('${id}')"><i class="fa fa-trash"></i></button>
+                            </div>
+                            <h2>Heading Text</h2>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'text':
+                    html = `
+                        <div class="canvas-element" id="${id}" data-type="text">
+                            <div class="element-controls">
+                                <button onclick="editElement('${id}')"><i class="fa fa-edit"></i></button>
+                                <button onclick="deleteElement('${id}')"><i class="fa fa-trash"></i></button>
+                            </div>
+                            <p>This is a text block. Click to edit the content.</p>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'image':
+                    html = `
+                        <div class="canvas-element" id="${id}" data-type="image">
+                            <div class="element-controls">
+                                <button onclick="editElement('${id}')"><i class="fa fa-edit"></i></button>
+                                <button onclick="deleteElement('${id}')"><i class="fa fa-trash"></i></button>
+                            </div>
+                            <img src="/images/logo.png" alt="Image" class="img-responsive" style="max-width: 200px;">
+                        </div>
+                    `;
+                    break;
+                    
+                case 'form-start':
+                    html = `
+                        <div class="canvas-element" id="${id}" data-type="form-start">
+                            <div class="element-controls">
+                                <button onclick="editElement('${id}')"><i class="fa fa-edit"></i></button>
+                                <button onclick="deleteElement('${id}')"><i class="fa fa-trash"></i></button>
+                            </div>
+                            <form action="/event/register/{{event._id}}" method="POST" enctype="multipart/form-data">
+                                <div class="form-header">
+                                    <h3>Registration Form</h3>
+                                    <p>Please fill in all required fields</p>
+                                </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'form-field':
+                    let fieldId = source.data('field-id');
+                    let fieldType = source.data('field-type');
+                    let fieldName = source.text().replace(/^\s*\S+\s*/, ''); // Remove icon
+                    
+                    html = `
+                        <div class="canvas-element" id="${id}" data-type="form-field" data-field-id="${fieldId}">
+                            <div class="element-controls">
+                                <button onclick="editElement('${id}')"><i class="fa fa-edit"></i></button>
+                                <button onclick="deleteElement('${id}')"><i class="fa fa-trash"></i></button>
+                            </div>
+                            <div class="form-group">
+                                <label for="field_${fieldId}">${fieldName}</label>
+                                ${generateFieldHTML(fieldType, fieldId, fieldName)}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'submit-button':
+                    html = `
+                        <div class="canvas-element" id="${id}" data-type="submit-button">
+                            <div class="element-controls">
+                                <button onclick="editElement('${id}')"><i class="fa fa-edit"></i></button>
+                                <button onclick="deleteElement('${id}')"><i class="fa fa-trash"></i></button>
+                            </div>
+                            <div class="form-group text-center">
+                                <button type="submit" class="btn btn-primary btn-lg">Register Now</button>
+                            </div>
+                            </form>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'container':
+                    html = `
+                        <div class="canvas-element" id="${id}" data-type="container">
+                            <div class="element-controls">
+                                <button onclick="editElement('${id}')"><i class="fa fa-edit"></i></button>
+                                <button onclick="deleteElement('${id}')"><i class="fa fa-trash"></i></button>
+                            </div>
+                            <div class="container">
+                                <div class="droppable-area">Drop elements here</div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    return null;
+            }
+            
+            return $(html);
+        }
+        
+        function generateFieldHTML(fieldType, fieldId, fieldName) {
+            switch(fieldType) {
+                case 'text':
+                    return `<input type="text" class="form-control" name="field_${fieldId}" id="field_${fieldId}">`;
+                case 'email':
+                    return `<input type="email" class="form-control" name="field_${fieldId}" id="field_${fieldId}">`;
+                case 'number':
+                    return `<input type="number" class="form-control" name="field_${fieldId}" id="field_${fieldId}">`;
+                case 'textarea':
+                    return `<textarea class="form-control" name="field_${fieldId}" id="field_${fieldId}" rows="3"></textarea>`;
+                case 'select':
+                    return `<select class="form-control" name="field_${fieldId}" id="field_${fieldId}">
+                                <option value="">Select an option</option>
+                                <option value="option1">Option 1</option>
+                                <option value="option2">Option 2</option>
+                            </select>`;
+                case 'date':
+                    return `<input type="date" class="form-control" name="field_${fieldId}" id="field_${fieldId}">`;
+                case 'file':
+                    return `<input type="file" class="form-control" name="field_${fieldId}" id="field_${fieldId}">`;
+                default:
+                    return `<input type="text" class="form-control" name="field_${fieldId}" id="field_${fieldId}">`;
+            }
+        }
+        
+        function setupElementInteractions(elementId) {
+            $(`#${elementId}`).click(function(e) {
+                e.stopPropagation();
+                selectElement(elementId);
+            });
+        }
+        
+        function selectElement(elementId) {
+            $('.canvas-element').removeClass('selected');
+            $(`#${elementId}`).addClass('selected');
+            selectedElement = elementId;
+        }
+        
+        function editElement(elementId) {
+            selectElement(elementId);
+            showPropertiesPanel(elementId);
+        }
+        
+        function deleteElement(elementId) {
+            if (confirm('Are you sure you want to delete this element?')) {
+                $(`#${elementId}`).remove();
+                closePropertiesPanel();
+            }
+        }
+        
+        function showPropertiesPanel(elementId) {
+            let element = $(`#${elementId}`);
+            let type = element.data('type');
+            let content = generatePropertiesHTML(type, elementId);
+            
+            $('#properties-content').html(content);
+            $('#properties-panel').show();
+        }
+        
+        function closePropertiesPanel() {
+            $('#properties-panel').hide();
+            selectedElement = null;
+        }
+        
+        function generatePropertiesHTML(type, elementId) {
+            switch(type) {
+                case 'heading':
+                    let currentText = $(`#${elementId} h2`).text();
+                    return `
+                        <div class="form-group">
+                            <label>Heading Text</label>
+                            <input type="text" class="form-control" id="prop-text" value="${currentText}">
+                        </div>
+                        <div class="form-group">
+                            <label>Heading Size</label>
+                            <select class="form-control" id="prop-size">
+                                <option value="h1">H1 - Largest</option>
+                                <option value="h2" selected>H2 - Large</option>
+                                <option value="h3">H3 - Medium</option>
+                                <option value="h4">H4 - Small</option>
+                            </select>
+                        </div>
+                    `;
+                case 'text':
+                    let textContent = $(`#${elementId} p`).text();
+                    return `
+                        <div class="form-group">
+                            <label>Text Content</label>
+                            <textarea class="form-control" id="prop-text" rows="4">${textContent}</textarea>
+                        </div>
+                    `;
+                case 'image':
+                    return `
+                        <div class="form-group">
+                            <label>Image URL</label>
+                            <input type="text" class="form-control" id="prop-src" value="${$(`#${elementId} img`).attr('src')}">
+                        </div>
+                        <div class="form-group">
+                            <label>Alt Text</label>
+                            <input type="text" class="form-control" id="prop-alt" value="${$(`#${elementId} img`).attr('alt')}">
+                        </div>
+                    `;
+                default:
+                    return '<p>No properties available for this element.</p>';
+            }
+        }
+        
+        function saveDesign() {
+            let design = $('#canvas').html();
+            
+            $.ajax({
+                url: '/event/online-registration/{{eventId}}/save-design',
+                method: 'POST',
+                data: {
+                    type: 'registration',
+                    design: design
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Design saved successfully!');
+                    } else {
+                        alert('Error saving design: ' + response.error);
+                    }
+                },
+                error: function() {
+                    alert('Network error occurred while saving');
+                }
+            });
+        }
+        
+        function previewPage() {
+            let design = $('#canvas').html();
+            let previewWindow = window.open('', '_blank');
+            previewWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Registration Preview</title>
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+                </head>
+                <body>
+                    <div class="container">
+                        ${design}
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+        
+        // Apply properties changes
+        $('#apply-properties').click(function() {
+            if (!selectedElement) return;
+            
+            let element = $(`#${selectedElement}`);
+            let type = element.data('type');
+            
+            switch(type) {
+                case 'heading':
+                    let text = $('#prop-text').val();
+                    let size = $('#prop-size').val();
+                    element.find('h1, h2, h3, h4').replaceWith(`<${size}>${text}</${size}>`);
+                    break;
+                case 'text':
+                    element.find('p').text($('#prop-text').val());
+                    break;
+                case 'image':
+                    element.find('img').attr('src', $('#prop-src').val()).attr('alt', $('#prop-alt').val());
+                    break;
+            }
+            
+            closePropertiesPanel();
+        });
+        
+        // Close properties panel when clicking outside
+        $(document).click(function(e) {
+            if (!$(e.target).closest('#properties-panel, .canvas-element').length) {
+                closePropertiesPanel();
+            }
+        });
+    </script>
+</body>
+</html>

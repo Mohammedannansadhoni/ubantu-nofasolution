@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="col-md-12">
+        <h1>Events</h1>
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{/if}}
+
+        <a href="/event/create" class="btn btn-primary">Create Event</a> &nbsp;
+        <a href="/user" class="btn btn-primary">Manage Users</a> &nbsp;
+        <a href="/event/badge-categories-list" class="btn btn-primary">Manage Badge Categories</a> &nbsp;
+        <a href="/backup" class="btn btn-primary">Manage Backups</a> &nbsp; 
+        <a href="/event/manage-fonts" class="btn btn-info">Manage Fonts</a> &nbsp;
+        <a href="/user" class="btn btn-primary">Manage online website</a> &nbsp;
+        <a href="/event/delete-all" class="btn btn-danger">Delete all events</a>
+
+        <form action="/event/event-fields" method="POST">
+            
+            
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>From Date</th>
+                    <th>To Date</th>
+                    <th>Actions</th>
+   
+                </tr>
+                </thead>
+                <tbody>
+                    {{#each events}}
+                        <tr>
+                            <td>{{this.eventName}}</td>
+                            <td>{{formatDate this.fromDate 'custom'}}</td>
+                            <td>{{formatDate this.toDate 'custom'}}</td>
+                            <td>
+                                <a href="/event/edit/{{this._id}}" class="btn btn-warning" >Edit</a>
+                                {{#if this.setupComplete}}
+                                <a href="/event/upload/{{this._id}}" class="btn btn-success" >Import</a>
+                                <a href="/event/download/{{this._id}}" class="btn btn-success" >Export</a>
+                                <a href="/event/delete/{{this._id}}" class="btn btn-danger" >Delete</a>
+                                <a href="/event/registration/{{this._id}}" class="btn btn-primary" >Registration</a>
+                                <a href="/event/dashboard/{{this._id}}" class="btn btn-info" >Dashboard</a>
+                                
+                                <!-- Online Registration Toggle -->
+                                <div class="online-reg-toggle-container" style="display: inline-block; margin: 0 10px;">
+                                    <label class="toggle-switch" data-event-id="{{this._id}}">
+                                        <input type="checkbox" class="toggle-input" {{#if this.onlineRegistrationEnabled}}checked{{/if}}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <small class="toggle-label">Online Reg</small>
+                                </div>
+                                
+                                {{#if this.onlineRegistrationEnabled}}
+                                <a href="/event/online-registration/{{this._id}}" class="btn btn-info online-reg-btn" data-event-id="{{this._id}}">Online Registration</a>
+                                {{else}}
+                                <span class="btn btn-secondary online-reg-btn disabled" data-event-id="{{this._id}}" style="opacity: 0.5; cursor: not-allowed;" title="Enable online registration first">Online Registration</span>
+                                {{/if}}
+                                {{/if}}
+                                
+                                
+                            </td>
+                        </tr>
+
+                    {{/each}}
+                </tbody>
+
+            </table>
+
+        </form>
+    </div>
+
+</div>
+
+      <script>
+
+  </script>

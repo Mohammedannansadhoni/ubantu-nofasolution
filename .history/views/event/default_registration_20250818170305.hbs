@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register for {{event.eventName}}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            padding: 40px 0;
+        }
+        
+        .registration-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header-section {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header-section h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header-section .lead {
+            opacity: 0.9;
+            font-size: 1.2em;
+        }
+        
+        .event-info {
+            background: #f8f9fa;
+            padding: 30px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .event-detail {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+        
+        .event-detail i {
+            width: 25px;
+            margin-right: 15px;
+            color: #007bff;
+            font-size: 1.2em;
+        }
+        
+        .form-section {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .form-control {
+            height: 45px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+        }
+        
+        textarea.form-control {
+            height: auto;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .required-field::after {
+            content: " *";
+            color: #dc3545;
+        }
+        
+        .submit-section {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .btn-register {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            color: white;
+            padding: 15px 50px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+        }
+        
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40,167,69,0.4);
+            color: white;
+        }
+        
+        .alert {
+            border-radius: 5px;
+            margin-bottom: 25px;
+        }
+        
+        .terms-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .checkbox-wrapper {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+        }
+        
+        .checkbox-wrapper input[type="checkbox"] {
+            margin-top: 3px;
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 15px;
+            }
+            
+            .header-section {
+                padding: 30px 20px;
+            }
+            
+            .header-section h1 {
+                font-size: 2em;
+            }
+            
+            .form-section {
+                padding: 30px 20px;
+            }
+            
+            .submit-section {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="registration-container">
+            <!-- Header Section -->
+            <div class="header-section">
+                <h1>{{event.eventName}}</h1>
+                <p class="lead">Event Registration</p>
+            </div>
+            
+            <!-- Event Information -->
+            <div class="event-info">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{#if event.eventDate}}
+                        <div class="event-detail">
+                            <i class="fa fa-calendar"></i>
+                            <div>
+                                <strong>Date:</strong><br>
+                                {{formatDate event.eventDate}}
+                            </div>
+                        </div>
+                        {{/if}}
+                        
+                        {{#if event.eventLocation}}
+                        <div class="event-detail">
+                            <i class="fa fa-map-marker"></i>
+                            <div>
+                                <strong>Location:</strong><br>
+                                {{event.eventLocation}}
+                            </div>
+                        </div>
+                        {{/if}}
+                    </div>
+                    <div class="col-md-6">
+                        {{#if event.eventTime}}
+                        <div class="event-detail">
+                            <i class="fa fa-clock-o"></i>
+                            <div>
+                                <strong>Time:</strong><br>
+                                {{event.eventTime}}
+                            </div>
+                        </div>
+                        {{/if}}
+                        
+                        {{#if event.eventDescription}}
+                        <div class="event-detail">
+                            <i class="fa fa-info-circle"></i>
+                            <div>
+                                <strong>About:</strong><br>
+                                {{event.eventDescription}}
+                            </div>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Registration Form -->
+            <div class="form-section">
+                {{#if error}}
+                <div class="alert alert-danger">
+                    <i class="fa fa-exclamation-triangle"></i> {{error}}
+                </div>
+                {{/if}}
+                
+                {{#if success}}
+                <div class="alert alert-success">
+                    <i class="fa fa-check-circle"></i> {{success}}
+                </div>
+                {{/if}}
+                
+                <form action="/event/register/{{event._id}}" method="POST" enctype="multipart/form-data" id="registration-form">
+                    <div class="row">
+                        {{#each event.eventFields}}
+                        {{#if showInOnlineRegistration}}
+                        <div class="col-md-{{#eq fieldType 'textarea'}}12{{else}}6{{/eq}}">
+                            <div class="form-group">
+                                <label for="field_{{_id}}" class="{{#if isRequired}}required-field{{/if}}">
+                                    {{fieldName}}
+                                </label>
+                                {{{formField this}}}
+                                {{#if fieldDescription}}
+                                <small class="text-muted">{{fieldDescription}}</small>
+                                {{/if}}
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{/each}}
+                    </div>
+                    
+                    <!-- Terms and Conditions -->
+                    <div class="terms-section">
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="agree-terms" name="agreeTerms" required>
+                            <label for="agree-terms">
+                                I agree to the <a href="#" data-toggle="modal" data-target="#terms-modal">Terms and Conditions</a> 
+                                and <a href="#" data-toggle="modal" data-target="#privacy-modal">Privacy Policy</a>
+                            </label>
+                        </div>
+                        
+                        <div class="checkbox-wrapper">
+                            <input type="checkbox" id="marketing-consent" name="marketingConsent">
+                            <label for="marketing-consent">
+                                I would like to receive updates about future events and activities
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="submit-section">
+                        <button type="submit" class="btn btn-register">
+                            <i class="fa fa-paper-plane"></i> Register Now
+                        </button>
+                        <p class="text-muted" style="margin-top: 15px;">
+                            By registering, you'll receive a confirmation email with your registration details.
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Terms Modal -->
+    <div class="modal fade" id="terms-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title">Terms and Conditions</h4>
+                </div>
+                <div class="modal-body">
+                    <p>By registering for this event, you agree to:</p>
+                    <ul>
+                        <li>Provide accurate and complete information</li>
+                        <li>Attend the event at the specified date and time</li>
+                        <li>Follow all event guidelines and codes of conduct</li>
+                        <li>Allow event organizers to use your registration data for event management</li>
+                    </ul>
+                    <p>Event organizers reserve the right to cancel or modify the event if necessary.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Privacy Modal -->
+    <div class="modal fade" id="privacy-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                    <h4 class="modal-title">Privacy Policy</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Your privacy is important to us. We collect and use your information to:</p>
+                    <ul>
+                        <li>Process your event registration</li>
+                        <li>Send you event-related communications</li>
+                        <li>Improve our events and services</li>
+                    </ul>
+                    <p>We will not share your personal information with third parties without your consent, except as required by law.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Form validation
+            $('#registration-form').on('submit', function(e) {
+                let isValid = true;
+                let firstError = null;
+                
+                // Check required fields
+                $(this).find('[required]').each(function() {
+                    if (!$(this).val().trim()) {
+                        isValid = false;
+                        $(this).addClass('has-error');
+                        if (!firstError) firstError = $(this);
+                    } else {
+                        $(this).removeClass('has-error');
+                    }
+                });
+                
+                // Check email fields
+                $(this).find('input[type="email"]').each(function() {
+                    if ($(this).val() && !isValidEmail($(this).val())) {
+                        isValid = false;
+                        $(this).addClass('has-error');
+                        if (!firstError) firstError = $(this);
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    if (firstError) {
+                        firstError.focus();
+                        $('html, body').animate({
+                            scrollTop: firstError.offset().top - 100
+                        }, 500);
+                    }
+                    showAlert('Please fill in all required fields correctly.', 'danger');
+                    return false;
+                }
+                
+                // Show loading state
+                let submitBtn = $(this).find('button[type="submit"]');
+                submitBtn.prop('disabled', true);
+                submitBtn.html('<i class="fa fa-spinner fa-spin"></i> Processing...');
+            });
+            
+            // Real-time validation
+            $('input, textarea, select').on('blur', function() {
+                if ($(this).attr('required') && !$(this).val().trim()) {
+                    $(this).addClass('has-error');
+                } else if ($(this).attr('type') === 'email' && $(this).val() && !isValidEmail($(this).val())) {
+                    $(this).addClass('has-error');
+                } else {
+                    $(this).removeClass('has-error');
+                }
+            });
+            
+            // File upload preview
+            $('input[type="file"]').on('change', function() {
+                let file = this.files[0];
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        // Show file preview if it's an image
+                        if (file.type.startsWith('image/')) {
+                            let preview = $('<img>').attr('src', e.target.result)
+                                .css({
+                                    'max-width': '200px',
+                                    'max-height': '200px',
+                                    'margin-top': '10px',
+                                    'border': '1px solid #ddd',
+                                    'border-radius': '4px'
+                                });
+                            $(this).parent().find('.file-preview').remove();
+                            $(this).parent().append($('<div class="file-preview">').append(preview));
+                        }
+                    }.bind(this);
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+        
+        function isValidEmail(email) {
+            let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function showAlert(message, type) {
+            let alertClass = type === 'danger' ? 'alert-danger' : 'alert-success';
+            let alert = $(`
+                <div class="alert ${alertClass} alert-dismissible" style="position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px;">
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                    ${message}
+                </div>
+            `);
+            
+            $('body').append(alert);
+            setTimeout(() => alert.alert('close'), 5000);
+        }
+    </script>
+</body>
+</html>

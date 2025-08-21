@@ -1,0 +1,49 @@
+<ol class="breadcrumb">
+  <li><a href="/event">Home</a></li>
+  <li class="active">Manage Users</li>
+</ol>
+
+<div class="row">
+    <div class="col-md-12">
+        <h1>Users</h1>
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{/if}}
+
+        <a href="/user/create" class="btn btn-primary">Create User</a> &nbsp;
+        <a href="/user/delete-all" class="btn btn-danger">Delete all users</a>
+            
+            
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Event</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {{#each users}}
+                        <tr>
+                            <td>{{this.name}}</td>
+                            <td>{{this.email}}</td>
+                            <td>{{this.event.eventName}}</td>
+                            <td>
+                                <a href="/user/edit/{{this._id}}" class="btn btn-primary" >Edit</a>
+                                <a href="/user/delete/{{this._id}}" class="btn btn-danger" >Delete</a>
+                            </td>
+                        </tr>
+
+                    {{/each}}
+                </tbody>
+
+            </table>
+
+    </div>
+
+</div>

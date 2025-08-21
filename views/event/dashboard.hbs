@@ -1,0 +1,44 @@
+<ol class="breadcrumb">
+  <li><a href="/event">Home</a></li>
+  <li class="active">Dashboard</li>
+</ol>
+
+<div class="row">
+    <h4>{{event.eventName}}</h4>
+    	<div class="col-md-3">
+    	    <a class="info-tiles tiles-inverse has-footer" href="#">
+    		    <div class="tiles-heading">
+			        <div class="pull-left">Total Count</div>
+			        <div class="pull-right">
+			        	<div id="tileorders" class="sparkline-block"><canvas width="39" height="13" style="display: inline-block; width: 39px; height: 13px; vertical-align: top;"></canvas></div>
+			        </div>
+			    </div>
+			    <div class="tiles-body">
+			        <div class="text-center">{{countTotal}}</div>
+			    </div>
+			    <div class="tiles-footer">
+			    	<div class="pull-left"></div>
+			    	<div class="pull-right percent-change"></div>
+			    </div>
+			</a>
+    	</div>
+
+        <div class="col-md-3">
+        	<a class="info-tiles tiles-green has-footer" href="#">
+			    <div class="tiles-heading">
+			        <div class="pull-left">Total Attended</div>
+			        <div class="pull-right">
+			        	<div id="tilerevenues" class="sparkline-block"><canvas width="40" height="13" style="display: inline-block; width: 40px; height: 13px; vertical-align: top;"></canvas></div>
+			        </div>
+			    </div>
+			    <div class="tiles-body">
+			        <div class="text-center">{{countAttended}}</div>
+			    </div>
+			    <div class="tiles-footer">
+			    	<div class="pull-left"></div>
+			    	<div class="pull-right percent-change"></div>
+			    </div>
+			</a>
+    	</div>    
+
+</div>

@@ -1,0 +1,281 @@
+<div class="row">
+    <div class="col-md-12">
+        <h1>Events</h1>
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{/if}}
+
+        <a href="/event/create" class="btn btn-primary">Create Event</a> &nbsp;
+        <a href="/user" class="btn btn-primary">Manage Users</a> &nbsp;
+        <a href="/event/badge-categories-list" class="btn btn-primary">Manage Badge Categories</a> &nbsp;
+        <a href="/backup" class="btn btn-primary">Manage Backups</a> &nbsp; 
+        <a href="/event/manage-fonts" class="btn btn-info">Manage Fonts</a> &nbsp;
+        <a href="/user" class="btn btn-primary">Manage online website</a> &nbsp;
+        <a href="/event/delete-all" class="btn btn-danger">Delete all events</a>
+
+        <form action="/event/event-fields" method="POST">
+            
+            
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>From Date</th>
+                    <th>To Date</th>
+                    <th>Actions</th>
+   
+                </tr>
+                </thead>
+                <tbody>
+                    {{#each events}}
+                        <tr>
+                            <td>{{this.eventName}}</td>
+                            <td>{{formatDate this.fromDate 'custom'}}</td>
+                            <td>{{formatDate this.toDate 'custom'}}</td>
+                            <td>
+                                <a href="/event/edit/{{this._id}}" class="btn btn-warning" >Edit</a>
+                                {{#if this.setupComplete}}
+                                <a href="/event/upload/{{this._id}}" class="btn btn-success" >Import</a>
+                                <a href="/event/download/{{this._id}}" class="btn btn-success" >Export</a>
+                                <a href="/event/delete/{{this._id}}" class="btn btn-danger" >Delete</a>
+                                <a href="/event/registration/{{this._id}}" class="btn btn-primary" >Registration</a>
+                                <a href="/event/dashboard/{{this._id}}" class="btn btn-info" >Dashboard</a>
+                                
+                                <!-- Online Registration Toggle -->
+                                <div class="online-reg-toggle-container" style="display: inline-block; margin: 0 10px;">
+                                    <label class="toggle-switch" data-event-id="{{this._id}}">
+                                        <input type="checkbox" class="toggle-input" {{#if this.onlineRegistrationEnabled}}checked{{/if}}>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                    <small class="toggle-label">Online Reg</small>
+                                </div>
+                                
+                                {{#if this.onlineRegistrationEnabled}}
+                                <a href="/event/registration-form/{{this._id}}" class="btn btn-info online-reg-btn" data-event-id="{{this._id}}">Online Registration</a>
+                                {{else}}
+                                <span class="btn btn-secondary online-reg-btn disabled" data-event-id="{{this._id}}" style="opacity: 0.5; cursor: not-allowed;" title="Enable online registration first">Online Registration</span>
+                                {{/if}}
+                                {{/if}}
+                                
+                                
+                            </td>
+                        </tr>
+
+                    {{/each}}
+                </tbody>
+
+            </table>
+
+        </form>
+    </div>
+
+</div>
+
+      <script>
+
+      </script>
+
+      <style>
+        /* Toggle Switch Styles */
+        .online-reg-toggle-container {
+          vertical-align: middle;
+          text-align: center;
+        }
+
+        .toggle-switch {
+          position: relative;
+          display: inline-block;
+          width: 50px;
+          height: 24px;
+          margin: 0;
+        }
+
+        .toggle-input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        .toggle-slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          transition: 0.3s ease;
+          border-radius: 24px;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-slider:before {
+          position: absolute;
+          content: "";
+          height: 18px;
+          width: 18px;
+          left: 3px;
+          bottom: 3px;
+          background-color: white;
+          transition: 0.3s ease;
+          border-radius: 50%;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-input:checked + .toggle-slider {
+          background-color: #4CAF50;
+        }
+
+        .toggle-input:checked + .toggle-slider:before {
+          transform: translateX(26px);
+        }
+
+        .toggle-slider:hover {
+          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .toggle-label {
+          display: block;
+          margin-top: 2px;
+          font-size: 10px;
+          color: #666;
+          font-weight: 500;
+        }
+
+        /* Animation for button state changes */
+        .online-reg-btn {
+          transition: all 0.3s ease;
+        }
+
+        .online-reg-btn.disabled {
+          pointer-events: none;
+        }
+
+        /* Loading state */
+        .toggle-switch.loading .toggle-slider {
+          background-color: #ff9800;
+        }
+
+        .toggle-switch.loading .toggle-slider:before {
+          animation: toggleLoading 0.6s ease-in-out infinite alternate;
+        }
+
+        @keyframes toggleLoading {
+          0% { transform: translateX(3px) scale(0.8); }
+          100% { transform: translateX(23px) scale(0.8); }
+        }
+      </style>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // Handle toggle switch changes
+          const toggleSwitches = document.querySelectorAll('.toggle-switch');
+          
+          toggleSwitches.forEach(function(toggleSwitch) {
+            const checkbox = toggleSwitch.querySelector('.toggle-input');
+            const eventId = toggleSwitch.getAttribute('data-event-id');
+            
+            checkbox.addEventListener('change', function() {
+              const isEnabled = this.checked;
+              const button = document.querySelector(`[data-event-id="${eventId}"].online-reg-btn`);
+              
+              // Add loading state
+              toggleSwitch.classList.add('loading');
+              
+              // Send AJAX request to update the setting
+              fetch(`/event/toggle-online-registration/${eventId}`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ enabled: isEnabled })
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  // Update button state
+                  updateButtonState(button, isEnabled, eventId);
+                  
+                  // Show success message
+                  showToast(isEnabled ? 'Online registration enabled!' : 'Online registration disabled!', 'success');
+                } else {
+                  // Revert toggle state on error
+                  this.checked = !isEnabled;
+                  showToast('Failed to update setting', 'error');
+                }
+              })
+              .catch(error => {
+                // Revert toggle state on error
+                this.checked = !isEnabled;
+                showToast('Network error occurred', 'error');
+                console.error('Error:', error);
+              })
+              .finally(() => {
+                // Remove loading state
+                toggleSwitch.classList.remove('loading');
+              });
+            });
+          });
+          
+          function updateButtonState(button, isEnabled, eventId) {
+            if (isEnabled) {
+              // Enable button
+              button.className = 'btn btn-info online-reg-btn';
+              button.style.opacity = '1';
+              button.style.cursor = 'pointer';
+              button.style.pointerEvents = 'auto';
+              button.href = `/event/online-registration/${eventId}`;
+              button.textContent = 'Online Registration';
+              button.removeAttribute('title');
+            } else {
+              // Disable button
+              button.className = 'btn btn-secondary online-reg-btn disabled';
+              button.style.opacity = '0.5';
+              button.style.cursor = 'not-allowed';
+              button.style.pointerEvents = 'none';
+              button.removeAttribute('href');
+              button.textContent = 'Online Registration';
+              button.title = 'Enable online registration first';
+            }
+          }
+          
+          function showToast(message, type) {
+            // Create toast notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+              position: fixed;
+              top: 20px;
+              right: 20px;
+              padding: 12px 20px;
+              border-radius: 4px;
+              color: white;
+              font-weight: 500;
+              z-index: 9999;
+              transition: all 0.3s ease;
+              ${type === 'success' ? 'background-color: #4CAF50;' : 'background-color: #f44336;'}
+            `;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+              toast.style.transform = 'translateX(0)';
+              toast.style.opacity = '1';
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+              toast.style.transform = 'translateX(100%)';
+              toast.style.opacity = '0';
+              setTimeout(() => {
+                document.body.removeChild(toast);
+              }, 300);
+            }, 3000);
+          }
+        });
+      </script>

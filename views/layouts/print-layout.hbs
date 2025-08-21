@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/library/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+
+    {{#each styles}}
+      <link rel='stylesheet' href='{{style}}' />
+    {{/each}}
+
+    <script src="/library/jquery-3.3.1.min.js"></script>
+    <script src="/library/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="/library/JsBarcode.all.min.js"></script>
+    
+
+  </head>
+
+  <body>
+    <div class="container">
+      {{{body}}}
+    </div>
+
+
+
+    {{#each scripts}}
+      <script src="{{script}}"></script>
+    {{/each}}
+    
+  </body>
+</html>

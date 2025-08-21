@@ -1,0 +1,229 @@
+
+{{!-- Load custom fonts --}}
+{{#if customFonts}}
+    {{#each customFonts}}
+        {{#if googleFontApi}}
+            <link href="{{googleFontApi}}" rel="stylesheet">
+        {{/if}}
+        {{#if fontFile}}
+            <style>
+                @font-face { 
+                    font-family: '{{fontFamily}}'; 
+                    src: url('/uploads/fonts/{{fontFile}}'); 
+                }
+            </style>
+        {{/if}}
+    {{/each}}
+{{/if}}
+
+
+<div class="row">
+    
+
+    <div class="col-md-8">
+
+        <!-- A5 paper size -->
+        <!--
+            Equivalent A5 paper dimensions in pixels at 300 DPI and 72 DPI respectively are: 
+            1748 pixels x 2480 pixels (print resolution) 
+            420 pixels x 595 pixels (screen resolution)
+        -->
+        <div id="badgeCanvas" style="
+            width: 559px;
+            height:794px;
+        ">
+
+            {{#each fields}}
+            <span id="{{this.fieldName}}" class="canvas" style="position:absolute; ">
+                {{toUpperCase this.fieldValue}}
+            </span>
+
+            {{/each}}        
+
+            {{#if showBarcode}}
+            <img id="barcode" style="
+            position:absolute;
+            left: {{barcodeLeft}};
+            top: {{barcodeTop}};
+            " >
+            {{/if}}
+
+            {{#if showQrCode}}
+            <div id="qrCode" style="
+            position:absolute;
+            left: {{qrCodeLeft}}px;
+            top: {{qrCodeTop}}px;
+            width: 80px;
+            height: 100px;
+            border: 1px solid #ccc;
+            background: white;
+            z-index: 10;
+            "></div>
+            {{/if}}
+
+            {{#each uploadImageFields}}
+            <img id="{{this.fieldName}}" src="/uploads/{{this.fieldValue}}" style="
+            position:absolute;
+            left: {{this.fieldLeft}}px;
+            top: {{this.fieldTop}}px;
+            width: {{this.fieldWidth}}px;
+            height: {{this.fieldHeight}}px;
+            transform: rotate({{this.fieldRotate}}deg);
+            " />
+            {{/each}}
+
+            {{#each uploadLogoFields}}
+            <img id="{{this.fieldName}}" src="/uploads/{{this.fieldValue}}" style="
+            position:absolute;
+            left: {{this.fieldLeft}}px;
+            top: {{this.fieldTop}}px;
+            width: {{this.fieldWidth}}px;
+            height: {{this.fieldHeight}}px;
+            transform: rotate({{this.fieldRotate}}deg);
+            " />
+            {{/each}}
+
+        </div> 
+      
+    </div>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+
+
+
+$(document).ready(function(){
+var fields = [];
+    {{#if showBarcode}}
+      JsBarcode("#barcode", "{{barcode}}", {
+      format: "CODE128",
+      width: 2,
+      height:40,
+      margin: 5,
+      textMargin: 0,
+      fontSize: 16,
+      displayValue: true
+      });
+    {{/if}}
+
+    {{#if showQrCode}}
+      console.log("QR Code should be generated");
+      console.log("QR Code value:", "{{qrCode}}");
+      
+      var qrCodeValue = "{{qrCode}}";
+      var qrCodeDiv = document.getElementById('qrCode');
+      
+      console.log("QR Code div:", qrCodeDiv);
+      console.log("QRCode library available:", typeof QRCode);
+      
+      if(qrCodeDiv) {
+        // Clear any existing content
+        qrCodeDiv.innerHTML = '';
+        
+        if(qrCodeValue && qrCodeValue !== 'undefined' && qrCodeValue !== '') {
+          if(typeof QRCode !== 'undefined') {
+            try {
+              new QRCode(qrCodeDiv, {
+                text: qrCodeValue,
+                width: 80,
+                height: 80,
+                colorDark: "#000000",
+                colorLight: "#ffffff"
+              });
+              
+              // Add QR code value text below the QR code (similar to barcode)
+              var qrTextDiv = document.createElement('div');
+              qrTextDiv.style.textAlign = 'center';
+              qrTextDiv.style.fontSize = '12px';
+              qrTextDiv.style.marginTop = '2px';
+              qrTextDiv.style.fontFamily = 'Arial, sans-serif';
+              qrTextDiv.innerHTML = qrCodeValue;
+              qrCodeDiv.appendChild(qrTextDiv);
+              
+              console.log("QR Code generated successfully");
+            } catch(error) {
+              console.error("Error generating QR Code:", error);
+              qrCodeDiv.innerHTML = '<div style="width:80px;height:80px;border:1px solid red;background:#ffeeee;text-align:center;line-height:80px;font-size:10px;">QR Error</div>';
+            }
+          } else {
+            console.error("QRCode library not loaded");
+            qrCodeDiv.innerHTML = '<div style="width:80px;height:80px;border:1px solid orange;background:#fff8dc;text-align:center;line-height:80px;font-size:10px;">QR Lib Missing</div>';
+          }
+        } else {
+          console.log("No QR code value provided");
+          qrCodeDiv.innerHTML = '<div style="width:80px;height:80px;border:1px solid gray;background:#f0f0f0;text-align:center;line-height:80px;font-size:10px;">No QR Data</div>';
+        }
+      } else {
+        console.error("QR Code div not found");
+      }
+    {{/if}}
+
+ var topIndex=0;
+
+    {{#each fields}}
+    $("#{{this.fieldName}}").css('left', '{{this.fieldLeft}}px' );
+    $("#{{this.fieldName}}").css('top', '{{this.fieldTop}}px'  );
+    $("#{{this.fieldName}}").css('font-family','{{this.fieldFontFamily}}');
+    $("#{{this.fieldName}}").css('font-size','{{this.fieldFontSize}}px' );
+    $("#{{this.fieldName}}").css('font-weight','{{this.fieldFontWeight}}');
+    $("#{{this.fieldName}}").css('font-style','{{this.fieldFontStyle}}');
+    $("#{{this.fieldName}}").css('text-align','{{this.fieldTextAlign}}');
+    $("#{{this.fieldName}}").css('width','{{this.fieldWidth}}px');
+    $("#{{this.fieldName}}").css({'transform': 'rotate({{this.fieldRotate}}deg)'  });
+
+    /*
+    if('{{this.fieldTextAlign}}'=='center'){
+        $("#{{this.fieldName}}").css('display','inline');
+        $("#{{this.fieldName}}").css('left','16px');
+        $("#{{this.fieldName}}").css('float','none');
+        $("#{{this.fieldName}}").css('position','absolute');
+        $("#{{this.fieldName}}").css('width','557px');
+    }
+    else if('{{this.fieldTextAlign}}'=='left'){
+        $("#{{this.fieldName}}").css('display','inline');
+        $("#{{this.fieldName}}").css('float','none');
+        $("#{{this.fieldName}}").css('position','absolute');
+        $("#{{this.fieldName}}").css('width','auto');
+    }
+    else if('{{this.fieldTextAlign}}'=='right'){
+        $("#{{this.fieldName}}").css('display','inline');
+        $("#{{this.fieldName}}").css('left','16px');
+        $("#{{this.fieldName}}").css('float','none');
+        $("#{{this.fieldName}}").css('position','absolute');
+        $("#{{this.fieldName}}").css('width','557px');
+    }
+    */
+
+
+    fields.push('{{this.fieldName}}');
+
+    {{/each}}
+
+    {{#if showBarcode}}
+
+        $("#barcode").css('left', '{{barcodeLeft}}px' );
+        $("#barcode").css('top', '{{barcodeTop}}px'  );
+
+        fields.push('barcode');
+    {{/if}}
+
+    {{#if showQrCode}}
+
+        $("#qrCode").css('left', '{{qrCodeLeft}}px' );
+        $("#qrCode").css('top', '{{qrCodeTop}}px'  );
+
+        fields.push('qrCode');
+    {{/if}}
+
+      //window.print();
+      
+      //setTimeout(function(){ window.close(); }, 1000);
+});
+
+      
+</script>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    {{#if autorefresh}}
+      <meta http-equiv="refresh" content="30">
+    {{/if}}
+
+    <title>{{title}}</title>
+    <link rel="stylesheet" href="/library/jquery-ui-1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="/library/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/library/DataTables/DataTables-1.10.16/css/jquery.dataTables.min.css"/>
+    <link rel='stylesheet' href='/library/jquery.fileupload.css' />
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+
+    {{#each styles}}
+      <link rel='stylesheet' href='{{style}}' />
+    {{/each}}
+
+    <script src="https://use.fontawesome.com/422fa3a780.js"></script>
+
+
+  </head>
+
+  <body>
+    {{>header}}
+    <div class="container">
+      {{{body}}}
+    </div>
+
+    <script src="/library/jquery-3.3.1.min.js"></script>
+    <script src="/library/jquery-ui-1.12.1/jquery-ui.js"></script>
+    <script src="/library/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="/library/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="/library/jquery.fileupload.js"></script>
+
+    {{#each scripts}}
+      <script src="{{script}}"></script>
+    {{/each}}
+    
+  </body>
+</html>

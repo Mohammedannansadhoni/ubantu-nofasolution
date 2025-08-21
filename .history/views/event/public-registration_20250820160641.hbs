@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{eventTitle}} - Registration</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    /* Use the same page-wrapper styles from the designer */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      border: none;
+      min-height: 100vh;
+    }
+
+    header, footer {
+      background-color: #ffffff;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    footer {
+      border-top: 1px solid #ccc;
+      border-bottom: none;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced header styling */
+    header .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #333;
+    }
+
+    header p {
+      margin: 5px 0 0 0;
+      color: #666;
+    }
+
+    /* Enhanced footer styling */
+    footer .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    footer p {
+      margin: 0;
+      color: #333;
+    }
+
+    .canvas-container {
+      flex: 1;
+      padding: 20px;
+      min-height: 400px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #ffffff;
+      transition: all 0.3s ease;
+    }
+
+    .canvas-content {
+      padding: 20px;
+      color: #000;
+    }
+
+    .resizable-logo-wrapper {
+      display: inline-block;
+      position: relative;
+      min-width: 50px;
+      min-height: 50px;
+      max-width: 90%;
+      max-height: 300px;
+    }
+
+    .resizable-logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Registration form styles */
+    .registration-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .registration-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      padding: 48px 36px 36px 36px;
+      max-width: 440px;
+      width: 100%;
+      border: 1.5px solid #e0e0e0;
+    }
+
+    .event-logo {
+      max-width: 110px;
+      margin: 0 auto 18px auto;
+      display: block;
+    }
+
+    .event-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+      color: #222;
+    }
+
+    .event-header {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 18px;
+      color: #333;
+    }
+
+    .registration-form label {
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #222;
+      display: block;
+    }
+
+    .registration-form input,
+    .registration-form select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid #cfd8dc;
+      border-radius: 7px;
+      margin-bottom: 20px;
+      font-size: 1.07rem;
+      background: #f7fafd;
+      transition: border 0.2s;
+    }
+
+    .registration-form input:focus,
+    .registration-form select:focus {
+      border: 1.5px solid #0a1931;
+      outline: none;
+    }
+
+    .registration-form input[type="submit"] {
+      background: #0a1931;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.13rem;
+      font-weight: 700;
+      padding: 14px 0;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(10, 25, 49, 0.08);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .registration-form input[type="submit"]:hover {
+      background: #1a2951;
+    }
+
+    .registration-form .required {
+      color: #d32f2f;
+      margin-left: 2px;
+    }
+
+    .registration-form .form-note {
+      font-size: 0.97em;
+      color: #888;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .event-footer {
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 22px;
+      color: #666;
+    }
+
+    /* Form field styling */
+    .form-field {
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .registration-card {
+        padding: 24px 8px 18px 8px;
+        max-width: 98vw;
+      }
+    }
+
+    /* Custom background support */
+    .custom-background {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    /* Success notification */
+    .success-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+      z-index: 10000;
+      opacity: 0;
+      transform: translateX(100px);
+      transition: all 0.3s ease;
+    }
+
+    .success-message.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- This is the exact page-wrapper content from the designer -->
+  <div class="page-wrapper" id="pageWrapper">
+    
+    {{#if savedCanvasHtml}}
+      <!-- Render saved canvas HTML directly -->
+      {{{savedCanvasHtml}}}
+    {{else}}
+      <!-- Default canvas structure -->
+      <div class="canvas-container" id="canvas" {{#if customBackground}}style="background-image: {{{customBackground}}}"{{/if}}>
+        <div class="canvas-content">
+          <div class="registration-container">
+            <div class="registration-card">
+              {{#if logoUrl}}
+                <img src="{{logoUrl}}" class="event-logo" alt="{{eventTitle}} Logo">
+              {{else}}
+                <img src="https://via.placeholder.com/110x60?text=Logo" class="event-logo" alt="Event Logo">
+              {{/if}}
+              
+              <div class="event-title">{{eventTitle}}</div>
+              <div class="event-header">{{eventHeader}}</div>
+
+              <form class="registration-form" action="/event/{{event._id}}/public-register" method="POST" id="registrationForm">
+                
+                {{#each fields}}
+                  <div class="form-field">
+                    {{formField this.fieldName this.fieldLabel this.fieldType this.fieldValue this.fieldMandatory ../badgeCategories this.dropdownOptions}}
+                  </div>
+                {{/each}}
+
+                <div class="form-note">{{formNote}}</div>
+                <input type="submit" value="REGISTER">
+              </form>
+
+              <div class="event-footer">{{eventFooter}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {{/if}}
+  </div>
+
+  <!-- Success notification -->
+  <div class="success-message" id="successMessage">
+    Registration submitted successfully! ✅
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("🎨 Loading public registration page...");
+      
+      {{#if savedCanvasHtml}}
+        console.log("✅ Applying saved design to public registration");
+        
+        // The saved canvas HTML is already rendered, but we need to ensure 
+        // the form action points to the correct event for submission
+        const forms = document.querySelectorAll('form.registration-form');
+        forms.forEach(form => {
+          if (!form.action.includes('/public-register')) {
+            form.action = '/event/{{event._id}}/public-register';
+            console.log("🔧 Updated form action for public submission");
+          }
+        });
+        
+        // Apply any custom background from database if not in saved HTML
+        {{#if customBackground}}
+          const canvas = document.getElementById('canvas');
+          if (canvas && !canvas.style.backgroundImage) {
+            canvas.style.backgroundImage = 'url({{customBackground}})';
+            console.log("🖼️ Applied custom background from database");
+          }
+        {{/if}}
+        
+        // Update logos with event-specific URLs if needed
+        {{#if logoUrl}}
+          const logos = document.querySelectorAll('.event-logo');
+          logos.forEach(logo => {
+            if (logo.src && logo.src.includes('placeholder')) {
+              logo.src = '{{logoUrl}}';
+              console.log("🏷️ Updated logo from database");
+            }
+          });
+        {{/if}}
+        
+        console.log("🎨 Saved design successfully applied to public page");
+      {{else}}
+        console.log("ℹ️ No saved design found, using default layout");
+        
+        // Apply custom background to default layout
+        {{#if customBackground}}
+          const canvas = document.getElementById('canvas');
+          if (canvas) {
+            canvas.style.backgroundImage = 'url({{customBackground}})';
+            console.log("🖼️ Applied custom background to default layout");
+          }
+        {{/if}}
+      {{/if}}
+      
+      const form = document.getElementById('registrationForm');
+      const successMessage = document.getElementById('successMessage');
+
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          // Show loading state
+          const submitBtn = form.querySelector('input[type="submit"]');
+          const originalText = submitBtn.value;
+          submitBtn.value = 'Submitting...';
+          submitBtn.disabled = true;
+
+          // Create FormData
+          const formData = new FormData(form);
+
+          // Submit form
+          fetch(form.action, {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => {
+            console.log('Registration response:', response);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('Registration data:', data);
+            if (data.success) {
+              // Show success message
+              successMessage.classList.add('show');
+              
+              // Redirect immediately if redirectUrl is provided
+              if (data.redirectUrl) {
+                console.log('Redirecting to:', data.redirectUrl);
+                // Use a small delay to show the success message briefly
+                setTimeout(() => {
+                  window.location.href = data.redirectUrl;
+                }, 500);
+              } else {
+                // If no redirect URL, keep the old behavior
+                setTimeout(() => {
+                  form.reset();
+                  submitBtn.value = originalText;
+                  submitBtn.disabled = false;
+                  successMessage.classList.remove('show');
+                }, 2000);
+              }
+            } else {
+              throw new Error(data.message || 'Registration failed');
+            }
+          })
+          .catch(error => {
+            console.error('Registration error:', error);
+            alert('Registration failed. Please try again.');
+            submitBtn.value = originalText;
+            submitBtn.disabled = false;
+          });
+        });
+      }
+
+      // Enhanced form field interactions
+      const formFields = document.querySelectorAll('.form-field input, .form-field select');
+      formFields.forEach(field => {
+        field.addEventListener('focus', function() {
+          this.style.transform = 'translateY(-2px)';
+          this.style.boxShadow = '0 4px 12px rgba(10, 25, 49, 0.15)';
+        });
+
+        field.addEventListener('blur', function() {
+          this.style.transform = 'translateY(0)';
+          this.style.boxShadow = 'none';
+        });
+      });
+    });
+
+    // Auto-hide success message
+    setTimeout(() => {
+      const successMessage = document.getElementById('successMessage');
+      if (successMessage.classList.contains('show')) {
+        successMessage.classList.remove('show');
+      }
+    }, 5000);
+  </script>
+</body>
+</html>

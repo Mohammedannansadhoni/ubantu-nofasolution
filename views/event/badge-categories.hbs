@@ -1,0 +1,63 @@
+<ol class="breadcrumb">
+  <li><a href="/event">Home</a></li>
+  <li class="active">Event Setup</li>
+</ol>
+
+<div class="stepwizard">
+    <div class="stepwizard-row">
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-default btn-circle">1</button>
+            <p>Event Initials</p>
+        </div>
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-default btn-circle" >2</button>
+            <p>Event Fields</p>
+        </div>
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-primary btn-circle" >3</button>
+            <p>Badge Categories</p>
+        </div> 
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-default btn-circle" disabled="disabled">4</button>
+            <p>Badge Layout</p>
+        </div>         
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <h4>Step 3 - Badge Categories</h4>
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{/if}}
+
+
+        <form action="/event/badge-categories" method="POST">
+            <table class="points_table">
+                <thead>
+                <tr>
+                    <th class="col-xs-3">Field Name</th>
+                    <th class="col-xs-9">Show in Register</th>
+                </tr>
+                </thead>
+                <tbody class="points_table_scrollbar">
+
+                        {{badgeCategoryOption badgecategories badgecategorycodes}}
+
+                </tbody>
+
+            </table>
+
+            <input type="submit" value="Next" style="width:100px" class="btn btn-success pull-right">
+            <a href="/event/event-fields/{{session.eventId}}" style="width:100px" class="btn btn-primary">Previous</a>
+
+        </form>
+    </div>
+
+</div>
+
+  

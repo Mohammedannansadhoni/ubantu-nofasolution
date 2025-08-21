@@ -1,0 +1,1 @@
+$('#fileupload').fileupload({ dataType: 'json' });

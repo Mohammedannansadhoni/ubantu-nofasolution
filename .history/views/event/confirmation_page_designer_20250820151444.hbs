@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Confirmation Page Designer</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .toolbar {
+      display: flex;
+      padding: 10px;
+      background: #ffffff;
+      border-bottom: 1px solid #ccc;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar select,
+    .toolbar input[type="file"],
+    .toolbar button {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      margin: 20px;
+      border: 2px solid #aaa;
+      transition: all 0.3s ease;
+    }
+
+    header, footer {
+      background-color: #ffffff;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    footer {
+      border-top: 1px solid #ccc;
+      border-bottom: none;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced header styling */
+    header .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      transition: all 0.3s ease;
+    }
+
+    header h1:hover {
+      color: #667eea;
+      transform: scale(1.02);
+    }
+
+    header p {
+      transition: all 0.3s ease;
+    }
+
+    header p:hover {
+      color: #333;
+    }
+
+    /* Enhanced footer styling */
+    footer .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    footer p {
+      transition: all 0.3s ease;
+    }
+
+    footer p:hover {
+      color: #667eea;
+    }
+
+    /* Editable content styling */
+    [contenteditable="true"] {
+      outline: none;
+      transition: all 0.3s ease;
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+
+    [contenteditable="true"]:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    [contenteditable="true"]:focus {
+      background: rgba(102, 126, 234, 0.15);
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+    }
+
+    .canvas-container {
+      flex: 1;
+      padding: 20px;
+      min-height: 400px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #ffffff;
+      transition: all 0.3s ease;
+    }
+
+    .canvas-content {
+      padding: 20px;
+      color: #000;
+    }
+
+    .resizable-logo-wrapper {
+      display: inline-block;
+      position: relative;
+      resize: both;
+      overflow: hidden;
+      min-width: 50px;
+      min-height: 50px;
+      max-width: 90%;
+      max-height: 300px;
+      border: 2px dashed #ccc;
+      margin: auto;
+    }
+
+    .resizable-logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .resizable-logo-wrapper::after {
+      content: "Click to upload";
+      position: absolute;
+      bottom: 4px;
+      right: 6px;
+      font-size: 10px;
+      color: #888;
+    }
+
+    .logo-upload {
+      display: none;
+    }
+
+    .canvas-container *:focus {
+      outline: 2px dashed blue;
+    }
+
+    /* Confirmation page styles */
+    .confirmation-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .confirmation-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      padding: 48px 36px;
+      max-width: 600px;
+      width: 100%;
+      border: 1.5px solid #e0e0e0;
+    }
+
+    .event-logo {
+      max-width: 150px;
+      margin: 0 auto 24px auto;
+      display: block;
+    }
+
+    .confirmation-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+      color: #28a745;
+    }
+
+    .confirmation-message {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 24px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .registration-details {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 24px 0;
+      text-align: left;
+    }
+
+    .registration-details h3 {
+      margin-bottom: 16px;
+      color: #333;
+      font-size: 1.2rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #666;
+    }
+
+    .detail-value {
+      color: #333;
+    }
+
+    .confirmation-footer {
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 24px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .registration-id {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #007bff;
+      background: #e7f3ff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border: 2px solid #b3d9ff;
+    }
+
+    /* Save Design Button Styling */
+    #saveDesign {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #saveDesign:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    }
+
+    #saveDesign::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    #saveDesign:hover::before {
+      left: 100%;
+    }
+
+    @media (max-width: 600px) {
+      .confirmation-card {
+        padding: 24px 16px;
+        max-width: 95vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <select id="dropdown">
+      <option value="">Select Option</option>
+      <option value="header">Add Header</option>
+      <option value="footer">Add Footer</option>
+    </select>
+
+    <input type="file" accept="image/*" id="uploadImg" title="Upload Background Image">
+
+    <select id="alignment">
+      <option value="">Align</option>
+      <option value="left">Left</option>
+      <option value="center">Center</option>
+      <option value="right">Right</option>
+    </select>
+
+    <button id="saveDesign">💾 Save Design</button>
+  </div>
+
+  <!-- Page Container -->
+  <div class="page-wrapper" id="pageWrapper">
+    <div class="canvas-container" id="canvas">
+      <div class="canvas-content">
+        <div class="confirmation-container">
+          <div class="confirmation-card">
+            <img src="https://via.placeholder.com/150x80?text=Logo" class="event-logo" alt="Event Logo" contenteditable="false">
+            
+            <div class="confirmation-title" contenteditable="true">Registration Confirmed!</div>
+            
+            <div class="confirmation-message" contenteditable="true">
+              Thank you for registering for {{#if event.eventName}}{{event.eventName}}{{else}}our event{{/if}}. Your registration has been successfully submitted.
+            </div>
+
+            <div class="registration-id" contenteditable="true">
+              Registration ID: REG-2024-001
+            </div>
+
+            <div class="registration-details">
+              <h3 contenteditable="true">Registration Details</h3>
+              
+              <div class="detail-row">
+                <span class="detail-label" contenteditable="true">Full Name:</span>
+                <span class="detail-value" contenteditable="true">[Participant Name]</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="detail-label" contenteditable="true">Email:</span>
+                <span class="detail-value" contenteditable="true">[Email Address]</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="detail-label" contenteditable="true">Company:</span>
+                <span class="detail-value" contenteditable="true">[Company Name]</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="detail-label" contenteditable="true">Badge Type:</span>
+                <span class="detail-value" contenteditable="true">[Badge Category]</span>
+              </div>
+            </div>
+
+            <div class="confirmation-footer" contenteditable="true">
+              A confirmation email has been sent to your registered email address. Please keep this page for your records.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const dropdown = document.getElementById("dropdown");
+    const canvas = document.getElementById("canvas");
+    const wrapper = document.getElementById("pageWrapper");
+    let selectedElement = null;
+
+    document.addEventListener("click", function (e) {
+      if (e.target.closest(".canvas-container")) {
+        selectedElement = e.target;
+      } else {
+        selectedElement = null;
+      }
+    });
+
+    document.getElementById("alignment").addEventListener("change", function () {
+      if (selectedElement) {
+        selectedElement.style.textAlign = this.value;
+      } else {
+        alert("Please click on an element inside the page.");
+      }
+      this.value = "";
+    });
+
+    // Save Design functionality for confirmation page
+    document.getElementById("saveDesign").addEventListener("click", function () {
+      const saveBtn = this;
+      
+      // Show loading state
+      const originalText = saveBtn.innerHTML;
+      saveBtn.innerHTML = "⏳ Saving...";
+      saveBtn.disabled = true;
+      
+      // Capture the complete canvas HTML as it appears in the editor
+      const canvasElement = document.getElementById("canvas");
+      const canvasHtml = canvasElement.outerHTML;
+      
+      // Get configuration data
+      const confirmationTitle = document.querySelector(".confirmation-title").textContent;
+      const confirmationMessage = document.querySelector(".confirmation-message").textContent;
+      const confirmationFooter = document.querySelector(".confirmation-footer").textContent;
+      const logoSrc = document.querySelector(".event-logo").src;
+      const backgroundImage = canvasElement.style.backgroundImage;
+      
+      // Get event ID from URL
+      const pathParts = window.location.pathname.split('/');
+      const eventId = pathParts[pathParts.length - 2]; // One level up from design-confirmation
+      
+      // Create payload
+      const configData = {
+        pageType: 'confirmation',
+        canvasHtml: canvasHtml,
+        confirmationTitle: confirmationTitle,
+        confirmationMessage: confirmationMessage,
+        confirmationFooter: confirmationFooter,
+        logoUrl: logoSrc !== "https://via.placeholder.com/150x80?text=Logo" ? logoSrc : null,
+        customBackground: backgroundImage || null
+      };
+      
+      console.log("💾 Saving confirmation page design...", {
+        hasCanvasHtml: !!configData.canvasHtml,
+        confirmationTitle: confirmationTitle
+      });
+      
+      // Save to server
+      fetch(`/event/online-registration/${eventId}/save-design`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(configData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          // Show success
+          saveBtn.innerHTML = "✅ Saved!";
+          saveBtn.style.background = "linear-gradient(135deg, #28a745 0%, #20c997 100%)";
+          showTooltip("Confirmation page design saved successfully! 🎉");
+          
+          // Reset button after 2 seconds
+          setTimeout(() => {
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+            saveBtn.style.background = "";
+          }, 2000);
+        } else {
+          throw new Error(data.message || "Save failed");
+        }
+      })
+      .catch((error) => {
+        console.error("Save error:", error);
+        saveBtn.innerHTML = "❌ Error";
+        saveBtn.style.background = "linear-gradient(135deg, #dc3545 0%, #c82333 100%)";
+        
+        if (error.message.includes("413")) {
+          alert("Design data is too large. Please reduce background image size or complexity.");
+        } else {
+          alert("Failed to save design. Please check your connection and try again.");
+        }
+        
+        // Reset button after 3 seconds
+        setTimeout(() => {
+          saveBtn.innerHTML = originalText;
+          saveBtn.disabled = false;
+          saveBtn.style.background = "";
+        }, 3000);
+      });
+    });
+
+    // Tooltip system for user feedback
+    function showTooltip(message) {
+      // Remove existing tooltip
+      const existingTooltip = document.querySelector(".custom-tooltip");
+      if (existingTooltip) {
+        existingTooltip.remove();
+      }
+      
+      // Create new tooltip
+      const tooltip = document.createElement("div");
+      tooltip.className = "custom-tooltip";
+      tooltip.innerHTML = message;
+      tooltip.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 14px;
+        z-index: 10000;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        animation: slideInRight 0.5s ease, slideOutRight 0.5s ease 2.5s;
+        pointer-events: none;
+      `;
+      
+      document.body.appendChild(tooltip);
+      
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        if (tooltip.parentNode) {
+          tooltip.remove();
+        }
+      }, 3000);
+    }
+
+    // Add CSS animations for tooltips
+    const style = document.createElement("style");
+    style.textContent = `
+      @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(100px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      
+      @keyframes slideOutRight {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(100px); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    dropdown.addEventListener("change", function () {
+      const value = dropdown.value;
+
+      if (value === "header" && !document.querySelector("header")) {
+        const header = document.createElement("header");
+        header.innerHTML = `
+          <div class="header-content" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <div class="resizable-logo-wrapper" id="logoWrapper" title="Click to upload logo" style="flex: 0 0 auto;">
+              <img src="" alt="Logo" id="logoImage" style="display:none;">
+              <input type="file" accept="image/*" class="logo-upload" id="logoInput">
+            </div>
+            <div class="header-text" style="flex: 1; text-align: center; padding: 0 20px;">
+              <h1 contenteditable="true" style="margin: 0; font-size: 2rem; color: #333;">Event Header Title</h1>
+              <p contenteditable="true" style="margin: 5px 0 0 0; color: #666;">Subtitle or additional information</p>
+            </div>
+            <div class="header-actions" style="flex: 0 0 auto;">
+              <button onclick="this.closest('header').remove()" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Remove Header</button>
+            </div>
+          </div>
+        `;
+        wrapper.insertBefore(header, wrapper.firstChild);
+
+        const logoWrapper = header.querySelector("#logoWrapper");
+        const logoInput = header.querySelector("#logoInput");
+        const logoImage = header.querySelector("#logoImage");
+
+        logoWrapper.addEventListener("click", () => logoInput.click());
+
+        logoInput.addEventListener("change", (event) => {
+          const file = event.target.files[0];
+          if (file && file.type.startsWith("image/")) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              logoImage.src = e.target.result;
+              logoImage.style.display = "block";
+              logoWrapper.style.border = "none";
+              showTooltip("Header logo uploaded! ✨");
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      if (value === "footer" && !document.querySelector("footer")) {
+        const footer = document.createElement("footer");
+        footer.innerHTML = `
+          <div class="footer-content" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <div class="footer-text" style="flex: 1; text-align: center;">
+              <p contenteditable="true" style="margin: 0; font-size: 1.1rem; color: #333;">Event Footer Text</p>
+              <p contenteditable="true" style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">Additional footer information or contact details</p>
+            </div>
+            <div class="footer-actions" style="flex: 0 0 auto;">
+              <button onclick="this.closest('footer').remove()" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Remove Footer</button>
+            </div>
+          </div>
+        `;
+        wrapper.appendChild(footer);
+        showTooltip("Footer added! Click on text to edit. ✏️");
+      }
+
+      dropdown.value = "";
+    });
+
+    document.getElementById("uploadImg").addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith("image/")) {
+        if (file.size > 5 * 1024 * 1024) {
+          alert("Image file is too large (max 5MB). Please choose a smaller image or compress it.");
+          this.value = '';
+          return;
+        }
+        
+        showTooltip("📤 Uploading and optimizing image...");
+        
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            let { width, height } = img;
+            const maxWidth = 1920;
+            const maxHeight = 1080;
+            
+            if (width > maxWidth || height > maxHeight) {
+              const ratio = Math.min(maxWidth / width, maxHeight / height);
+              width *= ratio;
+              height *= ratio;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            
+            const canvasElement = document.getElementById("canvas");
+            canvasElement.style.backgroundImage = `url('${compressedDataUrl}')`;
+            
+            showTooltip("Background image uploaded and optimized! 📷✨");
+            console.log(`🖼️ Background image applied: ${width}x${height}px`);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert("Please select a valid image file.");
+      }
+    });
+  </script>
+
+</body>
+</html>

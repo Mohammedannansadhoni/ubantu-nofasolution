@@ -1,0 +1,40 @@
+<ol class="breadcrumb">
+  <li><a href="/event/registration/{{session.eventId}}">Home</a></li>
+  <li class="active">Edit Registration</li>
+</ol>
+
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h1>Edit Registration</h1>
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{/if}}
+        <form action="/event/edit-registration" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="eventDataId" value="{{eventDataId}}">
+            
+            {{#each fields}}
+            <div class="row">
+                {{#each this}}
+                <div class="col-md-6">
+                    {{formField this.fieldName this.fieldLabel this.fieldType this.fieldValue this.fieldMandatory  ../../badgeCategories}}
+                </div>
+                {{/each}}
+            </div>
+            {{/each}}
+
+            <input type="submit" name="printAndSave" class="btn btn-primary" value="Print & Save">&nbsp;
+
+            <input type="submit" name="attendAndSave" class="btn btn-primary" value="Attended">&nbsp;
+
+            <input type="submit" name="save" class="btn btn-success" value="Save">
+
+        
+            <a href="/event/registration/{{session.eventId}}" class="btn btn-default">Cancel</a>
+        </form>
+    </div>
+
+</div>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Page Editor</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .toolbar {
+      display: flex;
+      padding: 10px;
+      background: #ffffff;
+      border-bottom: 1px solid #ccc;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar select,
+    .toolbar input[type="file"],
+    .toolbar button {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      margin: 20px;
+      border: 2px solid #aaa;
+      transition: all 0.3s ease;
+    }
+
+    /* Full-page mode - expands canvas to fill entire viewport */
+    .page-wrapper.full-page-mode {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      border: none;
+      z-index: 1000;
+      background: transparent;
+    }
+
+    .page-wrapper.full-page-mode .toolbar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      z-index: 1001;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    header, footer {
+      background-color: #ffffff;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    footer {
+      border-top: 1px solid #ccc;
+      border-bottom: none;
+    }
+
+    .canvas-container {
+      flex: 1;
+      padding: 20px;
+      min-height: 400px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #ffffff;
+      transition: all 0.3s ease;
+    }
+
+    /* Full-page canvas styling */
+    .page-wrapper.full-page-mode .canvas-container {
+      width: 100vw;
+      height: 100vh;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      background-attachment: fixed;
+    }
+
+    .page-wrapper.full-page-mode .canvas-content {
+      padding: 80px 20px 20px 20px; /* Top padding for toolbar */
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Hide headers/footers in full-page mode */
+    .page-wrapper.full-page-mode header,
+    .page-wrapper.full-page-mode footer {
+      display: none;
+    }
+
+    .canvas-content {
+      padding: 20px;
+      color: #000;
+    }
+
+    .resizable-logo-wrapper {
+      display: inline-block;
+      position: relative;
+      resize: both;
+      overflow: hidden;
+      min-width: 50px;
+      min-height: 50px;
+      max-width: 90%;
+      max-height: 300px;
+      border: 2px dashed #ccc;
+      margin: auto;
+    }
+
+    .resizable-logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .resizable-logo-wrapper::after {
+      content: "Click to upload";
+      position: absolute;
+      bottom: 4px;
+      right: 6px;
+      font-size: 10px;
+      color: #888;
+    }
+
+    .logo-upload {
+      display: none;
+    }
+
+    .canvas-container *:focus {
+      outline: 2px dashed blue;
+    }
+
+    /* Registration form styles */
+    .registration-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .registration-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      padding: 48px 36px 36px 36px;
+      max-width: 440px;
+      width: 100%;
+      border: 1.5px solid #e0e0e0;
+    }
+
+    .event-logo {
+      max-width: 110px;
+      margin: 0 auto 18px auto;
+      display: block;
+    }
+
+    .event-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+      color: #222;
+    }
+
+    .event-header {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 18px;
+      color: #333;
+    }
+
+    .registration-form label {
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #222;
+      display: block;
+    }
+
+    .registration-form input,
+    .registration-form select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid #cfd8dc;
+      border-radius: 7px;
+      margin-bottom: 20px;
+      font-size: 1.07rem;
+      background: #f7fafd;
+      transition: border 0.2s;
+    }
+
+    .registration-form input:focus,
+    .registration-form select:focus {
+      border: 1.5px solid #0a1931;
+      outline: none;
+    }
+
+    .registration-form input[type="submit"] {
+      background: #0a1931;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.13rem;
+      font-weight: 700;
+      padding: 14px 0;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(10, 25, 49, 0.08);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .registration-form input[type="submit"]:hover {
+      background: #1a2951;
+    }
+
+    .registration-form .required {
+      color: #d32f2f;
+      margin-left: 2px;
+    }
+    .page{width:100%; max-width:820px; min-height:560px; background:transparent}
+
+    /* Card */
+    .card{width:560px; max-width:95vw; margin:0 auto; background:var(--card); border-radius:18px; box-shadow:0 12px 40px rgba(0,0,0,.08); overflow:hidden}
+
+    /* Header / Footer full width in stage */
+    .page-header, .page-footer {
+      width:100%;
+      text-align:center;
+      background:#fff;
+      display:none;
+    }
+    .page-header {
+      padding:22px 26px 18px;
+      border-bottom:2px solid var(--line);
+    }
+    .page-header img{max-width:90px; margin:0 auto 10px; display:block}
+    .page-header h1{margin:0; font-size:22px; color:var(--ink)}
+    .page-header p{margin:4px 0 0; color:#2563eb; font-weight:600}
+    .page-footer {
+      padding:16px 26px;
+      border-top:2px solid var(--line);
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    /* Form */
+    .form{max-width:520px; margin:0 auto}
+    .field{margin-bottom:14px}
+    .field label{display:block; font-size:13px; color:var(--ink-2); margin-bottom:6px}
+    .required{color:#e11d48; margin-left:3px}
+    .register{width:100%; padding:13px 14px; background:var(--brand); color:#fff; border:0; border-radius:10px; font-weight:700; cursor:pointer; margin-top:4px}
+    .register:hover{filter:brightness(.95)}
+    .hint{margin-top:8px; text-align:center; color:var(--muted); font-size:12px}
+
+    /* Sortable visual */
+    #fields.sortable-active .field{outline:1px dashed #cbd5e1}
+
+    /* Alignment of the card on the page */
+    .align-left .card{margin-left:0}
+    .align-right .card{margin-left:auto}
+    .align-center .card{margin-left:auto; margin-right:auto}
+
+    /* Tab Navigation */
+    .tab-nav{display:flex; border-bottom:2px solid var(--line); margin-bottom:20px}
+    .tab-btn{padding:12px 16px; background:none; border:none; cursor:pointer; font-weight:600; color:var(--muted); border-bottom:2px solid transparent}
+    .tab-btn.active{color:var(--brand); border-bottom-color:var(--brand)}
+    .tab-btn:hover{color:var(--ink)}
+
+    /* Tab Content */
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    /* Email Configuration Styles */
+    .email-preview{background:#f8fafc; border:1px solid var(--line); border-radius:8px; padding:16px; margin-top:12px; font-family:Arial, sans-serif}
+    .email-preview h3{margin:0 0 8px; color:var(--ink)}
+    .email-preview p{margin:0 0 12px; color:var(--ink-2); line-height:1.5}
+    
+    /* Confirmation Page Styles */
+    .confirm-preview{background:#f0f9ff; border:1px solid #0ea5e9; border-radius:12px; padding:24px; text-align:center; margin-top:16px}
+    .confirm-preview h2{color:#0369a1; margin:0 0 12px}
+    .confirm-preview p{color:var(--ink-2); margin:0 0 8px}
+    .confirm-icon{font-size:48px; color:#10b981; margin-bottom:16px}
+  </style>
+</head>
+<body>
+<div class="builder">
+
+  <!-- TOOLKIT / MAIN PAGE CONTROLS -->
+  <aside class="panel" id="toolkit">
+    <h3>Event Management Suite</h3>
+    <p class="small">Create registration page, confirmation page, and email configuration for your event.</p>
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="registration">Registration</button>
+      <button class="tab-btn" data-tab="confirmation">Confirmation</button>
+      <button class="tab-btn" data-tab="email">Email</button>
+    </div>
+
+    <!-- REGISTRATION TAB -->
+    <div class="tab-content active" id="tab-registration">
+
+    <!-- Main page sections -->
+    <div class="sec" id="page-sections">
+      <h4>Main Page Sections</h4>
+      <div class="row">
+        <button class="btn" id="add-header"><i class="fa fa-plus"></i> Add Header</button>
+        <button class="btn" id="remove-header"><i class="fa fa-trash"></i> Remove Header</button>
+      </div>
+      <div class="row">
+        <button class="btn" id="add-footer"><i class="fa fa-plus"></i> Add Footer</button>
+        <button class="btn" id="remove-footer"><i class="fa fa-trash"></i> Remove Footer</button>
+      </div>
+      <label class="label">Alignment</label>
+      <div class="row">
+        <button class="btn" data-align="left">Left</button>
+        <button class="btn" data-align="center">Center</button>
+        <button class="btn" data-align="right">Right</button>
+      </div>
+      <label class="label">Header Title</label>
+      <input id="hdr-title" class="input" value="Abu Dhabi Procurement Excellence Forum" />
+      <label class="label">Header Subtitle</label>
+      <input id="hdr-sub" class="input" value="Event Registration" />
+      <label class="label">Header Logo</label>
+      <input id="logo" type="file" class="input" accept="image/*" />
+      <label class="label">Footer Note</label>
+      <input id="ftr-note" class="input" value="Please provide the correct email address to receive your confirmation email." />
+      <button class="btn" id="apply-sections">Apply Header/Footer Content</button>
+    </div>
+
+    <!-- Background section -->
+    <div class="sec">
+      <h4>Background</h4>
+      <label class="label">Upload Background Image</label>
+      <input id="bg-img" type="file" class="input" accept="image/*" />
+      <button class="btn" id="remove-bg"><i class="fa fa-trash"></i> Remove Background</button>
+    </div>
+
+    <!-- Registration form controls (live inside Body) -->
+    <div class="sec">
+      <h4>Registration Form — Quick Add</h4>
+      <div class="row">
+        <button class="btn" data-add="first">First Name *</button>
+        <button class="btn" data-add="last">Last Name *</button>
+      </div>
+      <div class="row">
+        <button class="btn" data-add="entity">Entity *</button>
+        <button class="btn" data-add="job">Job Title</button>
+      </div>
+      <div class="row">
+        <button class="btn" data-add="mobile">Mobile *</button>
+        <button class="btn" data-add="email">Email *</button>
+      </div>
+    </div>
+
+    <div class="sec">
+      <h4>Custom Fields</h4>
+      <select id="custom-type" class="select">
+        <option value="text">Text</option>
+        <option value="email">Email</option>
+        <option value="date">Date</option>
+        <option value="select">Dropdown</option>
+      </select>
+      <input id="custom-label" class="input" placeholder="Label (e.g., Company)" />
+      <input id="custom-ph" class="input" placeholder="Placeholder (e.g., Enter company)" />
+      <label class="row" style="align-items:center; gap:8px; margin:6px 0 10px">
+        <input id="custom-req" type="checkbox" /> <span class="label" style="margin:0">Required</span>
+      </label>
+      <button class="btn" id="add-custom"><i class="fa fa-plus"></i> Add Custom Field</button>
+    </div>
+
+    <div class="sec">
+      <h4>Form Utilities</h4>
+      <button class="btn" id="enable-sort">Enable Reorder (Drag)</button>
+      <button class="btn" id="disable-sort">Disable Reorder</button>
+      <button class="btn" id="clear-form"><i class="fa fa-eraser"></i> Clear All Fields</button>
+    </div>
+
+    <div class="sec">
+      <h4>Preview & Export</h4>
+      <button class="btn primary" id="preview">Preview</button>
+      <button class="btn primary" id="export">Export Standalone HTML</button>
+    </div>
+    </div>
+
+    <!-- CONFIRMATION PAGE TAB -->
+    <div class="tab-content" id="tab-confirmation">
+      <div class="sec">
+        <h4>Confirmation Page Settings</h4>
+        <label class="label">Page Title</label>
+        <input id="confirm-title" class="input" value="Registration Successful!" />
+        
+        <label class="label">Success Message</label>
+        <textarea id="confirm-message" class="input" style="height:80px" placeholder="Thank you for registering! Your registration has been confirmed.">Thank you for registering for Abu Dhabi Procurement Excellence Forum! Your registration has been confirmed and you will receive a confirmation email shortly.</textarea>
+        
+        <label class="label">Additional Instructions</label>
+        <textarea id="confirm-instructions" class="input" style="height:60px" placeholder="Please check your email for further details.">Please check your email for event details and further instructions. If you have any questions, feel free to contact us.</textarea>
+        
+        <label class="label">Redirect URL (Optional)</label>
+        <input id="confirm-redirect" class="input" placeholder="https://yourwebsite.com/event-info" />
+        
+        <label class="label">Redirect Delay (seconds)</label>
+        <input id="confirm-delay" type="number" class="input" value="0" min="0" max="30" />
+        
+        <button class="btn" id="preview-confirmation">Preview Confirmation Page</button>
+      </div>
+
+      <div class="sec">
+        <h4>Confirmation Page Preview</h4>
+        <div class="confirm-preview" id="confirmation-preview">
+          <div class="confirm-icon"><i class="fa fa-check-circle"></i></div>
+          <h2 id="preview-confirm-title">Registration Successful!</h2>
+          <p id="preview-confirm-message">Thank you for registering for Abu Dhabi Procurement Excellence Forum! Your registration has been confirmed and you will receive a confirmation email shortly.</p>
+          <p id="preview-confirm-instructions">Please check your email for event details and further instructions. If you have any questions, feel free to contact us.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMAIL CONFIGURATION TAB -->
+    <div class="tab-content" id="tab-email">
+      <div class="sec">
+        <h4>Email Server Configuration</h4>
+        <label class="label">SMTP Host</label>
+        <input id="smtp-host" class="input" placeholder="smtp.gmail.com" />
+        
+        <label class="label">SMTP Port</label>
+        <input id="smtp-port" type="number" class="input" value="587" />
+        
+        <label class="label">From Email</label>
+        <input id="from-email" class="input" placeholder="noreply@yourdomain.com" />
+        
+        <label class="label">From Name</label>
+        <input id="from-name" class="input" placeholder="Event Registration" />
+        
+        <label class="label">Username</label>
+        <input id="smtp-username" class="input" placeholder="your-email@gmail.com" />
+        
+        <label class="label">Password</label>
+        <input id="smtp-password" type="password" class="input" placeholder="your-app-password" />
+        
+        <button class="btn" id="test-email">Test Email Connection</button>
+      </div>
+
+      <div class="sec">
+        <h4>Confirmation Email Template</h4>
+        <label class="label">Email Subject</label>
+        <input id="email-subject" class="input" value="Registration Confirmation - {{eventName}}" />
+        
+        <label class="label">Email Body</label>
+        <textarea id="email-body" class="input" style="height:120px">Dear {{firstName}} {{lastName}},
+
+Thank you for registering for {{eventName}}!
+
+Your registration details:
+- Name: {{firstName}} {{lastName}}
+- Email: {{email}}
+- Entity: {{entity}}
+- Job Title: {{jobTitle}}
+
+Event Details:
+- Event: {{eventName}}
+- Date: {{eventDate}}
+- Location: {{eventLocation}}
+
+We look forward to seeing you at the event!
+
+Best regards,
+Event Team</textarea>
+        
+        <label class="label">Available Variables</label>
+        <p class="small">{{firstName}}, {{lastName}}, {{email}}, {{entity}}, {{jobTitle}}, {{eventName}}, {{eventDate}}, {{eventLocation}}</p>
+        
+        <button class="btn" id="preview-email">Preview Email</button>
+      </div>
+
+      <div class="sec">
+        <h4>Email Preview</h4>
+        <div class="email-preview" id="email-preview">
+          <h3 id="preview-email-subject">Registration Confirmation - Abu Dhabi Procurement Excellence Forum</h3>
+          <div id="preview-email-body">
+            <p>Dear John Doe,</p>
+            <p>Thank you for registering for Abu Dhabi Procurement Excellence Forum!</p>
+            <p>Your registration details:<br>
+            - Name: John Doe<br>
+            - Email: john.doe@example.com<br>
+            - Entity: ABC Company<br>
+            - Job Title: Manager</p>
+            <p>We look forward to seeing you at the event!</p>
+            <p>Best regards,<br>Event Team</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <h4>Export Configuration</h4>
+        <button class="btn primary" id="export-config">Export Email Configuration</button>
+        <button class="btn primary" id="export-all">Export Complete Setup</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- PAGE / CANVAS -->
+  <main class="stage" id="stage">
+    <header id="page-header" class="page-header">
+      <img id="logo-img" src="" alt="Logo" style="display:none" />
+      <h1 id="hdr-title-text">Abu Dhabi Procurement Excellence Forum</h1>
+      <p id="hdr-sub-text">Event Registration</p>
+    </header>
+
+    <div id="page" class="page align-center">
+      <div class="card">
+        <section class="page-body">
+          <form class="form" id="reg-form" onsubmit="return false;">
+            <div id="fields">
+              <div class="field" data-type="text">
+                <label>FIRST NAME<span class="required">*</span></label>
+                <input type="text" placeholder="Enter your first name" required />
+              </div>
+              <div class="field" data-type="text">
+                <label>LAST NAME<span class="required">*</span></label>
+                <input type="text" placeholder="Enter your last name" required />
+              </div>
+              <div class="field" data-type="text">
+                <label>ENTITY<span class="required">*</span></label>
+                <input type="text" placeholder="Enter your entity name" required />
+              </div>
+              <div class="field" data-type="text">
+                <label>JOB TITLE</label>
+                <input type="text" placeholder="Enter your job title" />
+              </div>
+              <div class="field" data-type="mobile">
+                <label>MOBILE NUMBER</label>
+                <div class="row" style="gap:8px">
+                  <select class="select" style="max-width:110px">
+                    <option selected>+971</option>
+                    <option>+91</option>
+                    <option>+966</option>
+                  </select>
+                  <input type="tel" class="input" placeholder="Enter your mobile number"/>
+                </div>
+              </div>
+              <div class="field" data-type="email">
+                <label>EMAIL<span class="required">*</span></label>
+                <input type="email" placeholder="Enter your email address" required />
+              </div>
+            </div>
+            <button class="register" type="button">REGISTER</button>
+            <p class="hint" id="hint">Please provide the correct email address to receive your confirmation email.</p>
+          </form>
+        </section>
+      </div>
+    </div>
+
+    <footer id="page-footer" class="page-footer">
+      Please provide the correct email address to receive your confirmation email.
+    </footer>
+  </main>
+</div>
+
+<script>
+(function(){
+  const $stage = $("#stage");
+  const $header = $("#page-header");
+  const $footer = $("#page-footer");
+  const $fields = $("#fields");
+  const $page = $("#page");
+
+  // Alignment
+  $("[data-align]").on("click", function(){
+    const a = $(this).data("align");
+    $page.removeClass("align-left align-center align-right").addClass("align-"+a);
+  });
+
+  // Show/hide header/footer
+  $("#add-header").on("click", ()=> $header.show());
+  $("#remove-header").on("click", ()=> $header.hide());
+  $("#add-footer").on("click", ()=> $footer.show());
+  $("#remove-footer").on("click", ()=> $footer.hide());
+
+  // Apply header/footer content
+  $("#apply-sections").on("click", function(){
+    $("#hdr-title-text").text($("#hdr-title").val().trim() || "");
+    $("#hdr-sub-text").text($("#hdr-sub").val().trim() || "");
+    $footer.text($("#ftr-note").val().trim() || "");
+    if($("#hdr-title").val() || $("#hdr-sub").val() || $("#logo")[0].files.length){ $header.show(); }
+    if($("#ftr-note").val()){ $footer.show(); }
+  });
+
+  // Logo upload
+  $("#logo").on("change", function(e){
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = evt => { $("#logo-img").attr("src", evt.target.result).show() };
+    reader.readAsDataURL(f);
+  });
+
+  // Background image upload
+  $("#bg-img").on("change", function(e){
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = evt => { 
+      $stage.css("background-image", `url('${evt.target.result}')`);
+      $stage.css("background-size", "cover");
+      $stage.css("background-position", "center");
+    };
+    reader.readAsDataURL(f);
+  });
+  $("#remove-bg").on("click", ()=> $stage.css("background-image","none"));
+
+  // Enable/Disable sortable
+  $("#enable-sort").on("click", function(){
+    $fields.addClass("sortable-active").sortable({placeholder:"field-placeholder"});
+  });
+  $("#disable-sort").on("click", function(){
+    try{ $fields.removeClass("sortable-active").sortable("destroy"); }catch(e){}
+  });
+
+  // Clear form fields
+  $("#clear-form").on("click", function(){ $fields.empty(); });
+
+  // Quick add buttons
+  $("[data-add]").on("click", function(){ addPresetField($(this).data("add")); });
+  function addPresetField(type){
+    const el = {
+      first: tplText("FIRST NAME", "Enter your first name", true),
+      last: tplText("LAST NAME", "Enter your last name", true),
+      entity: tplText("ENTITY", "Enter your entity name", true),
+      job: tplText("JOB TITLE", "Enter your job title", false),
+      email: tplEmail("EMAIL", "Enter your email address", true),
+      mobile: tplMobile("MOBILE NUMBER")
+    }[type];
+    if(el) $fields.append(el);
+  }
+
+  // Custom field add
+  $("#add-custom").on("click", function(){
+    const t = $("#custom-type").val();
+    const lab = ($("#custom-label").val()||"Custom").trim();
+    const ph = ($("#custom-ph").val()||"").trim();
+    const req = $("#custom-req").prop("checked");
+    let node = null;
+    if(t === "text") node = tplText(lab, ph, req);
+    if(t === "email") node = tplEmail(lab, ph, req);
+    if(t === "date") node = tplDate(lab, req);
+    if(t === "select") node = tplSelect(lab, ["Option A","Option B"], req);
+    if(node) $fields.append(node);
+  });
+
+  // Templates
+  function tplWrap(labelHtml, inner){
+    return $(`
+      <div class="field">
+        <label>${labelHtml}</label>
+        ${inner}
+        <div class="row" style="margin-top:6px">
+          <button type="button" class="btn" onclick="this.closest('.field').remove()"><i class='fa fa-trash'></i> Remove</button>
+        </div>
+      </div>
+    `);
+  }
+  function reqStar(req){ return req ? '<span class="required">*</span>' : '' }
+  function tplText(label, ph, req){ return tplWrap(`${escapeHtml(label)}${reqStar(req)}`, `<input type="text" placeholder="${escapeHtml(ph)}" ${req?"required":""}>`); }
+  function tplEmail(label, ph, req){ return tplWrap(`${escapeHtml(label)}${reqStar(req)}`, `<input type="email" placeholder="${escapeHtml(ph)}" ${req?"required":""}>`); }
+  function tplDate(label, req){ return tplWrap(`${escapeHtml(label)}${reqStar(req)}`, `<input type="date" ${req?"required":""}>`); }
+  function tplSelect(label, opts, req){ const options = opts.map(o=>`<option>${escapeHtml(o)}</option>`).join(''); return tplWrap(`${escapeHtml(label)}${reqStar(req)}`, `<select ${req?"required":""}>${options}</select>`); }
+  function tplMobile(label){ return tplWrap(label, `<div class="row" style="gap:8px"><select class="select" style="max-width:110px"><option selected>+971</option><option>+91</option><option>+966</option></select><input type="tel" class="input" placeholder="Enter your mobile number"/></div>`); }
+
+  function escapeHtml(str){ return str.replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" })[m]); }
+
+})();
+</script>
+</body>
+</html>

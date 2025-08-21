@@ -1,0 +1,50 @@
+<ol class="breadcrumb">
+  <li><a href="/event">Home</a></li>
+  <li class="active">Import File</li>
+</ol>
+
+<div class="row">
+    <div class="col-md-12">
+        <h1>Import</h1>
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{/if}}
+
+  
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Filename</th>
+                    <th>Creation Date</th>
+                    <th>Row Count</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                 
+                        <tr>
+                            <td>{{data.filename}}</td>
+                            <td>{{formatDate data.creationDate 'custom2'}}</td>
+                            <td>{{data.rowCount}}</td>
+                            <td>{{#if data.isCompleted}}Completed{{else}}Processing{{/if}}</td>
+                            <td>
+                                {{#if data.isCompleted}}
+                                    <a href="/event/registration/{{session.eventId}}" class="btn btn-primary" >Registration</a>
+                                   
+                                {{/if}}
+                            </td>
+                        </tr>
+
+                   
+                </tbody>
+
+            </table>
+
+    </div>
+
+</div>

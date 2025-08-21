@@ -1,0 +1,65 @@
+<ol class="breadcrumb">
+  <li><a href="/event/registration/{{session.eventId}}">Home</a></li>
+  <li class="active">Registration</li>
+</ol>
+
+    <div class="row">
+        <div class="col-md-6">
+            {{#if hasErrors}}
+                <div class="alert alert-danger">
+                    {{#each messages}}
+                        <p>{{this}}</p>
+                    {{/each}}
+                </div>
+            {{/if}}
+            <div id="custom-search-input">
+                <div class="input-group col-md-12">
+                    
+                    <input type="text" id="customSearchTextBox" class="form-control input-lg" placeholder="Search here..." />
+                    <input type="hidden" id="previousSearchValue" />
+
+                    <span class="input-group-btn">
+                        <button class="btn btn-info btn-lg" type="button">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <a href="/event/register" class="btn btn-primary pull-right">Register</a>
+            <button id="customDataTableEditRow" class="btn btn-primary">Edit</button>&nbsp;
+            <button id="customDataTablePrintRow" class="btn btn-primary">Print</button>&nbsp;
+            <button id="customDataTableAttendedRow" class="btn btn-primary">Attended</button>&nbsp;
+        </div>
+	</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <form action="/event/event-fields" method="POST">
+        <input type="hidden" name="eventDataIdForPrint" id="eventDataIdForPrint" value="{{eventDataIdForPrint}}">
+
+            <table class="table" id="datatable">
+                <thead>
+                    <tr>
+               
+                        {{#each columns}}
+                        <th>{{this}}</th>
+                        {{/each}}
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each rows}}
+                    <tr>
+                        {{#each this}}
+                        <td>{{this.value}}</td>
+                        {{/each}}
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+        </form>
+    </div>
+
+</div>

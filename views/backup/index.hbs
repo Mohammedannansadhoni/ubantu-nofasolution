@@ -1,0 +1,56 @@
+<ol class="breadcrumb">
+  <li><a href="/event">Home</a></li>
+  <li class="active">Manage Backups</li>
+</ol>
+
+<div class="row">
+    <div class="col-md-12">
+        <h1>Backups</h1>
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{/if}}
+
+        {{#if successMessage}}
+            <div class="alert alert-success">
+                <p>{{successMessage}}</p>
+            </div>
+        {{/if}}
+
+        <a href="/backup/create" class="btn btn-primary">Create Backup</a> &nbsp;
+        <a href="/backup/import" class="btn btn-primary">Upload Backup File</a>
+        <p>Available space: {{availableSpace}} Gb out of {{totalSpace}} Gb</p>
+            
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Size</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {{#each filelist}}
+                        <tr>
+                            <td>{{this.filename}}</td>
+                            <td>{{this.filesize}} Mb</td>
+                            <td>{{formatDate this.filedate 'custom2'}}</td>
+                            <td>
+                                <a href="/backup-files/{{this.filename}}" class="btn btn-primary" >Download</a>&nbsp;&nbsp;
+                                <a href="/backup/restore/{{this.filename}}" class="btn btn-warning" >Restore</a>&nbsp;&nbsp;
+                                <a href="/backup/delete/{{this.filename}}" class="btn btn-danger" >Delete</a>
+                            </td>
+                        </tr>
+
+                    {{/each}}
+                </tbody>
+
+            </table>
+
+    </div>
+
+</div>

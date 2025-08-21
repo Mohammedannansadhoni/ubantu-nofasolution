@@ -1,0 +1,1173 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Page Editor</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 10px;
+      gap: 10px;
+      background: #fff;
+      border-bottom: 1px solid #ccc;
+      z-index: 2000;
+      position: relative;
+    }
+
+    .toolbar select,
+    .toolbar input[type="file"],
+    .toolbar button {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 50px);
+      margin: 0;
+    }
+
+    header, footer {
+      background: #fff;
+      flex-shrink: 0;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced header styling */
+    header {
+      height: 15%;
+    }
+    }
+
+    header img {
+      max-height: 80%;
+      max-width: 90%;
+      object-fit: contain;
+    }
+
+    header p {
+      transition: all 0.3s ease;
+    }
+
+    header p:hover {
+      color: #333;
+    }
+
+    /* Enhanced footer styling */
+    footer .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    footer p {
+      transition: all 0.3s ease;
+    }
+
+    footer p:hover {
+      color: #667eea;
+    }
+
+    /* Editable content styling */
+    [contenteditable="true"] {
+      outline: none;
+      transition: all 0.3s ease;
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+
+    [contenteditable="true"]:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    [contenteditable="true"]:focus {
+      background: rgba(102, 126, 234, 0.15);
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+    }
+
+    .canvas-container {
+      flex: 1;
+      padding: 20px;
+      background-color: #fff;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #ffffff;
+      transition: all 0.3s ease;
+    }
+
+    .canvas-content {
+      padding: 20px;
+      color: #000;
+    }
+
+    .resizable-logo-wrapper {
+      display: inline-block;
+      position: relative;
+      resize: both;
+      overflow: hidden;
+      min-width: 50px;
+      min-height: 50px;
+      max-width: 90%;
+      max-height: 300px;
+      border: 2px dashed #ccc;
+      margin: auto;
+    }
+
+    .resizable-logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .resizable-logo-wrapper::after {
+      content: "Click to upload";
+      position: absolute;
+      bottom: 4px;
+      right: 6px;
+      font-size: 10px;
+      color: #888;
+    }
+
+    .logo-upload {
+      display: none;
+    }
+
+    .canvas-container *:focus {
+      outline: 2px dashed blue;
+    }
+
+    /* Registration form styles */
+    .registration-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .registration-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      padding: 48px 36px 36px 36px;
+      max-width: 440px;
+      width: 100%;
+      border: 1.5px solid #e0e0e0;
+    }
+
+    .event-logo {
+      max-width: 110px;
+      margin: 0 auto 18px auto;
+      display: block;
+    }
+
+    .event-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+      color: #222;
+    }
+
+    .event-header {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 18px;
+      color: #333;
+    }
+
+    .registration-form label {
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #222;
+      display: block;
+    }
+
+    .registration-form input,
+    .registration-form select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid #cfd8dc;
+      border-radius: 7px;
+      margin-bottom: 20px;
+      font-size: 1.07rem;
+      background: #f7fafd;
+      transition: border 0.2s;
+    }
+
+    .registration-form input:focus,
+    .registration-form select:focus {
+      border: 1.5px solid #0a1931;
+      outline: none;
+    }
+
+    .registration-form input[type="submit"] {
+      background: #0a1931;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.13rem;
+      font-weight: 700;
+      padding: 14px 0;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(10, 25, 49, 0.08);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .registration-form input[type="submit"]:hover {
+      background: #1a2951;
+    }
+
+    .form-note {
+      font-size: 0.97em;
+      color: #888;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .event-footer {
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 22px;
+      color: #666;
+    }
+
+    @media (max-width: 600px) {
+      .registration-card {
+        padding: 24px 8px 18px 8px;
+        max-width: 98vw;
+      }
+    }
+
+    /* Reorder mode styles - Creative Design */
+    .form-field {
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Toggle Button Styling */
+    #toggleReorder {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #toggleReorder:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    #toggleReorder.active {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    #toggleReorder::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    #toggleReorder:hover::before {
+      left: 100%;
+    }
+
+    /* Save Design Button Styling */
+    #saveDesign {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #saveDesign:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    }
+
+    #saveDesign::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    #saveDesign:hover::before {
+      left: 100%;
+    }
+
+    /* Reorder Mode Active */
+    .reorder-mode .form-field {
+      background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+      border: 2px solid #e3f2fd;
+      border-radius: 16px;
+      margin: 15px 0;
+      padding: 20px;
+      cursor: grab;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      transform: translateZ(0);
+      position: relative;
+    }
+
+    .reorder-mode .form-field:hover {
+      border-color: #2196f3;
+      box-shadow: 0 12px 35px rgba(33, 150, 243, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .reorder-mode .form-field.dragging {
+      opacity: 0.9;
+      transform: rotate(3deg) scale(1.02);
+      z-index: 1000;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      cursor: grabbing;
+    }
+
+    .reorder-mode .form-field.drag-over {
+      border-color: #4caf50;
+      background: linear-gradient(145deg, #e8f5e8 0%, #f1f8e9 100%);
+      box-shadow: 0 12px 35px rgba(76, 175, 80, 0.2);
+    }
+
+    /* Creative Drag Handle */
+    .reorder-mode .form-field::before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 30px;
+      background: linear-gradient(to bottom, #2196f3 0%, #64b5f6 50%, #2196f3 100%);
+      border-radius: 3px;
+      opacity: 0.7;
+      box-shadow: 
+        3px 0 0 rgba(33, 150, 243, 0.3),
+        6px 0 0 rgba(33, 150, 243, 0.2);
+    }
+
+    /* Field Number Badge */
+    .field-order-indicator {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      color: white;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      border: 3px solid white;
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+      z-index: 10;
+      animation: bounceIn 0.6s ease;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .reorder-mode .field-order-indicator {
+      display: flex;
+    }
+
+    /* Instructions Banner */
+    .reorder-instructions {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin: 20px 0;
+      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+      display: none;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reorder-instructions::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    .reorder-mode .reorder-instructions {
+      display: block;
+      animation: slideDown 0.5s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Disabled form inputs in reorder mode */
+    .reorder-mode .registration-form input,
+    .reorder-mode .registration-form select {
+      pointer-events: none;
+      background: linear-gradient(145deg, #f5f5f5 0%, #eeeeee 100%);
+      opacity: 0.7;
+    }
+
+    /* Helper text for drag action */
+    .reorder-mode .form-field::after {
+      content: "Drag me ↕";
+      position: absolute;
+      right: 20px;
+      top: 15px;
+      font-size: 11px;
+      color: #2196f3;
+      background: rgba(33, 150, 243, 0.1);
+      padding: 4px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(33, 150, 243, 0.2);
+      font-weight: 500;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    /* Success animation when dropping */
+    .drop-success {
+      animation: dropSuccess 0.6s ease;
+    }
+
+    @keyframes dropSuccess {
+      0% { background: #4caf50; }
+      100% { background: initial; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <select id="dropdown">
+      <option value="">Select Option</option>
+      <option value="header">Add Header</option>
+<div class="toolbar">
+  <select id="dropdown">
+    <option value="">Select Option</option>
+    <option value="header">Add Header</option>
+    <option value="footer">Add Footer</option>
+    <option value="both">Add Both</option>
+    <option value="removeHeader">Remove Header</option>
+    <option value="removeFooter">Remove Footer</option>
+  </select>
+      <option value="left">Left</option>
+      <option value="center">Center</option>
+      <option value="right">Right</option>
+    </select>
+
+    <button id="setRequired">Required</button>
+    <button id="toggleReorder">Reorder Fields</button>
+    <button id="saveDesign">💾 Save Design</button>
+  </div>
+
+  <!-- Page Container -->
+  <div class="page-wrapper" id="pageWrapper">
+
+    <div class="canvas-container" id="canvas">
+      <div class="canvas-content" contenteditable="false">
+        <div class="registration-container">
+          <div class="registration-card">
+            <img src="https://via.placeholder.com/110x60?text=Logo" class="event-logo" alt="Event Logo" contenteditable="false">
+            <div class="event-title" contenteditable="true">{{#if event.eventName}}{{event.eventName}}{{else}}Sample Event Name{{/if}}</div>
+            <div class="event-header" contenteditable="true">Welcome to Our Event Registration</div>
+
+            <form class="registration-form" action="/event/{{eventId}}/public-register" method="POST">
+              <div class="reorder-instructions">
+                ✨ Reorder Mode Active! Drag any field up or down to rearrange the form layout. Click "Exit Reorder Mode" when done.
+              </div>
+              
+              {{#each fields}}
+                <div class="form-field" data-field-name="{{this.fieldName}}" data-field-order="{{@index}}">
+                  <div class="field-order-indicator">{{add @index 1}}</div>
+                  {{formField this.fieldName this.fieldLabel this.fieldType this.fieldValue this.fieldMandatory ../badgeCategories this.dropdownOptions}}
+                </div>
+              {{/each}}
+
+              <div class="form-note" contenteditable="true">Please provide the correct email address you would like to receive your confirmation email.</div>
+              <input type="submit" value="REGISTER">
+            </form>
+
+            <div class="event-footer" contenteditable="true">Thank you for registering!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const dropdown = document.getElementById("dropdown");
+    const canvas = document.getElementById("canvas");
+    const wrapper = document.getElementById("pageWrapper");
+    const registrationForm = document.querySelector(".registration-form");
+    let selectedElement = null;
+    let reorderMode = false;
+    let draggedElement = null;
+
+    document.addEventListener("click", function (e) {
+      if (e.target.closest(".canvas-container")) {
+        selectedElement = e.target;
+      } else {
+        selectedElement = null;
+      }
+    });
+
+    document.getElementById("alignment").addEventListener("change", function () {
+      if (selectedElement) {
+        selectedElement.style.textAlign = this.value;
+      } else {
+        alert("Please click on an element inside the page.");
+      }
+      this.value = "";
+    });
+
+    document.getElementById("setRequired").addEventListener("click", function () {
+      if (selectedElement && selectedElement.tagName === "INPUT") {
+        selectedElement.required = !selectedElement.required;
+        selectedElement.style.border = selectedElement.required ? "2px solid red" : "";
+      } else {
+        alert("Please select an input field to toggle 'required'.");
+      }
+    });
+
+    // Toggle reorder mode with enhanced UX
+    document.getElementById("toggleReorder").addEventListener("click", function () {
+      reorderMode = !reorderMode;
+      const formFields = document.querySelectorAll(".form-field");
+      
+      if (reorderMode) {
+        // Activate reorder mode
+        this.textContent = "✨ Exit Reorder Mode";
+        this.classList.add("active");
+        registrationForm.classList.add("reorder-mode");
+        
+        // Add a little celebration effect
+        this.style.animation = "bounce 0.6s ease";
+        setTimeout(() => this.style.animation = "", 600);
+        
+        // Enable drag and drop for form fields with staggered animation
+        formFields.forEach((field, index) => {
+          setTimeout(() => {
+            field.draggable = true;
+            field.addEventListener("dragstart", handleDragStart);
+            field.addEventListener("dragover", handleDragOver);
+            field.addEventListener("drop", handleDrop);
+            field.addEventListener("dragend", handleDragEnd);
+            
+            // Update order indicators with animation delay
+            const indicator = field.querySelector(".field-order-indicator");
+            if (indicator) {
+              indicator.textContent = index + 1;
+              indicator.style.display = "flex";
+              indicator.style.animationDelay = `${index * 0.1}s`;
+            }
+            
+            // Add entrance animation
+            field.style.animation = `slideInUp 0.5s ease ${index * 0.1}s both`;
+          }, index * 100);
+        });
+        
+        // Update all order indicators
+        setTimeout(() => updateOrderIndicators(), formFields.length * 100);
+        
+        console.log("🎨 Creative reorder mode activated!", formFields.length, "fields ready");
+        
+        // Show helpful tooltip
+        showTooltip("Drag fields up or down to reorder them!");
+        
+      } else {
+        // Deactivate reorder mode
+        this.textContent = "🔄 Reorder Fields";
+        this.classList.remove("active");
+        registrationForm.classList.remove("reorder-mode");
+        
+        // Disable drag and drop with exit animation
+        formFields.forEach((field, index) => {
+          field.draggable = false;
+          field.removeEventListener("dragstart", handleDragStart);
+          field.removeEventListener("dragover", handleDragOver);
+          field.removeEventListener("drop", handleDrop);
+          field.removeEventListener("dragend", handleDragEnd);
+          
+          // Hide order indicators with staggered animation
+          const indicator = field.querySelector(".field-order-indicator");
+          if (indicator) {
+            setTimeout(() => {
+              indicator.style.display = "none";
+            }, index * 50);
+          }
+          
+          // Reset field styles
+          field.style.animation = "";
+        });
+        
+        console.log("✅ Reorder mode deactivated - changes saved!");
+        showTooltip("Field order saved successfully!");
+      }
+    });
+
+    // Save Design functionality
+    document.getElementById("saveDesign").addEventListener("click", function () {
+      const saveBtn = this;
+      
+      // Show loading state
+      const originalText = saveBtn.innerHTML;
+      saveBtn.innerHTML = "⏳ Saving...";
+      saveBtn.disabled = true;
+      
+      // Get the current field order
+      const fieldsOrder = getFieldsOrder();
+      
+      // Capture the complete canvas HTML as it appears in the editor
+      const canvasElement = document.getElementById("canvas");
+      const canvasHtml = canvasElement.outerHTML;
+      
+      // Get configuration data
+      const eventTitle = document.querySelector(".event-title").textContent;
+      const eventHeader = document.querySelector(".event-header").textContent;
+      const eventFooter = document.querySelector(".event-footer").textContent;
+      const logoSrc = document.querySelector(".event-logo").src;
+      const backgroundImage = canvasElement.style.backgroundImage;
+      
+      // Get event ID from URL
+      const pathParts = window.location.pathname.split('/');
+      const eventId = pathParts[pathParts.length - 1];
+      
+      // Create payload
+      const configData = {
+        pageType: 'registration',
+        fieldsOrder: fieldsOrder,
+        canvasHtml: canvasHtml,
+        eventTitle: eventTitle,
+        eventHeader: eventHeader,
+        eventFooter: eventFooter,
+        logoUrl: logoSrc !== "https://via.placeholder.com/110x60?text=Logo" ? logoSrc : null,
+        customBackground: backgroundImage || null
+      };
+      
+      console.log("💾 Saving registration design...", {
+        hasCanvasHtml: !!configData.canvasHtml,
+        fieldsCount: fieldsOrder.length,
+        eventTitle: eventTitle
+      });
+      
+      // Save to server using the new save-design route
+      fetch(`/event/online-registration/${eventId}/save-design`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(configData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.success) {
+          // Show success
+          saveBtn.innerHTML = "✅ Saved!";
+          saveBtn.style.background = "linear-gradient(135deg, #28a745 0%, #20c997 100%)";
+          showTooltip("Registration design saved successfully! 🎉");
+          
+          // Reset button after 2 seconds
+          setTimeout(() => {
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+            saveBtn.style.background = "";
+          }, 2000);
+        } else {
+          throw new Error(data.message || "Save failed");
+        }
+      })
+      .catch((error) => {
+        console.error("Save error:", error);
+        saveBtn.innerHTML = "❌ Error";
+        saveBtn.style.background = "linear-gradient(135deg, #dc3545 0%, #c82333 100%)";
+        
+        if (error.message.includes("413")) {
+          alert("Design data is too large. Please reduce background image size or complexity.");
+        } else {
+          alert("Failed to save design. Please check your connection and try again.");
+        }
+        
+        // Reset button after 3 seconds
+        setTimeout(() => {
+          saveBtn.innerHTML = originalText;
+          saveBtn.disabled = false;
+          saveBtn.style.background = "";
+        }, 3000);
+      });
+    });
+
+    // Enhanced drag and drop handlers
+    function handleDragStart(e) {
+      draggedElement = this;
+      this.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/html", this.outerHTML);
+      
+      // Add drag feedback sound effect (visual feedback)
+      this.style.transform = "rotate(3deg) scale(1.02)";
+    }
+
+    function handleDragOver(e) {
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      
+      if (this !== draggedElement) {
+        this.classList.add("drag-over");
+        // Add subtle hover animation
+        this.style.transform = "translateY(-2px)";
+      }
+      
+      e.dataTransfer.dropEffect = "move";
+      return false;
+    }
+
+    function handleDrop(e) {
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      }
+
+      if (draggedElement !== this) {
+        const allFields = Array.from(document.querySelectorAll(".form-field"));
+        const draggedIndex = allFields.indexOf(draggedElement);
+        const targetIndex = allFields.indexOf(this);
+        
+        // Add drop success animation
+        this.classList.add("drop-success");
+        setTimeout(() => this.classList.remove("drop-success"), 600);
+        
+        if (draggedIndex < targetIndex) {
+          this.parentNode.insertBefore(draggedElement, this.nextSibling);
+        } else {
+          this.parentNode.insertBefore(draggedElement, this);
+        }
+        
+        // Update order indicators with smooth animation
+        updateOrderIndicators();
+        
+        // Show success feedback
+        showTooltip("Field moved successfully! 🎉");
+      }
+      
+      this.classList.remove("drag-over");
+      this.style.transform = "";
+      return false;
+    }
+
+    function handleDragEnd(e) {
+      this.classList.remove("dragging");
+      this.style.transform = "";
+      
+      // Remove drag-over class from all elements
+      document.querySelectorAll(".form-field").forEach(field => {
+        field.classList.remove("drag-over");
+        field.style.transform = "";
+      });
+      
+      draggedElement = null;
+    }
+
+    // Enhanced order indicator updates
+    function updateOrderIndicators() {
+      const formFields = document.querySelectorAll(".form-field");
+      console.log("🔄 Updating order indicators for", formFields.length, "fields");
+      
+      formFields.forEach((field, index) => {
+        const indicator = field.querySelector(".field-order-indicator");
+        if (indicator) {
+          // Animate number change
+          indicator.style.transform = "scale(1.3)";
+          indicator.style.background = "linear-gradient(135deg, #4caf50 0%, #45a049 100%)";
+          
+          setTimeout(() => {
+            indicator.textContent = index + 1;
+            indicator.style.transform = "scale(1)";
+            indicator.style.background = "linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)";
+          }, 150);
+          
+          if (reorderMode) {
+            indicator.style.display = "flex";
+          }
+        }
+        field.dataset.fieldOrder = index;
+      });
+    }
+
+    // Tooltip system for user feedback
+    function showTooltip(message) {
+      // Remove existing tooltip
+      const existingTooltip = document.querySelector(".custom-tooltip");
+      if (existingTooltip) {
+        existingTooltip.remove();
+      }
+      
+      // Create new tooltip
+      const tooltip = document.createElement("div");
+      tooltip.className = "custom-tooltip";
+      tooltip.innerHTML = message;
+      tooltip.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        color: white;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 14px;
+        z-index: 10000;
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        animation: slideInRight 0.5s ease, slideOutRight 0.5s ease 2.5s;
+        pointer-events: none;
+      `;
+      
+      document.body.appendChild(tooltip);
+      
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        if (tooltip.parentNode) {
+          tooltip.remove();
+        }
+      }, 3000);
+    }
+
+    // Add CSS animations for tooltips
+    const style = document.createElement("style");
+    style.textContent = `
+      @keyframes bounce {
+        0%, 20%, 60%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        80% { transform: translateY(-5px); }
+      }
+      
+      @keyframes slideInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(100px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      
+      @keyframes slideOutRight {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(100px); }
+      }
+    `;
+    document.head.appendChild(style);
+
+    function getFieldsOrder() {
+      const formFields = document.querySelectorAll(".form-field");
+      return Array.from(formFields).map(field => ({
+        fieldName: field.dataset.fieldName,
+        order: parseInt(field.dataset.fieldOrder)
+      }));
+    }
+
+    dropdown.addEventListener("change", function () {
+      const value = dropdown.value;
+
+      if (value === "header" && !document.querySelector("header")) {
+        const header = document.createElement("header");
+
+        header.innerHTML = `
+          <div class="header-content" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <div class="resizable-logo-wrapper" id="logoWrapper" title="Click to upload logo" style="flex: 0 0 auto;">
+              <img src="" alt="Logo" id="logoImage" style="display:none;">
+              <input type="file" accept="image/*" class="logo-upload" id="logoInput">
+            </div>
+            <div class="header-text" style="flex: 1; text-align: center; padding: 0 20px;">
+              <h1 contenteditable="true" style="margin: 0; font-size: 2rem; color: #333;">Event Header Title</h1>
+              <p contenteditable="true" style="margin: 5px 0 0 0; color: #666;">Subtitle or additional information</p>
+            </div>
+            <div class="header-actions" style="flex: 0 0 auto;">
+              <button onclick="this.closest('header').remove()" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Remove Header</button>
+            </div>
+          </div>
+        `;
+
+        wrapper.insertBefore(header, wrapper.firstChild);
+
+        const logoWrapper = header.querySelector("#logoWrapper");
+        const logoInput = header.querySelector("#logoInput");
+        const logoImage = header.querySelector("#logoImage");
+
+        logoWrapper.addEventListener("click", () => logoInput.click());
+
+        logoInput.addEventListener("change", (event) => {
+          const file = event.target.files[0];
+          if (file && file.type.startsWith("image/")) {
+            // Check file size (limit to 2MB for logos)
+            if (file.size > 2 * 1024 * 1024) {
+              alert("Logo file is too large (max 2MB). Please choose a smaller image.");
+              logoInput.value = '';
+              return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              const img = new Image();
+              img.onload = function() {
+                // Create canvas for logo compression
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Calculate new dimensions (max 400x200 for logos)
+                let { width, height } = img;
+                const maxWidth = 400;
+                const maxHeight = 200;
+                
+                if (width > maxWidth || height > maxHeight) {
+                  const ratio = Math.min(maxWidth / width, maxHeight / height);
+                  width *= ratio;
+                  height *= ratio;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Draw and compress logo
+                ctx.drawImage(img, 0, 0, width, height);
+                const compressedDataUrl = canvas.toDataURL('image/png', 0.9); // 90% quality for logos
+                
+                logoImage.src = compressedDataUrl;
+                logoImage.style.display = "block";
+                logoWrapper.style.border = "none";
+                
+                showTooltip("Header logo uploaded and optimized! ✨");
+              };
+              img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      if (value === "footer" && !document.querySelector("footer")) {
+        const footer = document.createElement("footer");
+        footer.innerHTML = `
+          <div class="footer-content" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <div class="footer-text" style="flex: 1; text-align: center;">
+              <p contenteditable="true" style="margin: 0; font-size: 1.1rem; color: #333;">Event Footer Text</p>
+              <p contenteditable="true" style="margin: 5px 0 0 0; font-size: 0.9rem; color: #666;">Additional footer information or contact details</p>
+            </div>
+            <div class="footer-actions" style="flex: 0 0 auto;">
+              <button onclick="this.closest('footer').remove()" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;">Remove Footer</button>
+            </div>
+          </div>
+        `;
+        wrapper.appendChild(footer);
+        showTooltip("Footer added! Click on text to edit. ✏️");
+      }
+
+      dropdown.value = "";
+    });
+
+    document.getElementById("uploadImg").addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file && file.type.startsWith("image/")) {
+        // Check file size (limit to 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert("Image file is too large (max 5MB). Please choose a smaller image or compress it.");
+          this.value = '';
+          return;
+        }
+        
+        // Show upload progress
+        showTooltip("📤 Uploading and optimizing image...");
+        
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = new Image();
+          img.onload = function() {
+            // Create canvas for image compression
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Calculate new dimensions (max 1920x1080 for full-page backgrounds)
+            let { width, height } = img;
+            const maxWidth = 1920;
+            const maxHeight = 1080;
+            
+            if (width > maxWidth || height > maxHeight) {
+              const ratio = Math.min(maxWidth / width, maxHeight / height);
+              width *= ratio;
+              height *= ratio;
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Draw and compress image
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8); // 80% quality
+            
+            // Set as background
+            const canvasElement = document.getElementById("canvas");
+            canvasElement.style.backgroundImage = `url('${compressedDataUrl}')`;
+            
+            showTooltip("Background image uploaded and optimized! 📷✨");
+            console.log(`🖼️ Background image applied: ${width}x${height}px`);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert("Please select a valid image file.");
+      }
+    });
+
+    // 🎨 CANVAS RESTORATION: Load saved design when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("🔄 Checking for saved canvas design...");
+      
+      {{#if savedCanvasHtml}}
+        console.log("✅ Found saved canvas HTML, restoring design...");
+        
+        try {
+          // Parse the saved canvas HTML
+          const savedHtml = {{{json savedCanvasHtml}}};
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = savedHtml;
+          
+          // Extract the canvas content
+          const savedCanvas = tempDiv.querySelector('#canvas');
+          if (savedCanvas) {
+            const currentCanvas = document.getElementById('canvas');
+            
+            // Preserve the background image
+            const savedBackground = savedCanvas.style.backgroundImage;
+            if (savedBackground && savedBackground !== 'none') {
+              currentCanvas.style.backgroundImage = savedBackground;
+              console.log("🖼️ Restored background image from saved design");
+            }
+            
+            // Restore the inner content while preserving form functionality
+            const savedContent = savedCanvas.querySelector('.canvas-content');
+            if (savedContent) {
+              const currentContent = currentCanvas.querySelector('.canvas-content');
+              
+              // Update text content from saved design
+              const savedTitle = savedContent.querySelector('.event-title');
+              const savedHeader = savedContent.querySelector('.event-header');
+              const savedFooter = savedContent.querySelector('.event-footer');
+              const savedLogo = savedContent.querySelector('.event-logo');
+              
+              if (savedTitle) {
+                const currentTitle = currentContent.querySelector('.event-title');
+                if (currentTitle) currentTitle.textContent = savedTitle.textContent;
+              }
+              
+              if (savedHeader) {
+                const currentHeader = currentContent.querySelector('.event-header');
+                if (currentHeader) currentHeader.textContent = savedHeader.textContent;
+              }
+              
+              if (savedFooter) {
+                const currentFooter = currentContent.querySelector('.event-footer');
+                if (currentFooter) currentFooter.textContent = savedFooter.textContent;
+              }
+              
+              if (savedLogo && savedLogo.src && savedLogo.src !== 'https://via.placeholder.com/110x60?text=Logo') {
+                const currentLogo = currentContent.querySelector('.event-logo');
+                if (currentLogo) currentLogo.src = savedLogo.src;
+              }
+              
+              console.log("🎨 Restored canvas content from saved design");
+              showTooltip("Previous design restored! Your work is preserved. 🎉");
+            }
+          }
+        } catch (error) {
+          console.error("❌ Error restoring saved canvas:", error);
+          console.log("ℹ️ Starting with default layout");
+        }
+      {{else}}
+        console.log("ℹ️ No saved design found, starting fresh");
+      {{/if}}
+    });
+  </script>
+
+</body>
+</html>

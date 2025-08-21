@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page Builder - {{event.eventName}}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f7fa;
+        }
+        .builder-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* TOOLKIT PANEL */
+        .toolkit-panel {
+            width: 320px;
+            background: #fff;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .toolkit-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .toolkit-header h3 {
+            color: #2a3b4c;
+            margin-bottom: 5px;
+        }
+        .toolkit-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .toolkit-section h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* ALIGNMENT CONTROLS */
+        .alignment-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .alignment-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .alignment-btn:hover, .alignment-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        
+        /* FORM CONTROLS */
+        .form-control-btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #d1d5db;
+            background: #f9fafb;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        .form-control-btn:hover {
+            background: #e5e7eb;
+            border-color: #2563eb;
+        }
+        
+        /* DROPDOWN & INPUTS */
+        .toolkit-select, .toolkit-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        /* CANVAS AREA */
+        .canvas-area {
+            flex: 1;
+            background: linear-gradient(135deg, #e3eaf6 0%, #cfd8e6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .registration-canvas {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            padding: 40px;
+            min-width: 450px;
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+        }
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%;
+        }
+        .registration-form-body {
+            flex: 1;
+            padding: 20px 0;
+        }
+        .canvas-header {
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        .canvas-header img {
+            max-width: 90px;
+            margin-bottom: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .canvas-header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2a3b4c;
+            margin: 0 0 8px 0;
+            line-height: 1.3;
+        }
+        .canvas-header p {
+            color: #2563eb;
+            font-size: 18px;
+            margin: 0;
+            font-weight: 500;
+        }
+        .form-field {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-field label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        .form-field input, .form-field select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            background: #f9fafb;
+        }
+        .register-button {
+            width: 100%;
+            padding: 14px;
+            background: #1e293b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+        .register-button:hover {
+            background: #334155;
+        }
+        .canvas-footer {
+            margin-top: 25px;
+            color: #6b7280;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.4;
+            padding: 20px 0;
+            border-top: 2px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="builder-container">
+        <!-- LEFT TOOLKIT PANEL -->
+        <div class="toolkit-panel">
+            <div class="toolkit-header">
+                <h3>Registration Builder</h3>
+                <p style="color: #6b7280; font-size: 12px;">Design your registration form</p>
+            </div>
+            
+            <!-- ALIGNMENT SECTION -->
+            <div class="toolkit-section">
+                <h4>Alignment</h4>
+                <div class="alignment-controls">
+                    <div class="alignment-btn active" data-align="center">
+                        <i class="fa fa-align-center"></i><br>Center
+                    </div>
+                    <div class="alignment-btn" data-align="left">
+                        <i class="fa fa-align-left"></i><br>Left
+                    </div>
+                    <div class="alignment-btn" data-align="right">
+                        <i class="fa fa-align-right"></i><br>Right
+                    </div>
+                </div>
+            </div>
+            
+            <!-- HEADER/FOOTER SECTION -->
+            <div class="toolkit-section">
+                <h4>Page Sections</h4>
+                <select class="toolkit-select" id="section-dropdown">
+                    <option value="">Select Section</option>
+                    <option value="header">Header</option>
+                    <option value="footer">Footer</option>
+                    <option value="remove-header">Remove Header</option>
+                    <option value="remove-footer">Remove Footer</option>
+                </select>
+                <input type="text" class="toolkit-input" id="section-text" placeholder="Enter text..." style="display:none;">
+                <button class="form-control-btn" id="update-section" style="display:none;">
+                    <i class="fa fa-check"></i> Update Section
+                </button>
+            </div>
+            
+            <!-- IMAGE SECTION -->
+            <div class="toolkit-section">
+                <h4>Logo & Images</h4>
+                <input type="file" class="toolkit-input" id="logo-upload" accept="image/*">
+                <button class="form-control-btn" id="remove-logo">
+                    <i class="fa fa-trash"></i> Remove Logo
+                </button>
+            </div>
+            
+            <!-- FORM FIELDS SECTION -->
+            <div class="toolkit-section">
+                <h4>Form Fields</h4>
+                <button class="form-control-btn" data-field="first-name">
+                    <i class="fa fa-user"></i> First Name
+                </button>
+                <button class="form-control-btn" data-field="last-name">
+                    <i class="fa fa-user"></i> Last Name
+                </button>
+                <button class="form-control-btn" data-field="entity">
+                    <i class="fa fa-building"></i> Entity
+                </button>
+                <button class="form-control-btn" data-field="job-title">
+                    <i class="fa fa-briefcase"></i> Job Title
+                </button>
+                <button class="form-control-btn" data-field="mobile">
+                    <i class="fa fa-phone"></i> Mobile Number
+                </button>
+                <button class="form-control-btn" data-field="email">
+                    <i class="fa fa-envelope"></i> Email
+                </button>
+            </div>
+            
+            <!-- ACTIONS SECTION -->
+            <div class="toolkit-section">
+                <h4>Actions</h4>
+                <button class="form-control-btn" id="preview-form" style="background: #10b981; color: white;">
+                    <i class="fa fa-eye"></i> Preview
+                </button>
+                <button class="form-control-btn" id="export-form" style="background: #2563eb; color: white;">
+                    <i class="fa fa-download"></i> Export Page
+                </button>
+            </div>
+        </div>
+        
+        <!-- RIGHT CANVAS AREA -->
+        <div class="canvas-area">
+            <!-- CANVAS -->
+            <div class="registration-canvas" id="canvas">
+                <!-- CONTAINER/BODY (Main wrapper that holds everything) -->
+                <div class="container-body" id="container-body">
+                    
+                    <!-- HEADER SECTION (Goes at top of container when added) -->
+                    <div class="header-section" id="header-section" style="display: none;">
+                        <img src="/images/logo.png" alt="Logo" id="canvas-logo">
+                        <h1 id="header-title">Abu Dhabi<br>Procurement Excellence Forum</h1>
+                        <p id="header-subtitle">Event Registration</p>
+                    </div>
+                    
+                    <!-- BODY SECTION (Registration form - always in middle) -->
+                    <div class="body-section" id="body-section">
+                        <div id="form-fields">
+                            <div class="form-field" data-field="first-name">
+                                <label>FIRST NAME*</label>
+                                <input type="text" placeholder="Enter your first name">
+                            </div>
+                            <div class="form-field" data-field="last-name">
+                                <label>LAST NAME*</label>
+                                <input type="text" placeholder="Enter your last name">
+                            </div>
+                            <div class="form-field" data-field="entity">
+                                <label>ENTITY*</label>
+                                <input type="text" placeholder="Enter your entity name">
+                            </div>
+                            <div class="form-field" data-field="job-title">
+                                <label>JOB TITLE</label>
+                                <input type="text" placeholder="Enter your job title">
+                            </div>
+                            <div class="form-field" data-field="mobile">
+                                <label>MOBILE NUMBER</label>
+                                <input type="text" placeholder="+971 ...">
+                            </div>
+                            <div class="form-field" data-field="email">
+                                <label>EMAIL*</label>
+                                <input type="email" placeholder="Enter your email address">
+                            </div>
+                        </div>
+                        
+                        <!-- REGISTER BUTTON -->
+                        <button class="register-button">REGISTER</button>
+                    </div>
+                    
+                    <!-- FOOTER SECTION (Goes at bottom of container when added) -->
+                    <div class="footer-section" id="footer-section" style="display: none;">
+                        Please provide the correct email address you would like to receive your confirmation email.
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            initializeBuilder();
+        });
+        
+        function initializeBuilder() {
+            // ALIGNMENT CONTROLS
+            $('.alignment-btn').click(function() {
+                $('.alignment-btn').removeClass('active');
+                $(this).addClass('active');
+                
+                const alignment = $(this).data('align');
+                const canvas = $('#canvas');
+                
+                if (alignment === 'left') {
+                    canvas.css('text-align', 'left');
+                } else if (alignment === 'right') {
+                    canvas.css('text-align', 'right');
+                } else {
+                    canvas.css('text-align', 'center');
+                }
+            });
+            
+            // SECTION DROPDOWN
+            $('#section-dropdown').change(function() {
+                const value = $(this).val();
+                const textInput = $('#section-text');
+                const updateBtn = $('#update-section');
+                
+                if (value === 'header') {
+                    textInput.show().val($('#header-title').text());
+                    updateBtn.show();
+                } else if (value === 'footer') {
+                    textInput.show().val($('#canvas-footer').text());
+                    updateBtn.show();
+                } else if (value === 'remove-header') {
+                    $('#canvas-header').hide();
+                    textInput.hide();
+                    updateBtn.hide();
+                } else if (value === 'remove-footer') {
+                    $('#canvas-footer').hide();
+                    textInput.hide();
+                    updateBtn.hide();
+                } else {
+                    textInput.hide();
+                    updateBtn.hide();
+                }
+            });
+            
+            // UPDATE SECTION
+            $('#update-section').click(function() {
+                const sectionType = $('#section-dropdown').val();
+                const newText = $('#section-text').val();
+                
+                if (sectionType === 'header') {
+                    $('#header-title').html(newText);
+                    $('#canvas-header').show();
+                } else if (sectionType === 'footer') {
+                    $('#canvas-footer').text(newText);
+                    $('#canvas-footer').show();
+                }
+            });
+            
+            // LOGO UPLOAD
+            $('#logo-upload').change(function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        $('#canvas-logo').attr('src', evt.target.result).show();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // REMOVE LOGO
+            $('#remove-logo').click(function() {
+                $('#canvas-logo').hide();
+                $('#logo-upload').val('');
+            });
+            
+            // FORM FIELD TOGGLE
+            $('.form-control-btn[data-field]').click(function() {
+                const fieldName = $(this).data('field');
+                const field = $(`.form-field[data-field="${fieldName}"]`);
+                
+                if (field.is(':visible')) {
+                    field.hide();
+                    $(this).css('background', '#f9fafb');
+                } else {
+                    field.show();
+                    $(this).css('background', '#dcfce7');
+                }
+            });
+            
+            // PREVIEW
+            $('#preview-form').click(function() {
+                const canvas = $('#canvas')[0].outerHTML;
+                const previewWindow = window.open('', '_blank');
+                previewWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Registration Preview</title>
+                        <style>
+                            body { 
+                                font-family: 'Segoe UI', Arial, sans-serif; 
+                                background: linear-gradient(135deg, #e3eaf6 0%, #cfd8e6 100%);
+                                margin: 0; 
+                                padding: 20px; 
+                                display: flex; 
+                                align-items: center; 
+                                justify-content: center; 
+                                min-height: 100vh; 
+                            }
+                        </style>
+                    </head>
+                    <body>${canvas}</body>
+                    </html>
+                `);
+            });
+            
+            // EXPORT
+            $('#export-form').click(function() {
+                const canvas = $('#canvas')[0].outerHTML;
+                const blob = new Blob([canvas], {type: 'text/html'});
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'registration_page.html';
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>

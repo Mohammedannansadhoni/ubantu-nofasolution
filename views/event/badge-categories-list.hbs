@@ -1,0 +1,43 @@
+<ol class="breadcrumb">
+  <li><a href="/event">Home</a></li>
+  <li class="active">Manage Badge Categories</li>
+</ol>
+
+<div class="row">
+    <div class="col-md-12">
+        
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{/if}}
+
+        <a href="/event/badge-category-create" class="btn btn-success">Create Badge Category</a>
+
+            <table class="points_table">
+                <thead>
+                <tr>
+                    <th class="col-xs-3">Badge Category</th>
+                    <th class="col-xs-9">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="points_table_scrollbar">
+                    {{#each badgecategorycodes}}
+                        <tr class="even">
+                            <td class="col-xs-3">{{this.desc}}</td>
+                            <td class="col-xs-9">
+                                <a href="/event/badge-category-edit/{{this._id}}" class="btn btn-primary" >Edit</a>
+                                <a href="/event/badge-category-delete/{{this._id}}" class="btn btn-danger" >Delete</a>
+                            </td>
+                        </tr>
+
+                    {{/each}}
+                </tbody>
+
+            </table>
+
+    </div>
+
+</div>

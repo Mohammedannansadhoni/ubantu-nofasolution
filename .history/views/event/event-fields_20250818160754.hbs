@@ -1,0 +1,570 @@
+<ol class="breadcrumb">
+  <li><a href="/event">Home</a></li>
+  <li class="active">Event Setup</li>
+</ol>
+
+<div class="stepwizard">
+    <div class="stepwizard-row">
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-default btn-circle">1</button>
+            <p>Event Initials</p>
+        </div>
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-primary btn-circle" >2</button>
+            <p>Event Fields</p>
+        </div>
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-default btn-circle" disabled="disabled">3</button>
+            <p>Badge Categories</p>
+        </div> 
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-default btn-circle" disabled="disabled">4</button>
+            <p>Badge Layout</p>
+        </div>         
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>Step 2 - Event Fields</h4>
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{/if}}
+        <form action="/event/event-fields" method="POST">
+            
+            <input type="hidden" name="eventId" value="{{event._id}}">
+
+ 
+            <table class="points_table">
+                <thead>
+                <tr>
+                    <th class="col-xs-3">Field Name</th>
+                    <th class="col-xs-3">Caption</th>
+                    <th class="col-xs-1">Is Mandatory</th>
+                    <th class="col-xs-1">Show in Search</th>
+                    <th class="col-xs-1">Include in Search</th>
+                    <th class="col-xs-1">Show in Register</th>
+                    <th class="col-xs-1">Show in Online Reg</th>
+                    <th class="col-xs-1">Show in Print</th>
+                    <th class="col-xs-1">Excel Column</th>
+                </tr>
+                </thead>
+                <tbody class="points_table_scrollbar">
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Unique ID</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="uniqueId_label" value="{{event.uniqueId_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uniqueId_isMandatory" {{#if event.uniqueId_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uniqueId_showInSearch" {{#if event.uniqueId_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uniqueId_includeInSearch" {{#if event.uniqueId_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uniqueId_showInRegister" {{#if event.uniqueId_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uniqueId_showInOnlineRegistration" {{#if event.uniqueId_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uniqueId_showInPrint" {{#if event.uniqueId_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="uniqueId_columnInExcel" value="{{event.uniqueId_columnInExcel}}"></td>
+                        </tr>
+
+                        <tr class="even">
+                            <td class="col-xs-3">Barcode</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="barcode_label" value="{{event.barcode_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="barcode_isMandatory" {{#if event.barcode_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="barcode_showInSearch" {{#if event.barcode_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="barcode_includeInSearch" {{#if event.barcode_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="barcode_showInRegister" {{#if event.barcode_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="barcode_showInOnlineRegistration" {{#if event.barcode_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="barcode_showInPrint" {{#if event.barcode_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="barcode_columnInExcel" value="{{event.barcode_columnInExcel}}"></td>
+                        </tr>
+
+                        <tr class="odd">
+                            <td class="col-xs-3">QR Code</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="qrCode_label" value="{{event.qrCode_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="qrCode_isMandatory" {{#if event.qrCode_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="qrCode_showInSearch" {{#if event.qrCode_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="qrCode_includeInSearch" {{#if event.qrCode_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="qrCode_showInRegister" {{#if event.qrCode_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="qrCode_showInOnlineRegistration" {{#if event.qrCode_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="qrCode_showInPrint" {{#if event.qrCode_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="qrCode_columnInExcel" value="{{event.qrCode_columnInExcel}}"></td>
+                        </tr>
+
+                        <tr class="even">
+                            <td class="col-xs-3">Upload Image</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="uploadImage_label" value="{{event.uploadImage_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadImage_isMandatory" {{#if event.uploadImage_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadImage_showInSearch" {{#if event.uploadImage_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadImage_includeInSearch" {{#if event.uploadImage_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadImage_showInRegister" {{#if event.uploadImage_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadImage_showInOnlineRegistration" {{#if event.uploadImage_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadImage_showInPrint" {{#if event.uploadImage_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="uploadImage_columnInExcel" value="{{event.uploadImage_columnInExcel}}"></td>
+                        </tr>
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Upload Logo</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="uploadLogo_label" value="{{event.uploadLogo_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadLogo_isMandatory" {{#if event.uploadLogo_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadLogo_showInSearch" {{#if event.uploadLogo_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadLogo_includeInSearch" {{#if event.uploadLogo_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadLogo_showInRegister" {{#if event.uploadLogo_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadLogo_showInOnlineRegistration" {{#if event.uploadLogo_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="uploadLogo_showInPrint" {{#if event.uploadLogo_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="uploadLogo_columnInExcel" value="{{event.uploadLogo_columnInExcel}}"></td>
+                        </tr>
+
+                        <tr class="even">
+                            <td class="col-xs-3">SNo</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="sno_label" value="{{event.sno_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="sno_isMandatory" {{#if event.sno_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="sno_showInSearch" {{#if event.sno_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="sno_includeInSearch" {{#if event.sno_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="sno_showInRegister" {{#if event.sno_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="sno_showInPrint" {{#if event.sno_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="sno_showInOnlineRegistration" {{#if event.sno_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="sno_columnInExcel" value="{{event.sno_columnInExcel}}"></td>
+                        </tr>
+
+                        <tr class="even">
+                            <td class="col-xs-3">Title</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="title_label" value="{{event.title_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="title_isMandatory" {{#if event.title_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="title_showInSearch" {{#if event.title_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="title_includeInSearch" {{#if event.title_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="title_showInRegister" {{#if event.title_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="title_showInPrint" {{#if event.title_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="title_showInOnlineRegistration" {{#if event.title_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="title_columnInExcel" value="{{event.title_columnInExcel}}"></td>
+                        </tr>
+
+                        <tr class="odd">
+                            <td class="col-xs-3">First Name</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="firstName_label" value="{{event.firstName_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="firstName_isMandatory" {{#if event.firstName_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="firstName_showInSearch" {{#if event.firstName_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="firstName_includeInSearch" {{#if event.firstName_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="firstName_showInRegister" {{#if event.firstName_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="firstName_showInPrint" {{#if event.firstName_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="firstName_showInOnlineRegistration" {{#if event.firstName_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="firstName_columnInExcel" value="{{event.firstName_columnInExcel}}"></td>
+                        </tr>    
+
+                        <tr class="even">
+                            <td class="col-xs-3">Middle Name</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="middleName_label" value="{{event.middleName_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="middleName_isMandatory" {{#if event.middleName_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="middleName_showInSearch" {{#if event.middleName_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="middleName_includeInSearch" {{#if event.middleName_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="middleName_showInRegister" {{#if event.middleName_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="middleName_showInPrint" {{#if event.middleName_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="middleName_showInOnlineRegistration" {{#if event.middleName_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="middleName_columnInExcel" value="{{event.middleName_columnInExcel}}"></td>
+                        </tr>  
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Last Name</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="lastName_label" value="{{event.lastName_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="lastName_isMandatory" {{#if event.lastName_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="lastName_showInSearch" {{#if event.lastName_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="lastName_includeInSearch" {{#if event.lastName_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="lastName_showInRegister" {{#if event.lastName_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="lastName_showInPrint" {{#if event.lastName_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="lastName_showInOnlineRegistration" {{#if event.lastName_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="lastName_columnInExcel" value="{{event.lastName_columnInExcel}}"></td>
+                        </tr>   
+
+                        <tr class="even">
+                            <td class="col-xs-3">Full Name</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="fullName_label" value="{{event.fullName_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="fullName_isMandatory" {{#if event.fullName_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="fullName_showInSearch" {{#if event.fullName_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="fullName_includeInSearch" {{#if event.fullName_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="fullName_showInRegister" {{#if event.fullName_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="fullName_showInPrint" {{#if event.fullName_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="fullName_showInOnlineRegistration" {{#if event.fullName_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="fullName_columnInExcel" value="{{event.fullName_columnInExcel}}"></td>
+                        </tr> 
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Job Title</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="jobTitle_label" value="{{event.jobTitle_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="jobTitle_isMandatory" {{#if event.jobTitle_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="jobTitle_showInSearch" {{#if event.jobTitle_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="jobTitle_includeInSearch" {{#if event.jobTitle_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="jobTitle_showInRegister" {{#if event.jobTitle_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="jobTitle_showInPrint" {{#if event.jobTitle_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="jobTitle_showInOnlineRegistration" {{#if event.jobTitle_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="jobTitle_columnInExcel" value="{{event.jobTitle_columnInExcel}}"></td>
+                        </tr> 
+
+                        <tr class="even">
+                            <td class="col-xs-3">Department</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="department_label" value="{{event.department_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="department_isMandatory" {{#if event.department_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="department_showInSearch" {{#if event.department_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="department_includeInSearch" {{#if event.department_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="department_showInRegister" {{#if event.department_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="department_showInPrint" {{#if event.department_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="department_showInOnlineRegistration" {{#if event.department_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="department_columnInExcel" value="{{event.department_columnInExcel}}"></td>
+                        </tr> 
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Company Name</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="companyName_label" value="{{event.companyName_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="companyName_isMandatory" {{#if event.companyName_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="companyName_showInSearch" {{#if event.companyName_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="companyName_includeInSearch" {{#if event.companyName_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="companyName_showInRegister" {{#if event.companyName_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="companyName_showInPrint" {{#if event.companyName_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="companyName_showInOnlineRegistration" {{#if event.companyName_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="companyName_columnInExcel" value="{{event.companyName_columnInExcel}}"></td>
+                        </tr>   
+
+                        <tr class="even">
+                            <td class="col-xs-3">Mobile 1</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="mobile1_label" value="{{event.mobile1_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile1_isMandatory" {{#if event.mobile1_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile1_showInSearch" {{#if event.mobile1_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile1_includeInSearch" {{#if event.mobile1_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile1_showInRegister" {{#if event.mobile1_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile1_showInPrint" {{#if event.mobile1_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile1_showInOnlineRegistration" {{#if event.mobile1_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="mobile1_columnInExcel" value="{{event.mobile1_columnInExcel}}"></td>
+                        </tr>    
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Mobile 2</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="mobile2_label" value="{{event.mobile2_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile2_isMandatory" {{#if event.mobile2_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile2_showInSearch" {{#if event.mobile2_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile2_includeInSearch" {{#if event.mobile2_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile2_showInRegister" {{#if event.mobile2_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile2_showInPrint" {{#if event.mobile2_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="mobile2_showInOnlineRegistration" {{#if event.mobile2_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="mobile2_columnInExcel" value="{{event.mobile2_columnInExcel}}"></td>
+                        </tr>       
+
+                        <tr class="even">
+                            <td class="col-xs-3">Tel 1</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="tel1_label" value="{{event.tel1_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="tel1_isMandatory" {{#if event.tel1_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="tel1_showInSearch" {{#if event.tel1_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="tel1_includeInSearch" {{#if event.tel1_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="tel1_showInRegister" {{#if event.tel1_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="tel1_showInPrint" {{#if event.tel1_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="tel1_showInOnlineRegistration" {{#if event.tel1_showInOnlineRegistration}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="tel1_columnInExcel" value="{{event.tel1_columnInExcel}}"></td>
+                        </tr>   
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Tel 2</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="tel2_label" value="{{event.tel2_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="tel2_isMandatory" {{#if event.tel2_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="tel2_showInSearch" {{#if event.tel2_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="tel2_includeInSearch" {{#if event.tel2_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="tel2_showInRegister" {{#if event.tel2_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="tel2_showInPrint" {{#if event.tel2_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="tel2_columnInExcel" value="{{event.tel2_columnInExcel}}"></td>
+                        </tr>  
+
+                        <tr class="even">
+                            <td class="col-xs-3">Fax</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="fax_label" value="{{event.fax_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="fax_isMandatory" {{#if event.fax_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="fax_showInSearch" {{#if event.fax_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="fax_includeInSearch" {{#if event.fax_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="fax_showInRegister" {{#if event.fax_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="fax_showInPrint" {{#if event.fax_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="fax_columnInExcel" value="{{event.fax_columnInExcel}}"></td>
+                        </tr>                         
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Email</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="email_label" value="{{event.email_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="email_isMandatory" {{#if event.email_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="email_showInSearch" {{#if event.email_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="email_includeInSearch" {{#if event.email_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="email_showInRegister" {{#if event.email_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="email_showInPrint" {{#if event.email_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="email_columnInExcel" value="{{event.email_columnInExcel}}"></td>
+                        </tr> 
+
+                        <tr class="even">
+                            <td class="col-xs-3">Website</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="website_label" value="{{event.website_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="website_isMandatory" {{#if event.website_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="website_showInSearch" {{#if event.website_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="website_includeInSearch" {{#if event.website_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="website_showInRegister" {{#if event.website_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="website_showInPrint" {{#if event.website_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="website_columnInExcel" value="{{event.website_columnInExcel}}"></td>
+                        </tr>   
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Address 1</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="address1_label" value="{{event.address1_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="address1_isMandatory" {{#if event.address1_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="address1_showInSearch" {{#if event.address1_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="address1_includeInSearch" {{#if event.address1_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="address1_showInRegister" {{#if event.address1_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="address1_showInPrint" {{#if event.address1_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="address1_columnInExcel" value="{{event.address1_columnInExcel}}"></td>
+                        </tr>     
+
+                        <tr class="even">
+                            <td class="col-xs-3">Address 2</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="address2_label" value="{{event.address2_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="address2_isMandatory" {{#if event.address2_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="address2_showInSearch" {{#if event.address2_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="address2_includeInSearch" {{#if event.address2_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="address2_showInRegister" {{#if event.address2_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="address2_showInPrint" {{#if event.address2_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="address2_columnInExcel" value="{{event.address2_columnInExcel}}"></td>
+                        </tr>   
+
+                        <tr class="odd">
+                            <td class="col-xs-3">City</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="city_label" value="{{event.city_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="city_isMandatory" {{#if event.city_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="city_showInSearch" {{#if event.city_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="city_includeInSearch" {{#if event.city_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="city_showInRegister" {{#if event.city_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="city_showInPrint" {{#if event.city_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="city_columnInExcel" value="{{event.city_columnInExcel}}"></td>
+                        </tr> 
+
+                        <tr class="even">
+                            <td class="col-xs-3">Country</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="country_label" value="{{event.country_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="country_isMandatory" {{#if event.country_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="country_showInSearch" {{#if event.country_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="country_includeInSearch" {{#if event.country_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="country_showInRegister" {{#if event.country_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="country_showInPrint" {{#if event.country_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="country_columnInExcel" value="{{event.country_columnInExcel}}"></td>
+                        </tr>     
+
+                        <tr class="odd">
+                            <td class="col-xs-3">P.O.Box</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="poBox_label" value="{{event.poBox_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="poBox_isMandatory" {{#if event.poBox_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="poBox_showInSearch" {{#if event.poBox_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="poBox_includeInSearch" {{#if event.poBox_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="poBox_showInRegister" {{#if event.poBox_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="poBox_showInPrint" {{#if event.poBox_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="poBox_columnInExcel" value="{{event.poBox_columnInExcel}}"></td>
+                        </tr>  
+
+                        <tr class="even">
+                            <td class="col-xs-3">Postal Code</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="postalCode_label" value="{{event.postalCode_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="postalCode_isMandatory" {{#if event.postalCode_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="postalCode_showInSearch" {{#if event.postalCode_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="postalCode_includeInSearch" {{#if event.postalCode_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="postalCode_showInRegister" {{#if event.postalCode_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="postalCode_showInPrint" {{#if event.postalCode_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="postalCode_columnInExcel" value="{{event.postalCode_columnInExcel}}"></td>
+                        </tr>   
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Badge Category</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="badgeCategory_label" value="{{event.badgeCategory_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="badgeCategory_isMandatory" {{#if event.badgeCategory_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="badgeCategory_showInSearch" {{#if event.badgeCategory_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="badgeCategory_includeInSearch" {{#if event.badgeCategory_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="badgeCategory_showInRegister" {{#if event.badgeCategory_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="badgeCategory_showInPrint" {{#if event.badgeCategory_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="badgeCategory_columnInExcel" value="{{event.badgeCategory_columnInExcel}}"></td>
+                        </tr>
+
+                        <tr class="even">
+                            <td class="col-xs-3">Reg Type</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="regType_label" value="{{event.regType_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="regType_isMandatory" {{#if event.regType_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="regType_showInSearch" {{#if event.regType_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="regType_includeInSearch" {{#if event.regType_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="regType_showInRegister" {{#if event.regType_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="regType_showInPrint" {{#if event.regType_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="regType_columnInExcel" value="{{event.regType_columnInExcel}}"></td>
+                        </tr> 
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Reg Date</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="regDate_label" value="{{event.regDate_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="regDate_isMandatory" {{#if event.regDate_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="regDate_showInSearch" {{#if event.regDate_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="regDate_includeInSearch" {{#if event.regDate_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="regDate_showInRegister" {{#if event.regDate_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="regDate_showInPrint" {{#if event.regDate_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="regDate_columnInExcel" value="{{event.regDate_columnInExcel}}"></td>
+                        </tr>       
+
+                        <tr class="even">
+                            <td class="col-xs-3">Badge Print Date</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="badgePrintDate_label" value="{{event.badgePrintDate_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="badgePrintDate_isMandatory" {{#if event.badgePrintDate_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="badgePrintDate_showInSearch" {{#if event.badgePrintDate_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="badgePrintDate_includeInSearch" {{#if event.badgePrintDate_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="badgePrintDate_showInRegister" {{#if event.badgePrintDate_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="badgePrintDate_showInPrint" {{#if event.badgePrintDate_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="badgePrintDate_columnInExcel" value="{{event.badgePrintDate_columnInExcel}}"></td>
+                        </tr>     
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Modified Date</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="modifiedDate_label" value="{{event.modifiedDate_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="modifiedDate_isMandatory" {{#if event.modifiedDate_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="modifiedDate_showInSearch" {{#if event.modifiedDate_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="modifiedDate_includeInSearch" {{#if event.modifiedDate_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="modifiedDate_showInRegister" {{#if event.modifiedDate_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="modifiedDate_showInPrint" {{#if event.modifiedDate_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="modifiedDate_columnInExcel" value="{{event.modifiedDate_columnInExcel}}"></td>
+                        </tr>   
+
+                        <tr class="even">
+                            <td class="col-xs-3">Status Flag</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="statusFlag_label" value="{{event.statusFlag_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="statusFlag_isMandatory" {{#if event.statusFlag_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="statusFlag_showInSearch" {{#if event.statusFlag_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="statusFlag_includeInSearch" {{#if event.statusFlag_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="statusFlag_showInRegister" {{#if event.statusFlag_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="statusFlag_showInPrint" {{#if event.statusFlag_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="statusFlag_columnInExcel" value="{{event.statusFlag_columnInExcel}}"></td>
+                        </tr>  
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Backoffice</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="backoffice_label" value="{{event.backoffice_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="backoffice_isMandatory" {{#if event.backoffice_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="backoffice_showInSearch" {{#if event.backoffice_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="backoffice_includeInSearch" {{#if event.backoffice_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="backoffice_showInRegister" {{#if event.backoffice_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="backoffice_showInPrint" {{#if event.backoffice_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="backoffice_columnInExcel" value="{{event.backoffice_columnInExcel}}"></td>
+                        </tr>  
+
+                        <tr class="even">
+                            <td class="col-xs-3">Comment1</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="comment1_label" value="{{event.comment1_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment1_isMandatory" {{#if event.comment1_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment1_showInSearch" {{#if event.comment1_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment1_includeInSearch" {{#if event.comment1_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment1_showInRegister" {{#if event.comment1_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment1_showInPrint" {{#if event.comment1_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="comment1_columnInExcel" value="{{event.comment1_columnInExcel}}"></td>
+                        </tr>    
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Comment2</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="comment2_label" value="{{event.comment2_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment2_isMandatory" {{#if event.comment2_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment2_showInSearch" {{#if event.comment2_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment2_includeInSearch" {{#if event.comment2_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment2_showInRegister" {{#if event.comment2_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment2_showInPrint" {{#if event.comment2_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="comment2_columnInExcel" value="{{event.comment2_columnInExcel}}"></td>
+                        </tr>    
+
+                        <tr class="even">
+                            <td class="col-xs-3">Comment3</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="comment3_label" value="{{event.comment3_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment3_isMandatory" {{#if event.comment3_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment3_showInSearch" {{#if event.comment3_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment3_includeInSearch" {{#if event.comment3_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment3_showInRegister" {{#if event.comment3_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment3_showInPrint" {{#if event.comment3_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="comment3_columnInExcel" value="{{event.comment3_columnInExcel}}"></td>
+                        </tr>  
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Comment4</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="comment4_label" value="{{event.comment4_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment4_isMandatory" {{#if event.comment4_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment4_showInSearch" {{#if event.comment4_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment4_includeInSearch" {{#if event.comment4_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment4_showInRegister" {{#if event.comment4_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment4_showInPrint" {{#if event.comment4_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="comment4_columnInExcel" value="{{event.comment4_columnInExcel}}"></td>
+                        </tr> 
+
+                        <tr class="even">
+                            <td class="col-xs-3">Comment5</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="comment5_label" value="{{event.comment5_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment5_isMandatory" {{#if event.comment5_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment5_showInSearch" {{#if event.comment5_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment5_includeInSearch" {{#if event.comment5_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment5_showInRegister" {{#if event.comment5_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment5_showInPrint" {{#if event.comment5_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="comment5_columnInExcel" value="{{event.comment5_columnInExcel}}"></td>
+                        </tr>        
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Comment6</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="comment6_label" value="{{event.comment6_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment6_isMandatory" {{#if event.comment6_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment6_showInSearch" {{#if event.comment6_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment6_includeInSearch" {{#if event.comment6_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment6_showInRegister" {{#if event.comment6_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment6_showInPrint" {{#if event.comment6_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="comment6_columnInExcel" value="{{event.comment6_columnInExcel}}"></td>
+                        </tr>   
+
+                        <tr class="even">
+                            <td class="col-xs-3">Comment7</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="comment7_label" value="{{event.comment7_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment7_isMandatory" {{#if event.comment7_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment7_showInSearch" {{#if event.comment7_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment7_includeInSearch" {{#if event.comment7_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment7_showInRegister" {{#if event.comment7_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment7_showInPrint" {{#if event.comment7_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="comment7_columnInExcel" value="{{event.comment7_columnInExcel}}"></td>
+                        </tr>     
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Comment8</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="comment8_label" value="{{event.comment8_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment8_isMandatory" {{#if event.comment8_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment8_showInSearch" {{#if event.comment8_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment8_includeInSearch" {{#if event.comment8_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment8_showInRegister" {{#if event.comment8_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment8_showInPrint" {{#if event.comment8_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="comment8_columnInExcel" value="{{event.comment8_columnInExcel}}"></td>
+                        </tr>   
+
+                        <tr class="even">
+                            <td class="col-xs-3">Comment9</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="comment9_label" value="{{event.comment9_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment9_isMandatory" {{#if event.comment9_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment9_showInSearch" {{#if event.comment9_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment9_includeInSearch" {{#if event.comment9_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment9_showInRegister" {{#if event.comment9_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment9_showInPrint" {{#if event.comment9_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="comment9_columnInExcel" value="{{event.comment9_columnInExcel}}"></td>
+                        </tr> 
+
+                        <tr class="odd">
+                            <td class="col-xs-3">Comment10</td>
+                            <td class="col-xs-3"><input type="text" class="form-control" name="comment10_label" value="{{event.comment10_label}}"></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment10_isMandatory" {{#if event.comment10_isMandatory}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment10_showInSearch" {{#if event.comment10_showInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment10_includeInSearch" {{#if event.comment10_includeInSearch}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment10_showInRegister" {{#if event.comment10_showInRegister}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="checkbox" class="form-control" name="comment10_showInPrint" {{#if event.comment10_showInPrint}}checked{{/if}} ></td>
+                            <td class="col-xs-1"><input type="text" class="form-control" name="comment10_columnInExcel" value="{{event.comment10_columnInExcel}}"></td>
+                        </tr>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+                </tbody>
+
+            </table>
+
+
+            <input type="submit" value="Next" style="width:100px" class="btn btn-success pull-right">
+            <a href="/event/edit/{{session.eventId}}" style="width:100px" class="btn btn-primary">Previous</a>
+        </form>
+    </div>
+
+</div>
+<br /><br/><br/>
+     

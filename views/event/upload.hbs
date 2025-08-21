@@ -1,0 +1,32 @@
+<ol class="breadcrumb">
+  <li><a href="/event">Home</a></li>
+  <li class="active">Import Data</li>
+</ol>
+
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <h1>Import Data</h1>
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{/if}}
+        <form action="/event/upload" method="POST" enctype="multipart/form-data">
+            
+
+
+            <div class="form-group">
+                <label for="eventLogo">Excel file:</label>
+                <input type="file" id="filetoupload" name="filetoupload" class="form-control" >
+            </div>
+
+           
+
+            <input type="submit" value="Import" class="btn btn-success">
+            <a href="/event" class="btn btn-default">Cancel</a>
+        </form>
+    </div>
+
+</div>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Page Editor</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      margin: 20px;
+      border: 2px solid #aaa;
+      transition: all 0.3s ease;
+    }
+
+    /* Full-page mode - expands canvas to fill entire viewport */
+    .page-wrapper.full-page-mode {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      margin: 0;
+      border: none;
+      z-index: 1000;
+      background: transparent;
+    }
+
+    .page-wrapper.full-page-mode .toolbar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      z-index: 1001;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    
+
+    /* Editable content styling */
+    [contenteditable="true"] {
+      outline: none;
+      transition: all 0.3s ease;
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+
+    [contenteditable="true"]:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    [contenteditable="true"]:focus {
+      background: rgba(102, 126, 234, 0.15);
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+    }
+
+    .canvas-container {
+      flex: 1;
+      padding: 20px;
+      min-height: 400px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #ffffff;
+      transition: all 0.3s ease;
+    }
+
+    /* Full-page canvas styling */
+    .page-wrapper.full-page-mode .canvas-container {
+      width: 100vw;
+      height: 100vh;
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      background-attachment: fixed;
+    }
+
+    .page-wrapper.full-page-mode .canvas-content {
+      padding: 80px 20px 20px 20px; /* Top padding for toolbar */
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Hide headers/footers in full-page mode */
+    .page-wrapper.full-page-mode header,
+    .page-wrapper.full-page-mode footer {
+      display: none;
+    }
+
+    .canvas-content {
+      padding: 20px;
+      color: #000;
+    }
+
+    .resizable-logo-wrapper {
+      display: inline-block;
+      position: relative;
+      resize: both;
+      overflow: hidden;
+      min-width: 50px;
+      min-height: 50px;
+      max-width: 90%;
+      max-height: 300px;
+      border: 2px dashed #ccc;
+      margin: auto;
+    }
+
+    .resizable-logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .resizable-logo-wrapper::after {
+      content: "Click to upload";
+      position: absolute;
+      bottom: 4px;
+      right: 6px;
+      font-size: 10px;
+      color: #888;
+    }
+
+    .logo-upload {
+      display: none;
+    }
+
+    .canvas-container *:focus {
+      outline: 2px dashed blue;
+    }
+
+    /* Registration form styles */
+    .registration-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .registration-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      padding: 48px 36px 36px 36px;
+      max-width: 440px;
+      width: 100%;
+      border: 1.5px solid #e0e0e0;
+    }
+
+    .event-logo {
+      max-width: 110px;
+      margin: 0 auto 18px auto;
+      display: block;
+    }
+
+    .event-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+      color: #222;
+    }
+
+    .event-header {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 18px;
+      color: #333;
+    }
+
+    .registration-form label {
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #222;
+      display: block;
+    }
+
+    .registration-form input,
+    .registration-form select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid #cfd8dc;
+      border-radius: 7px;
+      margin-bottom: 20px;
+      font-size: 1.07rem;
+      background: #f7fafd;
+      transition: border 0.2s;
+    }
+
+    .registration-form input:focus,
+    .registration-form select:focus {
+      border: 1.5px solid #0a1931;
+      outline: none;
+    }
+
+    .registration-form input[type="submit"] {
+      background: #0a1931;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.13rem;
+      font-weight: 700;
+      padding: 14px 0;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(10, 25, 49, 0.08);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .registration-form input[type="submit"]:hover {
+      background: #1a2951;
+    }
+
+    .registration-form .required {
+      color: #d32f2f;
+      margin-left: 2px;
+    }
+
+    .registration-form .form-note {
+      font-size: 0.97em;
+      color: #888;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .event-footer {
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 22px;
+      color: #666;
+    }
+
+    @media (max-width: 600px) {
+      .registration-card {
+        padding: 24px 8px 18px 8px;
+        max-width: 98vw;
+      }
+    }
+
+    /* Reorder mode styles - Creative Design */
+    .form-field {
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    
+
+  </style>
+</head>
+<body>
+
+ 
+  <!-- Page Container -->
+  <div class="page-wrapper" id="pageWrapper">
+
+    <div class="canvas-container" id="canvas">
+      <div class="canvas-content" contenteditable="false">
+        <div class="registration-container">
+          <div class="registration-card">
+            <img src="https://via.placeholder.com/110x60?text=Logo" class="event-logo" alt="Event Logo" contenteditable="false">
+            <div class="event-title" contenteditable="true">{{#if event.eventName}}{{event.eventName}}{{else}}Sample Event Name{{/if}}</div>
+            <div class="event-header" contenteditable="true">Welcome to Our Event Registration</div>
+
+            <form class="registration-form" action="/event/{{eventId}}/public-register" method="POST">
+              <div class="reorder-instructions">
+                ✨ Reorder Mode Active! Drag any field up or down to rearrange the form layout. Click "Exit Reorder Mode" when done.
+              </div>
+              
+              {{#each fields}}
+                <div class="form-field" data-field-name="{{this.fieldName}}" data-field-order="{{@index}}">
+                  <div class="field-order-indicator">{{add @index 1}}</div>
+                  {{formField this.fieldName this.fieldLabel this.fieldType this.fieldValue this.fieldMandatory ../badgeCategories this.dropdownOptions}}
+                </div>
+              {{/each}}
+
+              <div class="form-note" contenteditable="true">Please provide the correct email address you would like to receive your confirmation email.</div>
+              <input type="submit" value="REGISTER">
+            </form>
+
+            <div class="event-footer" contenteditable="true">Thank you for registering!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+ 
+
+</body>
+</html>

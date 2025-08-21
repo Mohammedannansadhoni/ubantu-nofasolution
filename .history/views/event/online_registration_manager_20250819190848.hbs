@@ -1,0 +1,337 @@
+<div class="container-fluid">
+    <ol class="breadcrumb">
+        <li><a href="/event">Home</a></li>
+        <li><a href="/event">Events</a></li>
+        <li class="active">Online Registration Setup - {{event.eventName}}</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Online Registration Management</h2>
+            <p class="text-muted">Configure your public registration page, confirmation page, and email settings</p>
+        </div>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="stepwizard">
+                <div class="stepwizard-row">
+                    <div class="stepwizard-step">
+                        <button type="button" class="btn btn-primary btn-circle step-btn" data-step="1">1</button>
+                        <p>Registration Page</p>
+                    </div>
+                    <div class="stepwizard-step">
+                        <button type="button" class="btn btn-default btn-circle step-btn" data-step="2">2</button>
+                        <p>Confirmation Page</p>
+                    </div>
+                    <div class="stepwizard-step">
+                        <button type="button" class="btn btn-default btn-circle step-btn" data-step="3">3</button>
+                        <p>Email Configuration</p>
+                    </div>
+                    <div class="stepwizard-step">
+                        <button type="button" class="btn btn-default btn-circle step-btn" data-step="4">4</button>
+                        <p>Generate Link</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step Content -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+
+                    <!-- Step 1: Registration Page Design -->
+                    <div id="step-1" class="step-content active">
+                        <h3>Design Registration Page</h3>
+                        <p>Customize how your public registration page will look</p>
+                        
+                        <div class="registration-preview">
+                            <iframe id="registration-preview" src="/event/online-registration/{{eventId}}/design-registration" 
+                                    style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 8px;"></iframe>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <a href="/event/online-registration/{{eventId}}/design-registration" class="btn btn-primary" target="_blank">
+                                <i class="fa fa-paint-brush"></i> Open Page Designer
+                            </a>
+                            <button class="btn btn-success next-step" data-next="2">Next: Confirmation Page</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Confirmation Page Design -->
+                    <div id="step-2" class="step-content">
+                        <h3>Design Confirmation Page</h3>
+                        <p>Customize the page users see after successful registration</p>
+                        
+                        <div class="confirmation-preview">
+                            <iframe id="confirmation-preview" src="/event/online-registration/{{eventId}}/design-confirmation" 
+                                    style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 8px;"></iframe>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <button class="btn btn-secondary prev-step" data-prev="1">Previous</button>
+                            <a href="/event/online-registration/{{eventId}}/design-confirmation" class="btn btn-primary" target="_blank">
+                                <i class="fa fa-paint-brush"></i> Open Page Designer
+                            </a>
+                            <button class="btn btn-success next-step" data-next="3">Next: Email Setup</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Email Configuration -->
+                    <div id="step-3" class="step-content">
+                        <h3>Email Configuration</h3>
+                        <p>Setup email templates and SMTP settings</p>
+                        
+                        <div class="email-config-preview">
+                            <iframe id="email-preview" src="/event/online-registration/{{eventId}}/email-config" 
+                                    style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 8px;"></iframe>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <button class="btn btn-secondary prev-step" data-prev="2">Previous</button>
+                            <a href="/event/online-registration/{{eventId}}/email-config" class="btn btn-primary" target="_blank">
+                                <i class="fa fa-envelope"></i> Configure Email
+                            </a>
+                            <button class="btn btn-success next-step" data-next="4">Next: Generate Link</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Generate Public Link -->
+                    <div id="step-4" class="step-content">
+                        <h3>Generate Public Registration Link</h3>
+                        <p>Create a shareable link for your registration page</p>
+                        
+                        <div class="link-generation">
+                            <div class="form-group">
+                                <label>Your Public Registration URL:</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="public-url" readonly 
+                                           placeholder="Click 'Generate Link' to create your public URL">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-info" id="copy-link" style="display: none;">
+                                            <i class="fa fa-copy"></i> Copy
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info">
+                                <strong>Note:</strong> Once you generate the link, your registration pages will be publicly accessible. 
+                                Make sure you've completed all the design and configuration steps above.
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <button class="btn btn-secondary prev-step" data-prev="3">Previous</button>
+                            <button class="btn btn-success" id="generate-link">
+                                <i class="fa fa-link"></i> Generate Public Link
+                            </button>
+                            <button class="btn btn-primary" id="test-link" style="display: none;">
+                                <i class="fa fa-external-link"></i> Test Registration
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stepwizard {
+    margin-bottom: 30px;
+}
+
+.stepwizard-row {
+    display: table-row;
+}
+
+.stepwizard-step {
+    display: table-cell;
+    width: 25%;
+    height: 200px;
+    text-align: center;
+    position: relative;
+}
+
+.stepwizard-step button[disabled] {
+    opacity: 1 !important;
+    filter: alpha(opacity=100) !important;
+}
+
+.stepwizard-step .btn-circle {
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    padding: 6px 0;
+    font-size: 18px;
+    line-height: 1.428571429;
+    border-radius: 25px;
+    margin-bottom: 10px;
+}
+
+.stepwizard-step p {
+    margin-top: 10px;
+    color: #666;
+    font-weight: 500;
+}
+
+.step-content {
+    display: none;
+    padding: 30px;
+}
+
+.step-content.active {
+    display: block;
+}
+
+.btn-circle.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-circle.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+.registration-preview, .confirmation-preview, .email-config-preview {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.link-generation {
+    max-width: 600px;
+    margin: 0 auto;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Step navigation
+    document.querySelectorAll('.next-step').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var nextStep = this.getAttribute('data-next');
+            showStep(nextStep);
+        });
+    });
+
+    document.querySelectorAll('.prev-step').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var prevStep = this.getAttribute('data-prev');
+            showStep(prevStep);
+        });
+    });
+
+    document.querySelectorAll('.step-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var step = this.getAttribute('data-step');
+            showStep(step);
+        });
+    });
+
+    function showStep(stepNumber) {
+        // Hide all step contents
+        document.querySelectorAll('.step-content').forEach(function(content) {
+            content.classList.remove('active');
+        });
+
+        // Show selected step
+        document.getElementById('step-' + stepNumber).classList.add('active');
+
+        // Update step buttons
+        document.querySelectorAll('.step-btn').forEach(function(btn) {
+            btn.classList.remove('btn-primary', 'btn-success');
+            btn.classList.add('btn-default');
+        });
+
+        // Highlight current and completed steps
+        for(var i = 1; i <= stepNumber; i++) {
+            var btn = document.querySelector('[data-step="' + i + '"]');
+            if(i < stepNumber) {
+                btn.classList.remove('btn-default');
+                btn.classList.add('btn-success');
+            } else if(i == stepNumber) {
+                btn.classList.remove('btn-default');
+                btn.classList.add('btn-primary');
+            }
+        }
+    }
+
+    // Generate link functionality
+    document.getElementById('generate-link').addEventListener('click', function() {
+        var btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Generating...';
+
+        fetch('/event/online-registration/{{eventId}}/generate-link', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                document.getElementById('public-url').value = data.publicUrl;
+                document.getElementById('copy-link').style.display = 'inline-block';
+                document.getElementById('test-link').style.display = 'inline-block';
+                
+                // Show success message
+                var alert = document.createElement('div');
+                alert.className = 'alert alert-success';
+                alert.innerHTML = '<strong>Success!</strong> Your public registration link has been generated.';
+                document.querySelector('.link-generation').insertBefore(alert, document.querySelector('.alert-info'));
+
+                btn.innerHTML = '<i class="fa fa-check"></i> Link Generated';
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-success');
+            } else {
+                alert('Error generating link: ' + data.error);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa fa-link"></i> Generate Public Link';
+            }
+        })
+        .catch(error => {
+            alert('Network error occurred');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa fa-link"></i> Generate Public Link';
+        });
+    });
+
+    // Copy link functionality
+    document.getElementById('copy-link').addEventListener('click', function() {
+        var urlInput = document.getElementById('public-url');
+        urlInput.select();
+        document.execCommand('copy');
+        
+        this.innerHTML = '<i class="fa fa-check"></i> Copied!';
+        setTimeout(() => {
+            this.innerHTML = '<i class="fa fa-copy"></i> Copy';
+        }, 2000);
+    });
+
+    // Test link functionality
+    document.getElementById('test-link').addEventListener('click', function() {
+        var url = document.getElementById('public-url').value;
+        if(url) {
+            window.open(url, '_blank');
+        }
+    });
+});
+</script>
