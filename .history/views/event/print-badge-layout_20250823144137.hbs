@@ -71,33 +71,29 @@
 
 <script>
 
-                                var left = '{{this.fieldLeft}}' || '0';
-                                var top = '{{this.fieldTop}}' || '0';
-                                var fontFamily = '{{this.fieldFontFamily}}' || 'inherit';
-                                var fontSize = '{{this.fieldFontSize}}' || '14';
-                                var fontWeight = '{{this.fieldFontWeight}}' || 'normal';
-                                var fontStyle = '{{this.fieldFontStyle}}' || 'normal';
-                                var textAlign = '{{this.fieldTextAlign}}' || 'left';
-                                var width = '{{this.fieldWidth}}' || '100';
-                                var rotate = '{{this.fieldRotate}}' || '0';
+                var left = '{{this.fieldLeft}}' || '0';
+                var top = '{{this.fieldTop}}' || '0';
+                var fontFamily = '{{this.fieldFontFamily}}' || 'inherit';
+                var fontSize = '{{this.fieldFontSize}}' || '14';
+                var fontWeight = '{{this.fieldFontWeight}}' || 'normal';
+                var fontStyle = '{{this.fieldFontStyle}}' || 'normal';
+                var textAlign = '{{this.fieldTextAlign}}' || 'left';
+                var width = '{{this.fieldWidth}}' || '100';
+                var rotate = '{{this.fieldRotate}}' || '0';
 
-                                console.log('Font debug:', {
-                                    fieldName: '{{this.fieldName}}',
-                                    fontFamily: fontFamily,
-                                    fontSize: fontSize,
-                                    fontWeight: fontWeight,
-                                    fontStyle: fontStyle
-                                });
-
-                                $("#{{this.fieldName}}").css('left', left + 'px');
-                                $("#{{this.fieldName}}").css('top', top + 'px');
-                                $("#{{this.fieldName}}").css('font-family', fontFamily);
-                                $("#{{this.fieldName}}").css('font-size', fontSize + 'px');
-                                $("#{{this.fieldName}}").css('font-weight', fontWeight);
-                                $("#{{this.fieldName}}").css('font-style', fontStyle);
-                                $("#{{this.fieldName}}").css('text-align', textAlign);
-                                $("#{{this.fieldName}}").css('width', width + 'px');
-                                $("#{{this.fieldName}}").css({'transform': 'rotate(' + rotate + 'deg)'});
+                $("#{{this.fieldName}}").css('left', left + 'px');
+                $("#{{this.fieldName}}").css('top', top + 'px');
+                $("#{{this.fieldName}}").css('font-family', fontFamily);
+                $("#{{this.fieldName}}").css('font-size', fontSize + 'px');
+                $("#{{this.fieldName}}").css('font-weight', fontWeight);
+                $("#{{this.fieldName}}").css('font-style', fontStyle);
+                $("#{{this.fieldName}}").css('text-align', textAlign);
+                $("#{{this.fieldName}}").css('width', width + 'px');
+                $("#{{this.fieldName}}").css({'transform': 'rotate(' + rotate + 'deg)'});
+      textMargin: 0,
+      fontSize: 16,
+      displayValue: true
+      });
     {{/if}}
 
 var fields = [];

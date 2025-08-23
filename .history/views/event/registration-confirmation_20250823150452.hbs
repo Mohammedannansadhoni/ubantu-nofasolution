@@ -306,14 +306,9 @@
 
                   {{#if registration.qrCode}}
                   <div class="detail-row">
-                    <span class="detail-label">QR Code ID:</span>
-                    <span class="detail-value">{{registration.qrCodeId}}</span>
-                  </div>
-                  {{#if registration.qrCodeVCard}}
-                  <div class="detail-row">
                     <span class="detail-label">QR Code (Contact Card):</span>
                     <span class="detail-value">
-                      <img src="https://api.qrserver.com/v1/create-qr-code/?data={{registration.qrCodeVCard}}&amp;size=120x120" alt="QR Code" />
+                      <img src="https://api.qrserver.com/v1/create-qr-code/?data={{registration.qrCode}}&amp;size=120x120" alt="QR Code" />
                     </span>
                   </div>
                   {{/if}}
@@ -339,47 +334,59 @@
     document.addEventListener('DOMContentLoaded', function() {
       console.log("🎉 Loading confirmation page...");
       console.log("Event ID: {{event._id}}");
-      console.log("Registration: {{registration.registrationId}}");
+      console.log("Registration: {{#if registration}}{{registration.registrationId}}{{else}}No registration data{{/if}}");
       console.log("Success: {{success}}");
       console.log("Message: {{message}}");
-
-      // Apply custom background if present
-      var confirmationCustomBackground = '{{confirmationCustomBackground}}';
-      if (confirmationCustomBackground && confirmationCustomBackground !== 'undefined' && confirmationCustomBackground !== '') {
-        var canvas = document.getElementById('canvas');
-        if (canvas && !canvas.style.backgroundImage) {
-          canvas.style.backgroundImage = 'url(' + confirmationCustomBackground + ')';
-          console.log("🖼️ Applied custom background");
-        }
-      }
-
-      // Update logo if present
-      var confirmationLogoUrl = '{{confirmationLogoUrl}}';
-      if (confirmationLogoUrl && confirmationLogoUrl !== 'undefined' && confirmationLogoUrl !== '') {
-        var logos = document.querySelectorAll('.event-logo');
-        logos.forEach(function(logo) {
-          if (logo.src && logo.src.includes('placeholder')) {
-            logo.src = confirmationLogoUrl;
-            console.log("🏷️ Updated logo from database");
+      
+      {{#if savedConfirmationHtml}}
+        console.log("✅ Applying saved confirmation design");
+        
+        // Apply any custom background from database if not in saved HTML
+        {{#if confirmationCustomBackground}}
+          const canvas = document.getElementById('canvas');
+          if (canvas && !canvas.style.backgroundImage) {
+            canvas.style.backgroundImage = 'url({{confirmationCustomBackground}})';
+            console.log("🖼️ Applied custom background from database");
           }
-        });
-      }
-
+        {{/if}}
+        
+        // Update logos with event-specific URLs if needed
+        {{#if confirmationLogoUrl}}
+          const logos = document.querySelectorAll('.event-logo');
+          logos.forEach(logo => {
+            if (logo.src && logo.src.includes('placeholder')) {
+              logo.src = '{{confirmationLogoUrl}}';
+              console.log("🏷️ Updated logo from database");
+            }
+          });
+        {{/if}}
+        
+        console.log("🎨 Saved confirmation design successfully applied");
+      {{else}}
+        console.log("ℹ️ No saved confirmation design found, using default layout");
+        
+        // Apply custom background to default layout
+        {{#if confirmationCustomBackground}}
+          const canvas = document.getElementById('canvas');
+          if (canvas) {
+            canvas.style.backgroundImage = 'url({{confirmationCustomBackground}})';
+            console.log("🖼️ Applied custom background to default layout");
+          }
+        {{/if}}
+      {{/if}}
+      
       // Add some interactive elements
-      var confirmationCard = document.querySelector('.confirmation-card');
+      const confirmationCard = document.querySelector('.confirmation-card');
       if (confirmationCard) {
         confirmationCard.addEventListener('click', function() {
           this.style.transform = 'scale(1.02)';
-          setTimeout(function() {
-            confirmationCard.style.transform = 'scale(1)';
+          setTimeout(() => {
+            this.style.transform = 'scale(1)';
           }, 200);
         });
       }
     });
-</script>
-</script>
-
-{{/if}}
+  </script>
 
 </body>
 </html>

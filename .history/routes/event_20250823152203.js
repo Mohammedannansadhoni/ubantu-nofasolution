@@ -2485,13 +2485,13 @@ router.get('/manage-fonts', function(req, res) {
         
         console.log('Raw fonts from database:', fonts.length);
         fonts.forEach(function(font, index) {
-            console.log(`Font ${index + 1}:`, font.name, font.fontType, font.googleFontApi ? 'hasAPI' : 'noAPI', font.fontFile ? 'hasFile' : 'noFile');
+            console.log(`Font ${index + 1}:`, font.fontName, font.fontType, font.googleFontApi ? 'hasAPI' : 'noAPI', font.fontFile ? 'hasFile' : 'noFile');
         });
+        
         // Transform fonts for the simplified display
         var displayFonts = fonts.map(function(font) {
             return {
-                name: font.name,
-                fontFamily: font.fontFamily,
+                name: font.fontName,
                 type: font.fontType === 'google' ? 'Google Fonts API' : 'Custom Font',
                 url: font.fontType === 'google' ? font.googleFontApi : '/uploads/fonts/' + font.fontFile,
                 isGoogleFont: font.fontType === 'google'
@@ -2503,11 +2503,8 @@ router.get('/manage-fonts', function(req, res) {
             console.log(`Display Font ${index + 1}:`, font.name, font.type, font.url);
         });
         
-        var fontError = req.session.fontError;
-        req.session.fontError = null;
         res.render('event/manage-fonts', { 
-            fonts: displayFonts,
-            fontError: fontError
+            fonts: displayFonts
         });
     });
 });
@@ -2569,19 +2566,19 @@ router.post('/manage-fonts', function(req, res) {
         console.log('Form fields:', fields);
         console.log('Form files:', Object.keys(files));
         
-        var name = fields.fontName;
+        var fontName = fields.fontName;
         var fontApi = fields.fontApi;
         
-        if(!name || name.trim() === '') {
+        if(!fontName || fontName.trim() === '') {
             console.log('Font name is empty');
             return res.redirect('/event/manage-fonts');
         }
         
-        console.log('Creating font:', name);
+        console.log('Creating font:', fontName);
         
         var newFont = new Font({
-            name: name.trim(),
-            fontFamily: name.trim(),
+            fontName: fontName.trim(),
+            fontFamily: fontName.trim(),
             isActive: true
         });
         
@@ -3786,41 +3783,41 @@ router.post('/:id/public-register', function(req, res) {
                                     fields.address1 ? `ADR;TYPE=WORK:;;${fields.address1};${fields.city || ''};${fields.country || ''}` : '',
                                     'END:VCARD'
                                 ].filter(Boolean).join('\n');
-                var eventData = new EventData({
-                    event: eventFieldToSave,
-                    registrationId: registrationId,
-                    uniqueId: fields.uniqueId || '',
-                    title: fields.title || '',
-                    firstName: fields.firstName || '',
-                    middleName: fields.middleName || '',
-                    lastName: fields.lastName || '',
-                    fullName: fields.fullName || '',
-                    jobTitle: fields.jobTitle || '',
-                    department: fields.department || '',
-                    companyName: fields.companyName || '',
-                    mobile1: fields.mobile1 || '',
-                    mobile2: fields.mobile2 || '',
-                    tel1: fields.tel1 || '',
-                    tel2: fields.tel2 || '',
-                    fax: fields.fax || '',
-                    email: fields.email || '',
-                    website: fields.website || '',
-                    address1: fields.address1 || '',
-                    address2: fields.address2 || '',
-                    city: fields.city || '',
-                    country: fields.country || '',
-                    badgeCategory: fields.badgeCategory || '',
-                    uploadImage: uploadImageFile,
-                    uploadLogo: uploadLogoFile,
-                    regType: 'Online',
-                    regDate: new Date(),
-                    status: 'Registered',
-                    isPrinted: false,
-                    isCheckedIn: false,
-                    checkedInAt: null,
-                                        qrCode: new Date().getTime().toString(),
-                    qrCodeVCard: vCard
-                });
+                                var eventData = new EventData({
+                                        event: eventFieldToSave,
+                                        registrationId: registrationId,
+                                        uniqueId: fields.uniqueId || '',
+                                        title: fields.title || '',
+                                        firstName: fields.firstName || '',
+                                        middleName: fields.middleName || '',
+                                        lastName: fields.lastName || '',
+                                        fullName: fields.fullName || '',
+                                        jobTitle: fields.jobTitle || '',
+                                        department: fields.department || '',
+                                        companyName: fields.companyName || '',
+                                        mobile1: fields.mobile1 || '',
+                                        mobile2: fields.mobile2 || '',
+                                        tel1: fields.tel1 || '',
+                                        tel2: fields.tel2 || '',
+                                        fax: fields.fax || '',
+                                        email: fields.email || '',
+                                        website: fields.website || '',
+                                        address1: fields.address1 || '',
+                                        address2: fields.address2 || '',
+                                        city: fields.city || '',
+                                        country: fields.country || '',
+                                        badgeCategory: fields.badgeCategory || '',
+                                        uploadImage: uploadImageFile,
+                                        uploadLogo: uploadLogoFile,
+                                        regType: 'Online',
+                                        regDate: new Date(),
+                                        status: 'Registered',
+                                        isPrinted: false,
+                                        isCheckedIn: false,
+                                        checkedInAt: null,
+                                        // Only QR code gets vCard
+                                        qrCode: vCard
+                                });
                     // Auto-generate barcode/qrCode if missing
                     if(eventData['barcode'] === undefined || eventData['barcode'] === '') {
                         eventData['barcode'] = new Date().getTime().toString();

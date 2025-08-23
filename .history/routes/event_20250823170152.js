@@ -2485,13 +2485,13 @@ router.get('/manage-fonts', function(req, res) {
         
         console.log('Raw fonts from database:', fonts.length);
         fonts.forEach(function(font, index) {
-            console.log(`Font ${index + 1}:`, font.name, font.fontType, font.googleFontApi ? 'hasAPI' : 'noAPI', font.fontFile ? 'hasFile' : 'noFile');
+            console.log(`Font ${index + 1}:`, font.fontName, font.fontType, font.googleFontApi ? 'hasAPI' : 'noAPI', font.fontFile ? 'hasFile' : 'noFile');
         });
+        
         // Transform fonts for the simplified display
         var displayFonts = fonts.map(function(font) {
             return {
-                name: font.name,
-                fontFamily: font.fontFamily,
+                name: font.fontName,
                 type: font.fontType === 'google' ? 'Google Fonts API' : 'Custom Font',
                 url: font.fontType === 'google' ? font.googleFontApi : '/uploads/fonts/' + font.fontFile,
                 isGoogleFont: font.fontType === 'google'

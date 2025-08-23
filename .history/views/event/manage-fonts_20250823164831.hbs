@@ -38,10 +38,10 @@
                     <td>
                         {{#if isGoogleFont}}
                             <link href="{{url}}" rel="stylesheet">
-                            <span style="font-family: '{{fontFamily}}', sans-serif; font-size: 20px;">Sample Text</span>
+                            <span style="font-family: '{{name}}', sans-serif; font-size: 20px;">Sample Text</span>
                         {{else}}
-                            <style>@font-face { font-family: '{{fontFamily}}'; src: url('{{url}}'); }</style>
-                            <span style="font-family: '{{fontFamily}}'; font-size: 20px;">Sample Text</span>
+                            <style>@font-face { font-family: '{{name}}'; src: url('{{url}}'); }</style>
+                            <span style="font-family: '{{name}}'; font-size: 20px;">Sample Text</span>
                         {{/if}}
                     </td>
                     <td>

@@ -1,4 +1,4 @@
-const formidable = require('formidable');
+const formidable = require('express-formidable');
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
@@ -312,61 +312,65 @@ router.get('/print-badge-layout/:id', function(req,res){
         var qrCodeTop = 10;
         var qrCodeLeft = 10;
         var fieldIndex = 0;
-        var uploadImageFields = [];
-        var uploadLogoFields = [];
 
         Object.keys(event.toJSON()).forEach(function(item){
+            
+
             if(item.indexOf('_showInPrint')>-1 && event[item]==true ){
                 fieldIndex = fieldIndex + 1;
 
-                var fieldName = item.substring(0, item.indexOf('_showInPrint') );
-                var fieldLabel = fieldName + '_label';
-                var fieldType = fieldName + '_fieldType';
-                var fieldValue = '';
-                var fieldMandatory = fieldName + '_isMandatory';
-                var fieldTop = fieldName + '_top';
-                var fieldLeft = fieldName + '_left';
-                var fieldWidth = fieldName + '_width';
-                var fieldHeight = fieldName + '_height';
-                var fieldRotate = fieldName + '_rotate';
-                var fieldFontFamily = fieldName + '_fontFamily';
-                var fieldFontSize = fieldName + '_fontSize';
-                var fieldFontWeight = fieldName + '_fontWeight';
-                var fieldFontStyle = fieldName + '_fontStyle';
-                var fieldTextAlign = fieldName + '_textAlign';
+                var fieldName = item.substring(0, item.indexOf('_showInPrint') ) ;
+                var fieldLabel = item.substring(0, item.indexOf('_showInPrint') ) + '_label';
+                var fieldType = item.substring(0, item.indexOf('_showInPrint') ) + '_fieldType';
+                var fieldValue = '';//eventData[fieldName] == undefined ? '':eventData[fieldName];
+                var fieldMandatory = item.substring(0, item.indexOf('_showInPrint') ) + '_isMandatory';
+                var fieldTop = item.substring(0, item.indexOf('_showInPrint') ) + '_top';
+            
+                var fieldLeft = item.substring(0, item.indexOf('_showInPrint') ) + '_left';
+                var fieldWidth = item.substring(0, item.indexOf('_showInPrint') ) + '_width';
+                var fieldRotate = item.substring(0, item.indexOf('_showInPrint') ) + '_rotate';
+                var fieldFontFamily = item.substring(0, item.indexOf('_showInPrint') ) + '_fontFamily';
+                var fieldFontSize = item.substring(0, item.indexOf('_showInPrint') ) + '_fontSize';
+                var fieldFontWeight = item.substring(0, item.indexOf('_showInPrint') ) + '_fontWeight';
+                var fieldFontStyle = item.substring(0, item.indexOf('_showInPrint') ) + '_fontStyle';
+                var fieldTextAlign = item.substring(0, item.indexOf('_showInPrint') ) + '_textAlign';
 
-                var field = {};
-                field['fieldName'] = fieldName;
-                field['fieldLabel'] = event[fieldLabel];
-                field['fieldType'] = event[fieldType];
-                field['fieldValue'] = fieldValue;
-                field['fieldMandatory'] = event[fieldMandatory];
 
-                // Always set default values for all field properties
-                field['fieldTop'] = (event[fieldTop] !== undefined && event[fieldTop] !== '' && event[fieldTop] !== null) ? event[fieldTop] : '0';
-                field['fieldLeft'] = (event[fieldLeft] !== undefined && event[fieldLeft] !== '' && event[fieldLeft] !== null) ? event[fieldLeft] : '0';
-                field['fieldWidth'] = (event[fieldWidth] !== undefined && event[fieldWidth] !== '' && event[fieldWidth] !== null) ? event[fieldWidth] : '100';
-                field['fieldHeight'] = (event[fieldHeight] !== undefined && event[fieldHeight] !== '' && event[fieldHeight] !== null) ? event[fieldHeight] : '100';
-                field['fieldRotate'] = (event[fieldRotate] !== undefined && event[fieldRotate] !== '' && event[fieldRotate] !== null) ? event[fieldRotate] : '0';
-                field['fieldFontFamily'] = (event[fieldFontFamily] !== undefined && event[fieldFontFamily] !== '' && event[fieldFontFamily] !== null) ? event[fieldFontFamily] : 'inherit';
-                field['fieldFontSize'] = (event[fieldFontSize] !== undefined && event[fieldFontSize] !== '' && event[fieldFontSize] !== null) ? event[fieldFontSize] : '14';
-                field['fieldFontWeight'] = (event[fieldFontWeight] !== undefined && event[fieldFontWeight] !== '' && event[fieldFontWeight] !== null) ? event[fieldFontWeight] : 'normal';
-                field['fieldFontStyle'] = (event[fieldFontStyle] !== undefined && event[fieldFontStyle] !== '' && event[fieldFontStyle] !== null) ? event[fieldFontStyle] : 'normal';
-                field['fieldTextAlign'] = (event[fieldTextAlign] !== undefined && event[fieldTextAlign] !== '' && event[fieldTextAlign] !== null) ? event[fieldTextAlign] : 'left';
+                //console.log(`fieldName=${fieldName}, fieldLabel=${fieldLabel}, fieldType=${fieldType}, fieldValue=${fieldValue}`)
+                var field={};
+                field['fieldName']=fieldName;
+                field['fieldLabel']=event[fieldLabel];
+                field['fieldType']=event[fieldType];
+                field['fieldValue']=fieldValue;
+                field['fieldMandatory']=event[fieldMandatory];
+
+                if(event[fieldTop]==10){
+                    var fieldTopValue = fieldIndex * 20;
+                    event[fieldTop] = fieldTopValue.toString();
+                }
+                
+                field['fieldTop']=event[fieldTop];
+                field['fieldLeft']=event[fieldLeft];
+                field['fieldWidth']=event[fieldWidth];
+                field['fieldRotate']=event[fieldRotate];
+                field['fieldFontFamily']=event[fieldFontFamily];
+                field['fieldFontSize']=event[fieldFontSize];
+                field['fieldFontWeight']=event[fieldFontWeight];
+                field['fieldFontStyle']=event[fieldFontStyle];
+                field['fieldTextAlign']=event[fieldTextAlign];
 
                 if(fieldName=='barcode'){
                     showBarcode=true;
-                    barcodeLeft=field['fieldLeft'];
-                    barcodeTop=field['fieldTop'];
+                    barcodeLeft=event[fieldLeft];
+                    barcodeTop=event[fieldTop];
+
                 } else if(fieldName=='qrCode'){
                     showQrCode=true;
-                    qrCodeLeft=field['fieldLeft'];
-                    qrCodeTop=field['fieldTop'];
-                } else if(fieldName=='uploadImage'){
-                    uploadImageFields.push(field);
-                } else if(fieldName=='uploadLogo'){
-                    uploadLogoFields.push(field);
+                    qrCodeLeft=event[fieldLeft];
+                    qrCodeTop=event[fieldTop];
+
                 } else {
+                    //console.log('field=' + JSON.stringify(field));
                     fields.unshift(field);
                 }
             }
@@ -379,7 +383,7 @@ router.get('/print-badge-layout/:id', function(req,res){
             }
 
             res.render('event/print-badge-layout', {layout:'print-layout', messages:messages, hasErrors:messages.length>0, fields:fields, 
-                showBarcode:showBarcode, barcodeLeft:barcodeLeft, barcodeTop:barcodeTop, showQrCode:showQrCode, qrCodeLeft:qrCodeLeft, qrCodeTop:qrCodeTop, uploadImageFields:uploadImageFields, uploadLogoFields:uploadLogoFields, customFonts:customFonts});
+                showBarcode:showBarcode, barcodeLeft:barcodeLeft, barcodeTop:barcodeTop, showQrCode:showQrCode, qrCodeLeft:qrCodeLeft, qrCodeTop:qrCodeTop, customFonts:customFonts});
         });
 
         
@@ -389,31 +393,54 @@ router.get('/print-badge-layout/:id', function(req,res){
 });
 
 router.post('/badge-layout', function(req,res){
-
     var messages = [];
-    var eventId = req.session.eventId;
+    var eventId=req.session.eventId;
 
-    // Dynamically update all badge field position/style properties from req.body
-    Event.findById(eventId, function(err, event) {
-        if (err) throw err;
+    console.log(`top=${req.body.fullName_top},left=${req.body.fullName_left},width=${req.body.fullName_width}`);
 
-        // Only update keys that match badge layout properties
-        Object.keys(req.body).forEach(function(key) {
-            if (key.match(/_(top|left|width|height|rotate|fontFamily|fontSize|fontWeight|fontStyle|textAlign)$/)) {
-                event[key] = req.body[key];
+
+    Event.findById(eventId, function(err,event){
+        if(err) throw err;
+
+        Object.keys(event.toJSON()).forEach(function(item){
+            
+
+            if(item.indexOf('_showInPrint')>-1 && event[item]==true ){
+                var fieldName = item.substring(0, item.indexOf('_showInPrint') ) ;
+
+                event[fieldName + '_top']=req.body[fieldName + '_top'];
+                event[fieldName + '_left']=req.body[fieldName + '_left'];
+
+                if(fieldName!='barcode' && fieldName!='qrCode' && fieldName!='uploadImage' && fieldName!='uploadLogo'){
+                    event[fieldName + '_width']=req.body[fieldName + '_width'];
+                    event[fieldName + '_rotate']=req.body[fieldName + '_rotate'];
+                    event[fieldName + '_fontFamily']=req.body[fieldName + '_fontFamily'];
+                    event[fieldName + '_fontSize']=req.body[fieldName + '_fontSize'];
+                    event[fieldName + '_fontWeight']=req.body[fieldName + '_fontWeight'];
+                    event[fieldName + '_fontStyle']=req.body[fieldName + '_fontStyle'];
+                    event[fieldName + '_textAlign']=req.body[fieldName + '_textAlign'];
+                } else if(fieldName=='uploadImage' || fieldName=='uploadLogo'){
+                    // Handle image field dimensions
+                    event[fieldName + '_width']=req.body[fieldName + '_width'];
+                    event[fieldName + '_height']=req.body[fieldName + '_height'];
+                    event[fieldName + '_rotate']=req.body[fieldName + '_rotate'];
+                }
+                
             }
         });
 
+
         event.setupComplete = true;
-        event.save(function(err, result) {
-            if (err) {
+        event.save(function(err, result){
+            if(err){
                 console.log(err);
             }
 
-            if (req.body.action == 'testprint') {
+            if(req.body.action == 'testprint'){
                 req.session.eventIdForPrint = eventId;
                 res.redirect('/event/badge-layout');
-            } else if (req.body.action == 'finish') {
+            }
+            else if(req.body.action=='finish'){
                 res.redirect('/event');
             }
         });
@@ -1012,14 +1039,6 @@ router.post('/register', function (req, res) {
                     }
                 }
             });
-
-            // Auto-generate barcode/qrCode if missing
-            if(eventData['barcode'] === undefined || eventData['barcode'] === '') {
-                eventData['barcode'] = new Date().getTime().toString();
-            }
-            if(eventData['qrCode'] === undefined || eventData['qrCode'] === '') {
-                eventData['qrCode'] = new Date().getTime().toString();
-            }
            
             eventData.regDate=moment().format('YYYY-MM-DD HH:mm:ss');
             eventData.regType='Onsite';
@@ -1926,30 +1945,221 @@ router.post('/event-fields', function (req, res) {
 
         event.uploadImage_label = req.body['uploadImage_label'];
         event.uploadImage_isMandatory = req.body['uploadImage_isMandatory'] ? true : false;
-        var messages = [];
-        var eventId = req.body['eventId'];
-        Event.findById(eventId, function (err, event) {
-            if (err || !event) {
-                messages.push('Event not found');
-                return res.render('event/event-fields', { messages: messages, hasErrors: messages.length > 0 });
-            }
-            // Dynamically update all event fields from req.body
-            Object.keys(req.body).forEach(function(key) {
-                if (key.endsWith('_label') || key.endsWith('_isMandatory') || key.endsWith('_showInSearch') || key.endsWith('_showInRegister') || key.endsWith('_showInOnlineRegistration') || key.endsWith('_showInPrint') || key.endsWith('_includeInSearch') || key.endsWith('_columnInExcel') || key.endsWith('_top') || key.endsWith('_left') || key.endsWith('_width') || key.endsWith('_height') || key.endsWith('_rotate')) {
-                    // Boolean fields
-                    if (key.endsWith('_isMandatory') || key.endsWith('_showInSearch') || key.endsWith('_showInRegister') || key.endsWith('_showInOnlineRegistration') || key.endsWith('_showInPrint') || key.endsWith('_includeInSearch')) {
-                        event[key] = req.body[key] ? true : false;
-                    } else {
-                        event[key] = req.body[key];
-                    }
-                }
-            });
-            event.save(function(err, result){
-                if(err) throw err;
-                // After saving, reload the event-fields page to reflect changes
-                res.redirect('/event/event-fields/' + eventId);
-            });
-        });
+        event.uploadImage_showInSearch = req.body['uploadImage_showInSearch'] ? true : false;
+        event.uploadImage_showInRegister = req.body['uploadImage_showInRegister'] ? true : false;
+        event.uploadImage_showInOnlineRegistration = req.body['uploadImage_showInOnlineRegistration'] ? true : false;
+        event.uploadImage_showInPrint = req.body['uploadImage_showInPrint'] ? true : false;
+        event.uploadImage_includeInSearch = req.body['uploadImage_includeInSearch'] ? true : false;
+        event.uploadImage_columnInExcel = req.body['uploadImage_columnInExcel'];
+
+        event.uploadLogo_label = req.body['uploadLogo_label'];
+        event.uploadLogo_isMandatory = req.body['uploadLogo_isMandatory'] ? true : false;
+        event.uploadLogo_showInSearch = req.body['uploadLogo_showInSearch'] ? true : false;
+        event.uploadLogo_showInRegister = req.body['uploadLogo_showInRegister'] ? true : false;
+        event.uploadLogo_showInOnlineRegistration = req.body['uploadLogo_showInOnlineRegistration'] ? true : false;
+        event.uploadLogo_showInPrint = req.body['uploadLogo_showInPrint'] ? true : false;
+        event.uploadLogo_includeInSearch = req.body['uploadLogo_includeInSearch'] ? true : false;
+        event.uploadLogo_columnInExcel = req.body['uploadLogo_columnInExcel'];
+
+        event.sno_label = req.body['sno_label'];
+        event.sno_isMandatory = req.body['sno_isMandatory'] ? true : false;
+        event.sno_showInSearch = req.body['sno_showInSearch'] ? true : false;
+        event.sno_showInRegister = req.body['sno_showInRegister'] ? true : false;
+        event.sno_showInOnlineRegistration = req.body['sno_showInOnlineRegistration'] ? true : false;
+        event.sno_showInPrint = req.body['sno_showInPrint'] ? true : false;
+        event.sno_includeInSearch = req.body['sno_includeInSearch'] ? true : false;
+        event.sno_columnInExcel = req.body['sno_columnInExcel'];
+
+        event.title_label = req.body['title_label'];
+        event.title_isMandatory = req.body['title_isMandatory'] ? true : false;
+        event.title_showInSearch = req.body['title_showInSearch'] ? true : false;
+        event.title_showInRegister = req.body['title_showInRegister'] ? true : false;
+        event.title_showInOnlineRegistration = req.body['title_showInOnlineRegistration'] ? true : false;
+        event.title_showInPrint = req.body['title_showInPrint'] ? true : false;
+        event.title_includeInSearch = req.body['title_includeInSearch'] ? true : false;
+        event.title_columnInExcel = req.body['title_columnInExcel'];
+
+
+        event.firstName_label = req.body['firstName_label'];
+        event.firstName_isMandatory = req.body['firstName_isMandatory'] ? true : false;
+        event.firstName_showInSearch = req.body['firstName_showInSearch'] ? true : false;
+        event.firstName_showInRegister = req.body['firstName_showInRegister'] ? true : false;
+        event.firstName_showInPrint = req.body['firstName_showInPrint'] ? true : false;
+        event.firstName_includeInSearch = req.body['firstName_includeInSearch'] ? true : false;
+        event.firstName_columnInExcel = req.body['firstName_columnInExcel'];
+
+        event.middleName_label = req.body['middleName_label'];
+        event.middleName_isMandatory = req.body['middleName_isMandatory'] ? true : false;
+        event.middleName_showInSearch = req.body['middleName_showInSearch'] ? true : false;
+        event.middleName_showInRegister = req.body['middleName_showInRegister'] ? true : false;
+        event.middleName_showInPrint = req.body['middleName_showInPrint'] ? true : false;
+        event.middleName_includeInSearch = req.body['middleName_includeInSearch'] ? true : false;
+        event.middleName_columnInExcel = req.body['middleName_columnInExcel'];
+
+        event.lastName_label = req.body['lastName_label'];
+        event.lastName_isMandatory = req.body['lastName_isMandatory'] ? true : false;
+        event.lastName_showInSearch = req.body['lastName_showInSearch'] ? true : false;
+        event.lastName_showInRegister = req.body['lastName_showInRegister'] ? true : false;
+        event.lastName_showInPrint = req.body['lastName_showInPrint'] ? true : false;
+        event.lastName_includeInSearch = req.body['lastName_includeInSearch'] ? true : false;
+        event.lastName_columnInExcel = req.body['lastName_columnInExcel'];
+
+        event.fullName_label = req.body['fullName_label'];
+        event.fullName_isMandatory = req.body['fullName_isMandatory'] ? true : false;
+        event.fullName_showInSearch = req.body['fullName_showInSearch'] ? true : false;
+        event.fullName_showInRegister = req.body['fullName_showInRegister'] ? true : false;
+        event.fullName_showInPrint = req.body['fullName_showInPrint'] ? true : false;
+        event.fullName_includeInSearch = req.body['fullName_includeInSearch'] ? true : false;
+        event.fullName_columnInExcel = req.body['fullName_columnInExcel'];
+
+        event.jobTitle_label = req.body['jobTitle_label'];
+        event.jobTitle_isMandatory = req.body['jobTitle_isMandatory'] ? true : false;
+        event.jobTitle_showInSearch = req.body['jobTitle_showInSearch'] ? true : false;
+        event.jobTitle_showInRegister = req.body['jobTitle_showInRegister'] ? true : false;
+        event.jobTitle_showInPrint = req.body['jobTitle_showInPrint'] ? true : false;
+        event.jobTitle_includeInSearch = req.body['jobTitle_includeInSearch'] ? true : false;
+        event.jobTitle_columnInExcel = req.body['jobTitle_columnInExcel'];
+
+        event.department_label = req.body['department_label'];
+        event.department_isMandatory = req.body['department_isMandatory'] ? true : false;
+        event.department_showInSearch = req.body['department_showInSearch'] ? true : false;
+        event.department_showInRegister = req.body['department_showInRegister'] ? true : false;
+        event.department_showInPrint = req.body['department_showInPrint'] ? true : false;
+        event.department_includeInSearch = req.body['department_includeInSearch'] ? true : false;
+        event.department_columnInExcel = req.body['department_columnInExcel'];
+
+
+        event.companyName_label = req.body['companyName_label'];
+        event.companyName_isMandatory = req.body['companyName_isMandatory'] ? true : false;
+        event.companyName_showInSearch = req.body['companyName_showInSearch'] ? true : false;
+        event.companyName_showInRegister = req.body['companyName_showInRegister'] ? true : false;
+        event.companyName_showInPrint = req.body['companyName_showInPrint'] ? true : false;
+        event.companyName_includeInSearch = req.body['companyName_includeInSearch'] ? true : false;
+        event.companyName_columnInExcel = req.body['companyName_columnInExcel'];
+
+
+        event.mobile1_label = req.body['mobile1_label'];
+        event.mobile1_isMandatory = req.body['mobile1_isMandatory'] ? true : false;
+        event.mobile1_showInSearch = req.body['mobile1_showInSearch'] ? true : false;
+        event.mobile1_showInRegister = req.body['mobile1_showInRegister'] ? true : false;
+        event.mobile1_showInPrint = req.body['mobile1_showInPrint'] ? true : false;
+        event.mobile1_includeInSearch = req.body['mobile1_includeInSearch'] ? true : false;
+        event.mobile1_columnInExcel = req.body['mobile1_columnInExcel'];
+
+        event.mobile2_label = req.body['mobile2_label'];
+        event.mobile2_isMandatory = req.body['mobile2_isMandatory'] ? true : false;
+        event.mobile2_showInSearch = req.body['mobile2_showInSearch'] ? true : false;
+        event.mobile2_showInRegister = req.body['mobile2_showInRegister'] ? true : false;
+        event.mobile2_showInPrint = req.body['mobile2_showInPrint'] ? true : false;
+        event.mobile2_includeInSearch = req.body['mobile2_includeInSearch'] ? true : false;
+        event.mobile2_columnInExcel = req.body['mobile2_columnInExcel'];
+
+        event.tel1_label = req.body['tel1_label'];
+        event.tel1_isMandatory = req.body['tel1_isMandatory'] ? true : false;
+        event.tel1_showInSearch = req.body['tel1_showInSearch'] ? true : false;
+        event.tel1_showInRegister = req.body['tel1_showInRegister'] ? true : false;
+        event.tel1_showInPrint = req.body['tel1_showInPrint'] ? true : false;
+        event.tel1_includeInSearch = req.body['tel1_includeInSearch'] ? true : false;
+        event.tel1_columnInExcel = req.body['tel1_columnInExcel'];
+
+        event.tel2_label = req.body['tel2_label'];
+        event.tel2_isMandatory = req.body['tel2_isMandatory'] ? true : false;
+        event.tel2_showInSearch = req.body['tel2_showInSearch'] ? true : false;
+        event.tel2_showInRegister = req.body['tel2_showInRegister'] ? true : false;
+        event.tel2_showInPrint = req.body['tel2_showInPrint'] ? true : false;
+        event.tel2_includeInSearch = req.body['tel2_includeInSearch'] ? true : false;
+        event.tel2_columnInExcel = req.body['tel2_columnInExcel'];
+
+        event.fax_label = req.body['fax_label'];
+        event.fax_isMandatory = req.body['fax_isMandatory'] ? true : false;
+        event.fax_showInSearch = req.body['fax_showInSearch'] ? true : false;
+        event.fax_showInRegister = req.body['fax_showInRegister'] ? true : false;
+        event.fax_showInPrint = req.body['fax_showInPrint'] ? true : false;
+        event.fax_includeInSearch = req.body['fax_includeInSearch'] ? true : false;
+        event.fax_columnInExcel = req.body['fax_columnInExcel'];
+
+        event.email_label = req.body['email_label'];
+        event.email_isMandatory = req.body['email_isMandatory'] ? true : false;
+        event.email_showInSearch = req.body['email_showInSearch'] ? true : false;
+        event.email_showInRegister = req.body['email_showInRegister'] ? true : false;
+        event.email_showInPrint = req.body['email_showInPrint'] ? true : false;
+        event.email_includeInSearch = req.body['email_includeInSearch'] ? true : false;
+        event.email_columnInExcel = req.body['email_columnInExcel'];
+
+        event.website_label = req.body['website_label'];
+        event.website_isMandatory = req.body['website_isMandatory'] ? true : false;
+        event.website_showInSearch = req.body['website_showInSearch'] ? true : false;
+        event.website_showInRegister = req.body['website_showInRegister'] ? true : false;
+        event.website_showInPrint = req.body['website_showInPrint'] ? true : false;
+        event.website_includeInSearch = req.body['website_includeInSearch'] ? true : false;
+        event.website_columnInExcel = req.body['website_columnInExcel'];
+
+        event.address1_label = req.body['address1_label'];
+        event.address1_isMandatory = req.body['address1_isMandatory'] ? true : false;
+        event.address1_showInSearch = req.body['address1_showInSearch'] ? true : false;
+        event.address1_showInRegister = req.body['address1_showInRegister'] ? true : false;
+        event.address1_showInPrint = req.body['address1_showInPrint'] ? true : false;
+        event.address1_includeInSearch = req.body['address1_includeInSearch'] ? true : false;
+        event.address1_columnInExcel = req.body['address1_columnInExcel'];
+
+        event.address2_label = req.body['address2_label'];
+        event.address2_isMandatory = req.body['address2_isMandatory'] ? true : false;
+        event.address2_showInSearch = req.body['address2_showInSearch'] ? true : false;
+        event.address2_showInRegister = req.body['address2_showInRegister'] ? true : false;
+        event.address2_showInPrint = req.body['address2_showInPrint'] ? true : false;
+        event.address2_includeInSearch = req.body['address2_includeInSearch'] ? true : false;
+        event.address2_columnInExcel = req.body['address2_columnInExcel'];
+
+        event.city_label = req.body['city_label'];
+        event.city_isMandatory = req.body['city_isMandatory'] ? true : false;
+        event.city_showInSearch = req.body['city_showInSearch'] ? true : false;
+        event.city_showInRegister = req.body['city_showInRegister'] ? true : false;
+        event.city_showInPrint = req.body['city_showInPrint'] ? true : false;
+        event.city_includeInSearch = req.body['city_includeInSearch'] ? true : false;
+        event.city_columnInExcel = req.body['city_columnInExcel'];
+
+        event.country_label = req.body['country_label'];
+        event.country_isMandatory = req.body['country_isMandatory'] ? true : false;
+        event.country_showInSearch = req.body['country_showInSearch'] ? true : false;
+        event.country_showInRegister = req.body['country_showInRegister'] ? true : false;
+        event.country_showInPrint = req.body['country_showInPrint'] ? true : false;
+        event.country_includeInSearch = req.body['country_includeInSearch'] ? true : false;
+        event.country_columnInExcel = req.body['country_columnInExcel'];
+
+        event.poBox_label = req.body['poBox_label'];
+        event.poBox_isMandatory = req.body['poBox_isMandatory'] ? true : false;
+        event.poBox_showInSearch = req.body['poBox_showInSearch'] ? true : false;
+        event.poBox_showInRegister = req.body['poBox_showInRegister'] ? true : false;
+        event.poBox_showInPrint = req.body['poBox_showInPrint'] ? true : false;
+        event.poBox_includeInSearch = req.body['poBox_includeInSearch'] ? true : false;
+        event.poBox_columnInExcel = req.body['poBox_columnInExcel'];
+
+        event.postalCode_label = req.body['postalCode_label'];
+        event.postalCode_isMandatory = req.body['postalCode_isMandatory'] ? true : false;
+        event.postalCode_showInSearch = req.body['postalCode_showInSearch'] ? true : false;
+        event.postalCode_showInRegister = req.body['postalCode_showInRegister'] ? true : false;
+        event.postalCode_showInPrint = req.body['postalCode_showInPrint'] ? true : false;
+        event.postalCode_includeInSearch = req.body['postalCode_includeInSearch'] ? true : false;
+        event.postalCode_columnInExcel = req.body['postalCode_columnInExcel'];
+
+        event.badgeCategory_label = req.body['badgeCategory_label'];
+        event.badgeCategory_isMandatory = req.body['badgeCategory_isMandatory'] ? true : false;
+        event.badgeCategory_showInSearch = req.body['badgeCategory_showInSearch'] ? true : false;
+        event.badgeCategory_showInRegister = req.body['badgeCategory_showInRegister'] ? true : false;
+        event.badgeCategory_showInPrint = req.body['badgeCategory_showInPrint'] ? true : false;
+        event.badgeCategory_includeInSearch = req.body['badgeCategory_includeInSearch'] ? true : false;
+        event.badgeCategory_columnInExcel = req.body['badgeCategory_columnInExcel'];
+
+
+        event.regType_label = req.body['regType_label'];
+        event.regType_isMandatory = req.body['regType_isMandatory'] ? true : false;
+        event.regType_showInSearch = req.body['regType_showInSearch'] ? true : false;
+        event.regType_showInRegister = req.body['regType_showInRegister'] ? true : false;
+        event.regType_showInPrint = req.body['regType_showInPrint'] ? true : false;
+        event.regType_includeInSearch = req.body['regType_includeInSearch'] ? true : false;
+        event.regType_columnInExcel = req.body['regType_columnInExcel'];
+
+        event.regDate_label = req.body['regDate_label'];
         event.regDate_isMandatory = req.body['regDate_isMandatory'] ? true : false;
         event.regDate_showInSearch = req.body['regDate_showInSearch'] ? true : false;
         event.regDate_showInRegister = req.body['regDate_showInRegister'] ? true : false;
@@ -2485,13 +2695,13 @@ router.get('/manage-fonts', function(req, res) {
         
         console.log('Raw fonts from database:', fonts.length);
         fonts.forEach(function(font, index) {
-            console.log(`Font ${index + 1}:`, font.name, font.fontType, font.googleFontApi ? 'hasAPI' : 'noAPI', font.fontFile ? 'hasFile' : 'noFile');
+            console.log(`Font ${index + 1}:`, font.fontName, font.fontType, font.googleFontApi ? 'hasAPI' : 'noAPI', font.fontFile ? 'hasFile' : 'noFile');
         });
+        
         // Transform fonts for the simplified display
         var displayFonts = fonts.map(function(font) {
             return {
-                name: font.name,
-                fontFamily: font.fontFamily,
+                name: font.fontName,
                 type: font.fontType === 'google' ? 'Google Fonts API' : 'Custom Font',
                 url: font.fontType === 'google' ? font.googleFontApi : '/uploads/fonts/' + font.fontFile,
                 isGoogleFont: font.fontType === 'google'
@@ -2503,11 +2713,8 @@ router.get('/manage-fonts', function(req, res) {
             console.log(`Display Font ${index + 1}:`, font.name, font.type, font.url);
         });
         
-        var fontError = req.session.fontError;
-        req.session.fontError = null;
         res.render('event/manage-fonts', { 
-            fonts: displayFonts,
-            fontError: fontError
+            fonts: displayFonts
         });
     });
 });
@@ -2569,19 +2776,19 @@ router.post('/manage-fonts', function(req, res) {
         console.log('Form fields:', fields);
         console.log('Form files:', Object.keys(files));
         
-        var name = fields.fontName;
+        var fontName = fields.fontName;
         var fontApi = fields.fontApi;
         
-        if(!name || name.trim() === '') {
+        if(!fontName || fontName.trim() === '') {
             console.log('Font name is empty');
             return res.redirect('/event/manage-fonts');
         }
         
-        console.log('Creating font:', name);
+        console.log('Creating font:', fontName);
         
         var newFont = new Font({
-            name: name.trim(),
-            fontFamily: name.trim(),
+            fontName: fontName.trim(),
+            fontFamily: fontName.trim(),
             isActive: true
         });
         
@@ -3106,7 +3313,7 @@ function generateCompleteRegistrationHTML(designData, event, eventId) {
 '</html>';
 }
 
-router.post('/online-registration/:id/save-design', function(req, res) {
+router.post('/online-registration/:id/save-design', formidable(), function(req, res) {
     var Event = require('../models/event');
     var fs = require('fs');
     var path = require('path');
@@ -3152,19 +3359,19 @@ router.post('/online-registration/:id/save-design', function(req, res) {
             // Create design data object
             var designData = {
                 header: {
-                    exists: ((req.fields && (req.fields.headerExists === 'true' || req.fields.headerExists === true)) || (req.body && (req.body.headerExists === 'true' || req.body.headerExists === true))) || false,
-                    logoAlignment: (req.fields && req.fields.logoAlignment) || (req.body && req.body.logoAlignment) || 'center',
+                    exists: (req.fields.headerExists === 'true' || req.fields.headerExists === true),
+                    logoAlignment: req.fields.logoAlignment || 'center',
                     logo: null
                 },
                 footer: {
-                    exists: ((req.fields && (req.fields.footerExists === 'true' || req.fields.footerExists === true)) || (req.body && (req.body.footerExists === 'true' || req.body.footerExists === true))) || false,
-                    content: (req.fields && req.fields.footerContent) || (req.body && req.body.footerContent) || ''
+                    exists: (req.fields.footerExists === 'true' || req.fields.footerExists === true),
+                    content: req.fields.footerContent || ''
                 },
                 background: null,
                 content: {
-                    eventTitle: (req.fields && req.fields.eventTitle) || (req.body && req.body.eventTitle) || event.eventName || 'Sample Event',
-                    eventHeader: (req.fields && req.fields.eventHeader) || (req.body && req.body.eventHeader) || 'Welcome to Our Event Registration',
-                    eventFooter: (req.fields && req.fields.eventFooter) || (req.body && req.body.eventFooter) || 'Thank you for registering!'
+                    eventTitle: req.fields.eventTitle || event.eventName || 'Sample Event',
+                    eventHeader: req.fields.eventHeader || 'Welcome to Our Event Registration',
+                    eventFooter: req.fields.eventFooter || 'Thank you for registering!'
                 },
                 savedAt: new Date().toISOString()
             };
@@ -3773,19 +3980,6 @@ router.post('/:id/public-register', function(req, res) {
                 }
                 console.log('🟡 [DEBUG] About to save registration with eventId:', eventId, 'eventFieldToSave:', eventFieldToSave);
                 console.log('🟡 [DEBUG] Incoming registration fields:', fields);
-                                // Build vCard string for QR code
-                                const vCard = [
-                                    'BEGIN:VCARD',
-                                    'VERSION:3.0',
-                                    `FN:${fields.fullName || (fields.firstName + ' ' + fields.lastName) || ''}`,
-                                    `N:${fields.lastName || ''};${fields.firstName || ''}`,
-                                    fields.companyName ? `ORG:${fields.companyName}` : '',
-                                    fields.jobTitle ? `TITLE:${fields.jobTitle}` : '',
-                                    fields.mobile1 ? `TEL;TYPE=CELL:${fields.mobile1}` : '',
-                                    fields.email ? `EMAIL:${fields.email}` : '',
-                                    fields.address1 ? `ADR;TYPE=WORK:;;${fields.address1};${fields.city || ''};${fields.country || ''}` : '',
-                                    'END:VCARD'
-                                ].filter(Boolean).join('\n');
                 var eventData = new EventData({
                     event: eventFieldToSave,
                     registrationId: registrationId,
@@ -3817,17 +4011,8 @@ router.post('/:id/public-register', function(req, res) {
                     status: 'Registered',
                     isPrinted: false,
                     isCheckedIn: false,
-                    checkedInAt: null,
-                                        qrCode: new Date().getTime().toString(),
-                    qrCodeVCard: vCard
+                    checkedInAt: null
                 });
-                    // Auto-generate barcode/qrCode if missing
-                    if(eventData['barcode'] === undefined || eventData['barcode'] === '') {
-                        eventData['barcode'] = new Date().getTime().toString();
-                    }
-                    if(eventData['qrCode'] === undefined || eventData['qrCode'] === '') {
-                        eventData['qrCode'] = new Date().getTime().toString();
-                    }
                 eventData.save(function(err, savedData) {
                     console.log('🔔 [DEBUG] Registration saved:', {
                         _id: savedData._id,

@@ -312,8 +312,6 @@ router.get('/print-badge-layout/:id', function(req,res){
         var qrCodeTop = 10;
         var qrCodeLeft = 10;
         var fieldIndex = 0;
-        var uploadImageFields = [];
-        var uploadLogoFields = [];
 
         Object.keys(event.toJSON()).forEach(function(item){
             if(item.indexOf('_showInPrint')>-1 && event[item]==true ){
@@ -327,7 +325,6 @@ router.get('/print-badge-layout/:id', function(req,res){
                 var fieldTop = fieldName + '_top';
                 var fieldLeft = fieldName + '_left';
                 var fieldWidth = fieldName + '_width';
-                var fieldHeight = fieldName + '_height';
                 var fieldRotate = fieldName + '_rotate';
                 var fieldFontFamily = fieldName + '_fontFamily';
                 var fieldFontSize = fieldName + '_fontSize';
@@ -346,7 +343,6 @@ router.get('/print-badge-layout/:id', function(req,res){
                 field['fieldTop'] = (event[fieldTop] !== undefined && event[fieldTop] !== '' && event[fieldTop] !== null) ? event[fieldTop] : '0';
                 field['fieldLeft'] = (event[fieldLeft] !== undefined && event[fieldLeft] !== '' && event[fieldLeft] !== null) ? event[fieldLeft] : '0';
                 field['fieldWidth'] = (event[fieldWidth] !== undefined && event[fieldWidth] !== '' && event[fieldWidth] !== null) ? event[fieldWidth] : '100';
-                field['fieldHeight'] = (event[fieldHeight] !== undefined && event[fieldHeight] !== '' && event[fieldHeight] !== null) ? event[fieldHeight] : '100';
                 field['fieldRotate'] = (event[fieldRotate] !== undefined && event[fieldRotate] !== '' && event[fieldRotate] !== null) ? event[fieldRotate] : '0';
                 field['fieldFontFamily'] = (event[fieldFontFamily] !== undefined && event[fieldFontFamily] !== '' && event[fieldFontFamily] !== null) ? event[fieldFontFamily] : 'inherit';
                 field['fieldFontSize'] = (event[fieldFontSize] !== undefined && event[fieldFontSize] !== '' && event[fieldFontSize] !== null) ? event[fieldFontSize] : '14';
@@ -362,10 +358,6 @@ router.get('/print-badge-layout/:id', function(req,res){
                     showQrCode=true;
                     qrCodeLeft=field['fieldLeft'];
                     qrCodeTop=field['fieldTop'];
-                } else if(fieldName=='uploadImage'){
-                    uploadImageFields.push(field);
-                } else if(fieldName=='uploadLogo'){
-                    uploadLogoFields.push(field);
                 } else {
                     fields.unshift(field);
                 }
@@ -379,7 +371,7 @@ router.get('/print-badge-layout/:id', function(req,res){
             }
 
             res.render('event/print-badge-layout', {layout:'print-layout', messages:messages, hasErrors:messages.length>0, fields:fields, 
-                showBarcode:showBarcode, barcodeLeft:barcodeLeft, barcodeTop:barcodeTop, showQrCode:showQrCode, qrCodeLeft:qrCodeLeft, qrCodeTop:qrCodeTop, uploadImageFields:uploadImageFields, uploadLogoFields:uploadLogoFields, customFonts:customFonts});
+                showBarcode:showBarcode, barcodeLeft:barcodeLeft, barcodeTop:barcodeTop, showQrCode:showQrCode, qrCodeLeft:qrCodeLeft, qrCodeTop:qrCodeTop, customFonts:customFonts});
         });
 
         
@@ -1012,14 +1004,6 @@ router.post('/register', function (req, res) {
                     }
                 }
             });
-
-            // Auto-generate barcode/qrCode if missing
-            if(eventData['barcode'] === undefined || eventData['barcode'] === '') {
-                eventData['barcode'] = new Date().getTime().toString();
-            }
-            if(eventData['qrCode'] === undefined || eventData['qrCode'] === '') {
-                eventData['qrCode'] = new Date().getTime().toString();
-            }
            
             eventData.regDate=moment().format('YYYY-MM-DD HH:mm:ss');
             eventData.regType='Onsite';
@@ -2485,13 +2469,13 @@ router.get('/manage-fonts', function(req, res) {
         
         console.log('Raw fonts from database:', fonts.length);
         fonts.forEach(function(font, index) {
-            console.log(`Font ${index + 1}:`, font.name, font.fontType, font.googleFontApi ? 'hasAPI' : 'noAPI', font.fontFile ? 'hasFile' : 'noFile');
+            console.log(`Font ${index + 1}:`, font.fontName, font.fontType, font.googleFontApi ? 'hasAPI' : 'noAPI', font.fontFile ? 'hasFile' : 'noFile');
         });
+        
         // Transform fonts for the simplified display
         var displayFonts = fonts.map(function(font) {
             return {
-                name: font.name,
-                fontFamily: font.fontFamily,
+                name: font.fontName,
                 type: font.fontType === 'google' ? 'Google Fonts API' : 'Custom Font',
                 url: font.fontType === 'google' ? font.googleFontApi : '/uploads/fonts/' + font.fontFile,
                 isGoogleFont: font.fontType === 'google'
@@ -2503,11 +2487,8 @@ router.get('/manage-fonts', function(req, res) {
             console.log(`Display Font ${index + 1}:`, font.name, font.type, font.url);
         });
         
-        var fontError = req.session.fontError;
-        req.session.fontError = null;
         res.render('event/manage-fonts', { 
-            fonts: displayFonts,
-            fontError: fontError
+            fonts: displayFonts
         });
     });
 });
@@ -2569,19 +2550,19 @@ router.post('/manage-fonts', function(req, res) {
         console.log('Form fields:', fields);
         console.log('Form files:', Object.keys(files));
         
-        var name = fields.fontName;
+        var fontName = fields.fontName;
         var fontApi = fields.fontApi;
         
-        if(!name || name.trim() === '') {
+        if(!fontName || fontName.trim() === '') {
             console.log('Font name is empty');
             return res.redirect('/event/manage-fonts');
         }
         
-        console.log('Creating font:', name);
+        console.log('Creating font:', fontName);
         
         var newFont = new Font({
-            name: name.trim(),
-            fontFamily: name.trim(),
+            fontName: fontName.trim(),
+            fontFamily: fontName.trim(),
             isActive: true
         });
         
@@ -3152,19 +3133,19 @@ router.post('/online-registration/:id/save-design', function(req, res) {
             // Create design data object
             var designData = {
                 header: {
-                    exists: ((req.fields && (req.fields.headerExists === 'true' || req.fields.headerExists === true)) || (req.body && (req.body.headerExists === 'true' || req.body.headerExists === true))) || false,
-                    logoAlignment: (req.fields && req.fields.logoAlignment) || (req.body && req.body.logoAlignment) || 'center',
+                    exists: (req.fields.headerExists === 'true' || req.fields.headerExists === true),
+                    logoAlignment: req.fields.logoAlignment || 'center',
                     logo: null
                 },
                 footer: {
-                    exists: ((req.fields && (req.fields.footerExists === 'true' || req.fields.footerExists === true)) || (req.body && (req.body.footerExists === 'true' || req.body.footerExists === true))) || false,
-                    content: (req.fields && req.fields.footerContent) || (req.body && req.body.footerContent) || ''
+                    exists: (req.fields.footerExists === 'true' || req.fields.footerExists === true),
+                    content: req.fields.footerContent || ''
                 },
                 background: null,
                 content: {
-                    eventTitle: (req.fields && req.fields.eventTitle) || (req.body && req.body.eventTitle) || event.eventName || 'Sample Event',
-                    eventHeader: (req.fields && req.fields.eventHeader) || (req.body && req.body.eventHeader) || 'Welcome to Our Event Registration',
-                    eventFooter: (req.fields && req.fields.eventFooter) || (req.body && req.body.eventFooter) || 'Thank you for registering!'
+                    eventTitle: req.fields.eventTitle || event.eventName || 'Sample Event',
+                    eventHeader: req.fields.eventHeader || 'Welcome to Our Event Registration',
+                    eventFooter: req.fields.eventFooter || 'Thank you for registering!'
                 },
                 savedAt: new Date().toISOString()
             };
@@ -3773,19 +3754,6 @@ router.post('/:id/public-register', function(req, res) {
                 }
                 console.log('🟡 [DEBUG] About to save registration with eventId:', eventId, 'eventFieldToSave:', eventFieldToSave);
                 console.log('🟡 [DEBUG] Incoming registration fields:', fields);
-                                // Build vCard string for QR code
-                                const vCard = [
-                                    'BEGIN:VCARD',
-                                    'VERSION:3.0',
-                                    `FN:${fields.fullName || (fields.firstName + ' ' + fields.lastName) || ''}`,
-                                    `N:${fields.lastName || ''};${fields.firstName || ''}`,
-                                    fields.companyName ? `ORG:${fields.companyName}` : '',
-                                    fields.jobTitle ? `TITLE:${fields.jobTitle}` : '',
-                                    fields.mobile1 ? `TEL;TYPE=CELL:${fields.mobile1}` : '',
-                                    fields.email ? `EMAIL:${fields.email}` : '',
-                                    fields.address1 ? `ADR;TYPE=WORK:;;${fields.address1};${fields.city || ''};${fields.country || ''}` : '',
-                                    'END:VCARD'
-                                ].filter(Boolean).join('\n');
                 var eventData = new EventData({
                     event: eventFieldToSave,
                     registrationId: registrationId,
@@ -3817,17 +3785,8 @@ router.post('/:id/public-register', function(req, res) {
                     status: 'Registered',
                     isPrinted: false,
                     isCheckedIn: false,
-                    checkedInAt: null,
-                                        qrCode: new Date().getTime().toString(),
-                    qrCodeVCard: vCard
+                    checkedInAt: null
                 });
-                    // Auto-generate barcode/qrCode if missing
-                    if(eventData['barcode'] === undefined || eventData['barcode'] === '') {
-                        eventData['barcode'] = new Date().getTime().toString();
-                    }
-                    if(eventData['qrCode'] === undefined || eventData['qrCode'] === '') {
-                        eventData['qrCode'] = new Date().getTime().toString();
-                    }
                 eventData.save(function(err, savedData) {
                     console.log('🔔 [DEBUG] Registration saved:', {
                         _id: savedData._id,

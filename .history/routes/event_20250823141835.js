@@ -312,61 +312,65 @@ router.get('/print-badge-layout/:id', function(req,res){
         var qrCodeTop = 10;
         var qrCodeLeft = 10;
         var fieldIndex = 0;
-        var uploadImageFields = [];
-        var uploadLogoFields = [];
 
         Object.keys(event.toJSON()).forEach(function(item){
+            
+
             if(item.indexOf('_showInPrint')>-1 && event[item]==true ){
                 fieldIndex = fieldIndex + 1;
 
-                var fieldName = item.substring(0, item.indexOf('_showInPrint') );
-                var fieldLabel = fieldName + '_label';
-                var fieldType = fieldName + '_fieldType';
-                var fieldValue = '';
-                var fieldMandatory = fieldName + '_isMandatory';
-                var fieldTop = fieldName + '_top';
-                var fieldLeft = fieldName + '_left';
-                var fieldWidth = fieldName + '_width';
-                var fieldHeight = fieldName + '_height';
-                var fieldRotate = fieldName + '_rotate';
-                var fieldFontFamily = fieldName + '_fontFamily';
-                var fieldFontSize = fieldName + '_fontSize';
-                var fieldFontWeight = fieldName + '_fontWeight';
-                var fieldFontStyle = fieldName + '_fontStyle';
-                var fieldTextAlign = fieldName + '_textAlign';
+                var fieldName = item.substring(0, item.indexOf('_showInPrint') ) ;
+                var fieldLabel = item.substring(0, item.indexOf('_showInPrint') ) + '_label';
+                var fieldType = item.substring(0, item.indexOf('_showInPrint') ) + '_fieldType';
+                var fieldValue = '';//eventData[fieldName] == undefined ? '':eventData[fieldName];
+                var fieldMandatory = item.substring(0, item.indexOf('_showInPrint') ) + '_isMandatory';
+                var fieldTop = item.substring(0, item.indexOf('_showInPrint') ) + '_top';
+            
+                var fieldLeft = item.substring(0, item.indexOf('_showInPrint') ) + '_left';
+                var fieldWidth = item.substring(0, item.indexOf('_showInPrint') ) + '_width';
+                var fieldRotate = item.substring(0, item.indexOf('_showInPrint') ) + '_rotate';
+                var fieldFontFamily = item.substring(0, item.indexOf('_showInPrint') ) + '_fontFamily';
+                var fieldFontSize = item.substring(0, item.indexOf('_showInPrint') ) + '_fontSize';
+                var fieldFontWeight = item.substring(0, item.indexOf('_showInPrint') ) + '_fontWeight';
+                var fieldFontStyle = item.substring(0, item.indexOf('_showInPrint') ) + '_fontStyle';
+                var fieldTextAlign = item.substring(0, item.indexOf('_showInPrint') ) + '_textAlign';
 
-                var field = {};
-                field['fieldName'] = fieldName;
-                field['fieldLabel'] = event[fieldLabel];
-                field['fieldType'] = event[fieldType];
-                field['fieldValue'] = fieldValue;
-                field['fieldMandatory'] = event[fieldMandatory];
 
-                // Always set default values for all field properties
-                field['fieldTop'] = (event[fieldTop] !== undefined && event[fieldTop] !== '' && event[fieldTop] !== null) ? event[fieldTop] : '0';
-                field['fieldLeft'] = (event[fieldLeft] !== undefined && event[fieldLeft] !== '' && event[fieldLeft] !== null) ? event[fieldLeft] : '0';
-                field['fieldWidth'] = (event[fieldWidth] !== undefined && event[fieldWidth] !== '' && event[fieldWidth] !== null) ? event[fieldWidth] : '100';
-                field['fieldHeight'] = (event[fieldHeight] !== undefined && event[fieldHeight] !== '' && event[fieldHeight] !== null) ? event[fieldHeight] : '100';
-                field['fieldRotate'] = (event[fieldRotate] !== undefined && event[fieldRotate] !== '' && event[fieldRotate] !== null) ? event[fieldRotate] : '0';
-                field['fieldFontFamily'] = (event[fieldFontFamily] !== undefined && event[fieldFontFamily] !== '' && event[fieldFontFamily] !== null) ? event[fieldFontFamily] : 'inherit';
-                field['fieldFontSize'] = (event[fieldFontSize] !== undefined && event[fieldFontSize] !== '' && event[fieldFontSize] !== null) ? event[fieldFontSize] : '14';
-                field['fieldFontWeight'] = (event[fieldFontWeight] !== undefined && event[fieldFontWeight] !== '' && event[fieldFontWeight] !== null) ? event[fieldFontWeight] : 'normal';
-                field['fieldFontStyle'] = (event[fieldFontStyle] !== undefined && event[fieldFontStyle] !== '' && event[fieldFontStyle] !== null) ? event[fieldFontStyle] : 'normal';
-                field['fieldTextAlign'] = (event[fieldTextAlign] !== undefined && event[fieldTextAlign] !== '' && event[fieldTextAlign] !== null) ? event[fieldTextAlign] : 'left';
+                //console.log(`fieldName=${fieldName}, fieldLabel=${fieldLabel}, fieldType=${fieldType}, fieldValue=${fieldValue}`)
+                var field={};
+                field['fieldName']=fieldName;
+                field['fieldLabel']=event[fieldLabel];
+                field['fieldType']=event[fieldType];
+                field['fieldValue']=fieldValue;
+                field['fieldMandatory']=event[fieldMandatory];
+
+                if(event[fieldTop]==10){
+                    var fieldTopValue = fieldIndex * 20;
+                    event[fieldTop] = fieldTopValue.toString();
+                }
+                
+                field['fieldTop']=event[fieldTop];
+                field['fieldLeft']=event[fieldLeft];
+                field['fieldWidth']=event[fieldWidth];
+                field['fieldRotate']=event[fieldRotate];
+                field['fieldFontFamily']=event[fieldFontFamily];
+                field['fieldFontSize']=event[fieldFontSize];
+                field['fieldFontWeight']=event[fieldFontWeight];
+                field['fieldFontStyle']=event[fieldFontStyle];
+                field['fieldTextAlign']=event[fieldTextAlign];
 
                 if(fieldName=='barcode'){
                     showBarcode=true;
-                    barcodeLeft=field['fieldLeft'];
-                    barcodeTop=field['fieldTop'];
+                    barcodeLeft=event[fieldLeft];
+                    barcodeTop=event[fieldTop];
+
                 } else if(fieldName=='qrCode'){
                     showQrCode=true;
-                    qrCodeLeft=field['fieldLeft'];
-                    qrCodeTop=field['fieldTop'];
-                } else if(fieldName=='uploadImage'){
-                    uploadImageFields.push(field);
-                } else if(fieldName=='uploadLogo'){
-                    uploadLogoFields.push(field);
+                    qrCodeLeft=event[fieldLeft];
+                    qrCodeTop=event[fieldTop];
+
                 } else {
+                    //console.log('field=' + JSON.stringify(field));
                     fields.unshift(field);
                 }
             }
@@ -379,7 +383,7 @@ router.get('/print-badge-layout/:id', function(req,res){
             }
 
             res.render('event/print-badge-layout', {layout:'print-layout', messages:messages, hasErrors:messages.length>0, fields:fields, 
-                showBarcode:showBarcode, barcodeLeft:barcodeLeft, barcodeTop:barcodeTop, showQrCode:showQrCode, qrCodeLeft:qrCodeLeft, qrCodeTop:qrCodeTop, uploadImageFields:uploadImageFields, uploadLogoFields:uploadLogoFields, customFonts:customFonts});
+                showBarcode:showBarcode, barcodeLeft:barcodeLeft, barcodeTop:barcodeTop, showQrCode:showQrCode, qrCodeLeft:qrCodeLeft, qrCodeTop:qrCodeTop, customFonts:customFonts});
         });
 
         
@@ -389,31 +393,54 @@ router.get('/print-badge-layout/:id', function(req,res){
 });
 
 router.post('/badge-layout', function(req,res){
-
     var messages = [];
-    var eventId = req.session.eventId;
+    var eventId=req.session.eventId;
 
-    // Dynamically update all badge field position/style properties from req.body
-    Event.findById(eventId, function(err, event) {
-        if (err) throw err;
+    console.log(`top=${req.body.fullName_top},left=${req.body.fullName_left},width=${req.body.fullName_width}`);
 
-        // Only update keys that match badge layout properties
-        Object.keys(req.body).forEach(function(key) {
-            if (key.match(/_(top|left|width|height|rotate|fontFamily|fontSize|fontWeight|fontStyle|textAlign)$/)) {
-                event[key] = req.body[key];
+
+    Event.findById(eventId, function(err,event){
+        if(err) throw err;
+
+        Object.keys(event.toJSON()).forEach(function(item){
+            
+
+            if(item.indexOf('_showInPrint')>-1 && event[item]==true ){
+                var fieldName = item.substring(0, item.indexOf('_showInPrint') ) ;
+
+                event[fieldName + '_top']=req.body[fieldName + '_top'];
+                event[fieldName + '_left']=req.body[fieldName + '_left'];
+
+                if(fieldName!='barcode' && fieldName!='qrCode' && fieldName!='uploadImage' && fieldName!='uploadLogo'){
+                    event[fieldName + '_width']=req.body[fieldName + '_width'];
+                    event[fieldName + '_rotate']=req.body[fieldName + '_rotate'];
+                    event[fieldName + '_fontFamily']=req.body[fieldName + '_fontFamily'];
+                    event[fieldName + '_fontSize']=req.body[fieldName + '_fontSize'];
+                    event[fieldName + '_fontWeight']=req.body[fieldName + '_fontWeight'];
+                    event[fieldName + '_fontStyle']=req.body[fieldName + '_fontStyle'];
+                    event[fieldName + '_textAlign']=req.body[fieldName + '_textAlign'];
+                } else if(fieldName=='uploadImage' || fieldName=='uploadLogo'){
+                    // Handle image field dimensions
+                    event[fieldName + '_width']=req.body[fieldName + '_width'];
+                    event[fieldName + '_height']=req.body[fieldName + '_height'];
+                    event[fieldName + '_rotate']=req.body[fieldName + '_rotate'];
+                }
+                
             }
         });
 
+
         event.setupComplete = true;
-        event.save(function(err, result) {
-            if (err) {
+        event.save(function(err, result){
+            if(err){
                 console.log(err);
             }
 
-            if (req.body.action == 'testprint') {
+            if(req.body.action == 'testprint'){
                 req.session.eventIdForPrint = eventId;
                 res.redirect('/event/badge-layout');
-            } else if (req.body.action == 'finish') {
+            }
+            else if(req.body.action=='finish'){
                 res.redirect('/event');
             }
         });
@@ -1012,14 +1039,6 @@ router.post('/register', function (req, res) {
                     }
                 }
             });
-
-            // Auto-generate barcode/qrCode if missing
-            if(eventData['barcode'] === undefined || eventData['barcode'] === '') {
-                eventData['barcode'] = new Date().getTime().toString();
-            }
-            if(eventData['qrCode'] === undefined || eventData['qrCode'] === '') {
-                eventData['qrCode'] = new Date().getTime().toString();
-            }
            
             eventData.regDate=moment().format('YYYY-MM-DD HH:mm:ss');
             eventData.regType='Onsite';
@@ -2485,13 +2504,13 @@ router.get('/manage-fonts', function(req, res) {
         
         console.log('Raw fonts from database:', fonts.length);
         fonts.forEach(function(font, index) {
-            console.log(`Font ${index + 1}:`, font.name, font.fontType, font.googleFontApi ? 'hasAPI' : 'noAPI', font.fontFile ? 'hasFile' : 'noFile');
+            console.log(`Font ${index + 1}:`, font.fontName, font.fontType, font.googleFontApi ? 'hasAPI' : 'noAPI', font.fontFile ? 'hasFile' : 'noFile');
         });
+        
         // Transform fonts for the simplified display
         var displayFonts = fonts.map(function(font) {
             return {
-                name: font.name,
-                fontFamily: font.fontFamily,
+                name: font.fontName,
                 type: font.fontType === 'google' ? 'Google Fonts API' : 'Custom Font',
                 url: font.fontType === 'google' ? font.googleFontApi : '/uploads/fonts/' + font.fontFile,
                 isGoogleFont: font.fontType === 'google'
@@ -2503,11 +2522,8 @@ router.get('/manage-fonts', function(req, res) {
             console.log(`Display Font ${index + 1}:`, font.name, font.type, font.url);
         });
         
-        var fontError = req.session.fontError;
-        req.session.fontError = null;
         res.render('event/manage-fonts', { 
-            fonts: displayFonts,
-            fontError: fontError
+            fonts: displayFonts
         });
     });
 });
@@ -2569,19 +2585,19 @@ router.post('/manage-fonts', function(req, res) {
         console.log('Form fields:', fields);
         console.log('Form files:', Object.keys(files));
         
-        var name = fields.fontName;
+        var fontName = fields.fontName;
         var fontApi = fields.fontApi;
         
-        if(!name || name.trim() === '') {
+        if(!fontName || fontName.trim() === '') {
             console.log('Font name is empty');
             return res.redirect('/event/manage-fonts');
         }
         
-        console.log('Creating font:', name);
+        console.log('Creating font:', fontName);
         
         var newFont = new Font({
-            name: name.trim(),
-            fontFamily: name.trim(),
+            fontName: fontName.trim(),
+            fontFamily: fontName.trim(),
             isActive: true
         });
         
@@ -3152,19 +3168,19 @@ router.post('/online-registration/:id/save-design', function(req, res) {
             // Create design data object
             var designData = {
                 header: {
-                    exists: ((req.fields && (req.fields.headerExists === 'true' || req.fields.headerExists === true)) || (req.body && (req.body.headerExists === 'true' || req.body.headerExists === true))) || false,
-                    logoAlignment: (req.fields && req.fields.logoAlignment) || (req.body && req.body.logoAlignment) || 'center',
+                    exists: (req.fields.headerExists === 'true' || req.fields.headerExists === true),
+                    logoAlignment: req.fields.logoAlignment || 'center',
                     logo: null
                 },
                 footer: {
-                    exists: ((req.fields && (req.fields.footerExists === 'true' || req.fields.footerExists === true)) || (req.body && (req.body.footerExists === 'true' || req.body.footerExists === true))) || false,
-                    content: (req.fields && req.fields.footerContent) || (req.body && req.body.footerContent) || ''
+                    exists: (req.fields.footerExists === 'true' || req.fields.footerExists === true),
+                    content: req.fields.footerContent || ''
                 },
                 background: null,
                 content: {
-                    eventTitle: (req.fields && req.fields.eventTitle) || (req.body && req.body.eventTitle) || event.eventName || 'Sample Event',
-                    eventHeader: (req.fields && req.fields.eventHeader) || (req.body && req.body.eventHeader) || 'Welcome to Our Event Registration',
-                    eventFooter: (req.fields && req.fields.eventFooter) || (req.body && req.body.eventFooter) || 'Thank you for registering!'
+                    eventTitle: req.fields.eventTitle || event.eventName || 'Sample Event',
+                    eventHeader: req.fields.eventHeader || 'Welcome to Our Event Registration',
+                    eventFooter: req.fields.eventFooter || 'Thank you for registering!'
                 },
                 savedAt: new Date().toISOString()
             };
@@ -3773,19 +3789,6 @@ router.post('/:id/public-register', function(req, res) {
                 }
                 console.log('🟡 [DEBUG] About to save registration with eventId:', eventId, 'eventFieldToSave:', eventFieldToSave);
                 console.log('🟡 [DEBUG] Incoming registration fields:', fields);
-                                // Build vCard string for QR code
-                                const vCard = [
-                                    'BEGIN:VCARD',
-                                    'VERSION:3.0',
-                                    `FN:${fields.fullName || (fields.firstName + ' ' + fields.lastName) || ''}`,
-                                    `N:${fields.lastName || ''};${fields.firstName || ''}`,
-                                    fields.companyName ? `ORG:${fields.companyName}` : '',
-                                    fields.jobTitle ? `TITLE:${fields.jobTitle}` : '',
-                                    fields.mobile1 ? `TEL;TYPE=CELL:${fields.mobile1}` : '',
-                                    fields.email ? `EMAIL:${fields.email}` : '',
-                                    fields.address1 ? `ADR;TYPE=WORK:;;${fields.address1};${fields.city || ''};${fields.country || ''}` : '',
-                                    'END:VCARD'
-                                ].filter(Boolean).join('\n');
                 var eventData = new EventData({
                     event: eventFieldToSave,
                     registrationId: registrationId,
@@ -3817,17 +3820,8 @@ router.post('/:id/public-register', function(req, res) {
                     status: 'Registered',
                     isPrinted: false,
                     isCheckedIn: false,
-                    checkedInAt: null,
-                                        qrCode: new Date().getTime().toString(),
-                    qrCodeVCard: vCard
+                    checkedInAt: null
                 });
-                    // Auto-generate barcode/qrCode if missing
-                    if(eventData['barcode'] === undefined || eventData['barcode'] === '') {
-                        eventData['barcode'] = new Date().getTime().toString();
-                    }
-                    if(eventData['qrCode'] === undefined || eventData['qrCode'] === '') {
-                        eventData['qrCode'] = new Date().getTime().toString();
-                    }
                 eventData.save(function(err, savedData) {
                     console.log('🔔 [DEBUG] Registration saved:', {
                         _id: savedData._id,
