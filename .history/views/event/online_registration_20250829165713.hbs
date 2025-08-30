@@ -1,0 +1,754 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web Page Editor</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 10px;
+      gap: 10px;
+      background: #fff;
+      border-bottom: 1px solid #ccc;
+      z-index: 2000;
+      position: relative;
+    }
+
+    .toolbar select,
+    .toolbar input[type="file"],
+    .toolbar button {
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 50px);
+      margin: 0;
+    }
+
+    header, footer {
+      background: #fff;
+      flex-shrink: 0;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced header styling */
+    header {
+      height: 15%;
+    }
+    }
+
+    header img {
+      max-height: 80%;
+      max-width: 90%;
+      object-fit: contain;
+    }
+
+    footer {
+      height: 15%;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #333;
+    }
+
+    /* Enhanced footer styling */
+    footer .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    footer p {
+      transition: all 0.3s ease;
+    }
+
+    footer p:hover {
+      color: #667eea;
+    }
+
+    /* Editable content styling */
+    [contenteditable="true"] {
+      outline: none;
+      transition: all 0.3s ease;
+      border-radius: 4px;
+      padding: 2px 4px;
+    }
+
+    [contenteditable="true"]:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    [contenteditable="true"]:focus {
+      background: rgba(102, 126, 234, 0.15);
+      box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+    }
+
+    .canvas-container {
+      flex: 1;
+      padding: 20px;
+      background-color: #fff;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      overflow-y: auto;
+      transition: all 0.3s ease;
+    }
+
+    .canvas-content {
+      padding: 20px;
+      color: #000;
+    }
+
+    .resizable-logo-wrapper {
+      display: inline-block;
+      position: relative;
+      resize: both;
+      overflow: hidden;
+      min-width: 50px;
+      min-height: 50px;
+      max-width: 90%;
+      max-height: 300px;
+      border: 2px dashed #ccc;
+      margin: auto;
+    }
+
+    .resizable-logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .resizable-logo-wrapper::after {
+      content: "Click to upload";
+      position: absolute;
+      bottom: 4px;
+      right: 6px;
+      font-size: 10px;
+      color: #888;
+    }
+
+    .logo-upload {
+      display: none;
+    }
+
+    .canvas-container *:focus {
+      outline: 2px dashed blue;
+    }
+
+    /* Registration form styles */
+    .registration-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .registration-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      padding: 48px 36px 36px 36px;
+      max-width: 440px;
+      width: 100%;
+      border: 1.5px solid #e0e0e0;
+    }
+
+    .event-logo {
+      max-width: 110px;
+      margin: 0 auto 18px auto;
+      display: block;
+    }
+
+    .event-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+      color: #222;
+    }
+
+    .event-header {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 18px;
+      color: #333;
+    }
+
+    .registration-form label {
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #222;
+      display: block;
+    }
+
+    .registration-form input,
+    .registration-form select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid #cfd8dc;
+      border-radius: 7px;
+      margin-bottom: 20px;
+      font-size: 1.07rem;
+      background: #f7fafd;
+      transition: border 0.2s;
+    }
+
+    .registration-form input:focus,
+    .registration-form select:focus {
+      border: 1.5px solid #0a1931;
+      outline: none;
+    }
+
+    .registration-form input[type="submit"] {
+      background: #0a1931;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.13rem;
+      font-weight: 700;
+      padding: 14px 0;
+      margin-top: 10px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(10, 25, 49, 0.08);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .registration-form input[type="submit"]:hover {
+      background: #1a2951;
+    }
+
+    .form-note {
+      font-size: 0.97em;
+      color: #888;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .event-footer {
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 22px;
+      color: #666;
+    }
+
+    @media (max-width: 600px) {
+      .registration-card {
+        padding: 24px 8px 18px 8px;
+        max-width: 98vw;
+      }
+    }
+
+    /* Reorder mode styles - Creative Design */
+    .form-field {
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Toggle Button Styling */
+    #toggleReorder {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #toggleReorder:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    #toggleReorder.active {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    #toggleReorder::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    #toggleReorder:hover::before {
+      left: 100%;
+    }
+
+    /* Save Design Button Styling */
+    #saveDesign {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #saveDesign:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    }
+
+    #saveDesign::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    #saveDesign:hover::before {
+      left: 100%;
+    }
+
+    /* Reorder Mode Active */
+    .reorder-mode .form-field {
+      background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+      border: 2px solid #e3f2fd;
+      border-radius: 16px;
+      margin: 15px 0;
+      padding: 20px;
+      cursor: grab;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      transform: translateZ(0);
+      position: relative;
+    }
+
+    .reorder-mode .form-field:hover {
+      border-color: #2196f3;
+      box-shadow: 0 12px 35px rgba(33, 150, 243, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .reorder-mode .form-field.dragging {
+      opacity: 0.9;
+      transform: rotate(3deg) scale(1.02);
+      z-index: 1000;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      cursor: grabbing;
+    }
+
+    .reorder-mode .form-field.drag-over {
+      border-color: #4caf50;
+      background: linear-gradient(145deg, #e8f5e8 0%, #f1f8e9 100%);
+      box-shadow: 0 12px 35px rgba(76, 175, 80, 0.2);
+    }
+
+    /* Creative Drag Handle */
+    .reorder-mode .form-field::before {
+      content: "";
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 30px;
+      background: linear-gradient(to bottom, #2196f3 0%, #64b5f6 50%, #2196f3 100%);
+      border-radius: 3px;
+      opacity: 0.7;
+      box-shadow: 
+        3px 0 0 rgba(33, 150, 243, 0.3),
+        6px 0 0 rgba(33, 150, 243, 0.2);
+    }
+
+    /* Field Number Badge */
+    .field-order-indicator {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+      color: white;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+      border: 3px solid white;
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+      z-index: 10;
+      animation: bounceIn 0.6s ease;
+    }
+
+    @keyframes bounceIn {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .reorder-mode .field-order-indicator {
+      display: flex;
+    }
+
+    /* Instructions Banner */
+    .reorder-instructions {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 18px 20px;
+      margin: 20px 0;
+      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+      display: none;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .reorder-instructions::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    .reorder-mode .reorder-instructions {
+      display: block;
+      animation: slideDown 0.5s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Disabled form inputs in reorder mode */
+    .reorder-mode .registration-form input,
+    .reorder-mode .registration-form select {
+      pointer-events: none;
+      background: linear-gradient(145deg, #f5f5f5 0%, #eeeeee 100%);
+      opacity: 0.7;
+    }
+
+    /* Helper text for drag action */
+    .reorder-mode .form-field::after {
+      content: "Drag me ↕";
+      position: absolute;
+      right: 20px;
+      top: 15px;
+      font-size: 11px;
+      color: #2196f3;
+      background: rgba(33, 150, 243, 0.1);
+      padding: 4px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(33, 150, 243, 0.2);
+      font-weight: 500;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    /* Success animation when dropping */
+    .drop-success {
+      animation: dropSuccess 0.6s ease;
+    }
+
+    @keyframes dropSuccess {
+      0% { background: #4caf50; }
+      100% { background: initial; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <select id="dropdown">
+    <option value="">Select Option</option>
+    <option value="header">Add Header</option>
+    <option value="footer">Add Footer</option>
+    <option value="both">Add Both</option>
+    <option value="removeHeader">Remove Header</option>
+    <option value="removeFooter">Remove Footer</option>
+  </select>
+
+  <input type="file" accept="image/*" id="uploadImg" title="Upload Background Image">
+
+  <button id="addLogoBtn">Add Logo in Header</button>
+
+  <input type="file" accept="image/*" id="headerLogoUpload" title="Upload Header Logo">
+
+  <select id="logoAlignment">
+    <option value="">Logo Align</option>
+    <option value="flex-start">Left</option>
+    <option value="center">Center</option>
+    <option value="flex-end">Right</option>
+  </select>
+
+  <button id="saveDesign" style="background: #28a745; color: white; font-weight: bold;">💾 Save Design</button>
+</div>
+
+<div class="page-wrapper" id="pageWrapper">
+  <div class="canvas-container" id="canvas">
+    <div class="canvas-content" contenteditable="false">
+      <div class="registration-container">
+        <div class="registration-card">
+          <!-- Logo is now only shown in header, not inside registration card -->
+          <div class="event-title" contenteditable="true">Sample Event Name</div>
+          <div class="event-header" contenteditable="true">Welcome to Our Event Registration</div>
+
+          <form class="registration-form" action="/event/{{eventId}}/public-register" method="POST">
+           
+            {{#each fields}}
+            <div class="form-field" data-field-name="{{this.fieldName}}" data-field-order="{{@index}}">
+              <div class="field-order-indicator">{{add @index 1}}</div>
+{{#each fields}}
+            <span id="{{this.fieldName}}" class="canvas" style="position:absolute; ">
+                {{toUpperCase this.fieldValue}}
+            </span>            </div>
+            {{/each}}
+
+            <div class="form-note" contenteditable="true">Please provide the correct email address you would like to receive your confirmation email.</div>
+            <input type="submit" value="REGISTER">
+          </form>
+
+          <div class="event-footer" contenteditable="true">Thank you for registering!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Ensure preview always matches what will be saved
+  // Remove static logo from registration card
+  // When header logo is added/changed, update header only
+  // When background is uploaded, update canvas only
+  const dropdown = document.getElementById("dropdown");
+  const pageWrapper = document.getElementById("pageWrapper");
+  const canvas = document.getElementById("canvas");
+  const uploadImg = document.getElementById("uploadImg");
+  const addLogoBtn = document.getElementById("addLogoBtn");
+  const headerLogoUpload = document.getElementById("headerLogoUpload");
+  const logoAlignment = document.getElementById("logoAlignment");
+
+  dropdown.addEventListener("change", () => {
+    const value = dropdown.value;
+    if (value === "header") addHeader();
+    else if (value === "footer") addFooter();
+    else if (value === "both") { addHeader(); addFooter(); }
+    else if (value === "removeHeader") removeHeader();
+    else if (value === "removeFooter") removeFooter();
+    dropdown.value = "";
+  });
+
+  function addHeader() {
+    if (!document.querySelector("header")) {
+      const header = document.createElement("header");
+      pageWrapper.insertBefore(header, canvas);
+    }
+  }
+
+  function addFooter() {
+    if (!document.querySelector("footer")) {
+      const footer = document.createElement("footer");
+      footer.setAttribute("contenteditable", "true");
+      footer.innerText = "Footer Text - Edit me";
+      pageWrapper.appendChild(footer);
+    }
+  }
+
+  function removeHeader() { const header = document.querySelector("header"); if(header) header.remove(); }
+  function removeFooter() { const footer = document.querySelector("footer"); if(footer) footer.remove(); }
+
+  // Background image for canvas only
+  uploadImg.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = (event) => canvas.style.backgroundImage = `url(${event.target.result})`;
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Add logo button
+  addLogoBtn.addEventListener("click", () => {
+    addHeader();
+    const header = document.querySelector("header");
+    if(header && !header.querySelector("img")){
+      const logo = document.createElement("img");
+      logo.src = "https://via.placeholder.com/300x80?text=Logo";
+      header.appendChild(logo);
+    }
+  });
+
+  // Header logo upload
+  headerLogoUpload.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        addHeader();
+        const header = document.querySelector("header");
+        if(header){
+          let img = header.querySelector("img");
+          if(!img){
+            img = document.createElement("img");
+            header.appendChild(img);
+          }
+          img.src = event.target.result;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Logo alignment
+  logoAlignment.addEventListener("change", () => {
+    const header = document.querySelector("header");
+    if(header) header.style.justifyContent = logoAlignment.value || "center";
+  });
+
+  // Save Design functionality
+  const saveDesign = document.getElementById("saveDesign");
+  saveDesign.addEventListener("click", () => {
+    // Debug: Show what is being detected in DOM
+    const debugHeader = document.querySelector("header");
+    const debugHeaderLogo = debugHeader ? debugHeader.querySelector('img') : null;
+    const debugFooter = document.querySelector("footer");
+    const debugBackgroundImage = canvas.style.backgroundImage;
+    alert(
+      `DEBUG\nHeader exists: ${!!debugHeader}\nHeader logo src: ${debugHeaderLogo ? debugHeaderLogo.src : 'none'}\nFooter exists: ${!!debugFooter}\nBackground image: ${debugBackgroundImage}`
+    );
+    const header = document.querySelector("header");
+    const footer = document.querySelector("footer");
+    const canvasHtml = pageWrapper.innerHTML;
+    
+    // Create FormData for sending files and data
+    const formData = new FormData();
+    formData.append('pageType', 'registration');
+    formData.append('canvasHtml', canvasHtml);
+    
+    // Header data
+    // Set headerExists true if header exists in DOM
+    formData.append('headerExists', header ? true : false);
+    if(header) {
+      const headerLogo = header.querySelector('img');
+      formData.append('logoAlignment', header.style.justifyContent || 'center');
+      // Always send logo if <img> exists, regardless of src format
+      if(headerLogo && headerLogo.src) {
+        formData.append('logoUrl', headerLogo.src);
+      } else {
+        formData.append('logoUrl', '');
+      }
+    } else {
+      formData.append('logoUrl', '');
+    }
+    
+    // Footer data
+    formData.append('footerExists', !!footer);
+    if(footer) {
+      formData.append('footerContent', footer.innerText);
+    }
+    
+    // Background image
+    const backgroundImage = canvas.style.backgroundImage;
+    if(backgroundImage && backgroundImage !== 'none') {
+      // Try to extract the URL from backgroundImage style
+      const urlMatch = backgroundImage.match(/url\(["']?([^"')]+)["']?\)/);
+      if(urlMatch && urlMatch[1]) {
+        formData.append('backgroundImage', urlMatch[1]);
+      } else {
+        formData.append('backgroundImage', '');
+      }
+    } else {
+      formData.append('backgroundImage', '');
+    }
+    
+    // Get editable content
+    const eventTitle = document.querySelector('.event-title');
+    const eventHeader = document.querySelector('.event-header');
+    const eventFooterContent = document.querySelector('.event-footer');
+    
+    if(eventTitle) formData.append('eventTitle', eventTitle.innerText);
+    if(eventHeader) formData.append('eventHeader', eventHeader.innerText);
+    if(eventFooterContent) formData.append('eventFooter', eventFooterContent.innerText);
+    
+    // Show saving state
+    saveDesign.innerText = '💾 Saving...';
+    saveDesign.disabled = true;
+    
+    // Send to server
+    fetch('/event/online-registration/{{eventId}}/save-design', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if(data.success) {
+        alert('✅ Design saved successfully!\n\nYour public registration link:\n' + window.location.origin + '/event/public-registration/{{eventId}}');
+      } else {
+        alert('❌ Error saving design: ' + data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Save error:', error);
+      alert('❌ Error saving design. Please try again.');
+    })
+    .finally(() => {
+      saveDesign.innerText = '💾 Save Design';
+      saveDesign.disabled = false;
+    });
+  });
+</script>
+
+</body>
+</html>

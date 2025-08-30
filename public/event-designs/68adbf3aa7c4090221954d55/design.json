@@ -1,0 +1,18 @@
+{
+  "header": {
+    "exists": true,
+    "logoAlignment": "center",
+    "logo": "/event-designs/68adbf3aa7c4090221954d55/header-logo.jpeg"
+  },
+  "footer": {
+    "exists": false,
+    "content": ""
+  },
+  "background": "/event-designs/68adbf3aa7c4090221954d55/background.jpeg",
+  "content": {
+    "eventTitle": "Sample Event Name",
+    "eventHeader": "Welcome to Our Event Registration",
+    "eventFooter": "Thank you for registering!"
+  },
+  "savedAt": "2025-08-26T14:49:22.862Z"
+}

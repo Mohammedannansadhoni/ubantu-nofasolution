@@ -1,0 +1,564 @@
+<div class="container-fluid">
+    <ol class="breadcrumb">
+        <li><a href="/event">Home</a></li>
+        <li><a href="/event">Events</a></li>
+        <li><a href="/event/online-registration/{{eventId}}">Online Registration</a></li>
+        <li class="active">Email Configuration</li>
+    </ol>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Email Configuration</h2>
+            <p class="text-muted">Setup email templates and SMTP settings for registration confirmations</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Email Templates -->
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Email Templates</h4>
+                </div>
+                <div class="panel-body">
+                    <form id="email-config-form">
+                        <input type="hidden" name="eventId" value="{{eventId}}">
+                        <!-- Confirmation Email -->
+                        <div class="form-group">
+                            <label for="confirmation-subject">Confirmation Email Subject</label>
+                            <input type="text" class="form-control" id="confirmation-subject" name="confirmationSubject" 
+                                   value="Registration Confirmation - {{event.eventName}}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmation-template">Confirmation Email Template</label>
+                            <div class="email-editor">
+                                <div class="editor-toolbar">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-default" onclick="formatText('bold')">
+                                            <i class="fa fa-bold"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="formatText('italic')">
+                                            <i class="fa fa-italic"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="formatText('underline')">
+                                            <i class="fa fa-underline"></i>
+                                        </button>
+                                    </div>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <button type="button" class="btn btn-default" onclick="insertVariable('userName')">
+                                            Name
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="insertVariable('eventName')">
+                                            Event
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="insertVariable('registrationId')">
+                                            Reg ID
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="insertVariable('qrCode')">
+                                            QR Code
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="insertVariable('barcode')">
+                                            Barcode
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="insertVariable('logoUrl')">
+                                            Event Logo
+                                        </button>
+                                        <button type="button" class="btn btn-default" onclick="insertVariable('backgroundImage')">
+                                            Background
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="editor-content" contenteditable="true" id="confirmation-template">
+                                    <h3>Thank you for registering!</h3>
+                                    <p>Dear <strong>{userName}</strong>,</p>
+                                    <p>Thank you for registering for <strong>{eventName}</strong>.</p>
+                                    <p>Your registration ID is: <strong>{registrationId}</strong></p>
+                                    <p>We look forward to seeing you at the event!</p>
+                                    <p>Best regards,<br>Event Team</p>
+                                    <hr>
+                                    <div>
+                                        <strong>Event Logo:</strong><br>
+                                        <img src="{logoUrl}" alt="Event Logo" style="max-width: 180px; margin-bottom: 12px;" />
+                                    </div>
+                                    <div>
+                                        <strong>Background Image:</strong><br>
+                                        <div style="background-image: url('{backgroundImage}'); background-size: cover; background-position: center; height: 80px; border-radius: 8px; margin-bottom: 12px;"></div>
+                                    </div>
+                                    <div>
+                                        <strong>QR Code:</strong><br>
+                                        <img src="https://api.qrserver.com/v1/create-qr-code/?data={qrCode}&size=120x120" alt="QR Code" />
+                                    </div>
+                                    <div>
+                                        <strong>Barcode:</strong><br>
+                                        <img src="https://api.qrserver.com/v1/create-qr-code/?data={barcode}&size=120x120" alt="Barcode" />
+                                    </div>
+                                </div>
+                            </div>
+                            <textarea id="confirmation-template-hidden" name="confirmationTemplate" style="display: none;"></textarea>
+                        </div>
+                        
+                        <!-- Welcome Email -->
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="send-welcome" name="sendWelcome" checked>
+                                    Send welcome email with event details
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="welcome-email-section">
+                            <div class="form-group">
+                                <label for="welcome-subject">Welcome Email Subject</label>
+                                <input type="text" class="form-control" id="welcome-subject" name="welcomeSubject" 
+                                       value="Welcome to {{event.eventName}} - Important Information">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="welcome-template">Welcome Email Template</label>
+                                <div class="email-editor">
+                                    <div class="editor-toolbar">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-default" onclick="formatWelcomeText('bold')">
+                                                <i class="fa fa-bold"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-default" onclick="formatWelcomeText('italic')">
+                                                <i class="fa fa-italic"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-default" onclick="formatWelcomeText('underline')">
+                                                <i class="fa fa-underline"></i>
+                                            </button>
+                                        </div>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-default" onclick="insertWelcomeVariable('userName')">
+                                                Name
+                                            </button>
+                                            <button type="button" class="btn btn-default" onclick="insertWelcomeVariable('eventName')">
+                                                Event
+                                            </button>
+                                            <button type="button" class="btn btn-default" onclick="insertWelcomeVariable('eventDate')">
+                                                Date
+                                            </button>
+                                            <button type="button" class="btn btn-default" onclick="insertWelcomeVariable('eventLocation')">
+                                                Location
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="editor-content" contenteditable="true" id="welcome-template">
+                                        <h3>Welcome to {eventName}!</h3>
+                                        <p>Dear <strong>{userName}</strong>,</p>
+                                        <p>We're excited to have you join us for <strong>{eventName}</strong>.</p>
+                                        <h4>Event Details:</h4>
+                                        <ul>
+                                            <li><strong>Date:</strong> {eventDate}</li>
+                                            <li><strong>Location:</strong> {eventLocation}</li>
+                                            <li><strong>Time:</strong> Please check your registration confirmation</li>
+                                        </ul>
+                                        <p>If you have any questions, please don't hesitate to contact us.</p>
+                                        <p>See you soon!</p>
+                                    </div>
+                                </div>
+                                <textarea id="welcome-template-hidden" name="welcomeTemplate" style="display: none;"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Reminder Email -->
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="send-reminder" name="sendReminder">
+                                    Send reminder email before event
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div id="reminder-email-section" style="display: none;">
+                            <div class="form-group">
+                                <label for="reminder-days">Send reminder how many days before event?</label>
+                                <select class="form-control" id="reminder-days" name="reminderDays">
+                                    <option value="1">1 day before</option>
+                                    <option value="2">2 days before</option>
+                                    <option value="3" selected>3 days before</option>
+                                    <option value="7">1 week before</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="reminder-subject">Reminder Email Subject</label>
+                                <input type="text" class="form-control" id="reminder-subject" name="reminderSubject" 
+                                       value="Reminder: {{event.eventName}} is coming up!">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-save"></i> Save Email Configuration
+                            </button>
+                            <button type="button" class="btn btn-info" id="test-email">
+                                <i class="fa fa-paper-plane"></i> Send Test Email
+                            </button>
+                            <button type="button" class="btn btn-secondary" onclick="previewEmail()">
+                                <i class="fa fa-eye"></i> Preview Email
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SMTP Settings -->
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>SMTP Settings</h4>
+                </div>
+                <div class="panel-body">
+                    <form id="smtp-config-form">
+                        <div class="form-group">
+                            <label for="smtp-host">SMTP Host</label>
+                            <input type="text" class="form-control" id="smtp-host" name="smtpHost" 
+                                   placeholder="smtp.gmail.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="smtp-port">SMTP Port</label>
+                            <input type="number" class="form-control" id="smtp-port" name="smtpPort" 
+                                   placeholder="587" value="587" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="smtp-secure" name="smtpSecure" checked>
+                                    Use TLS/SSL
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="smtp-user">Email Username</label>
+                            <input type="email" class="form-control" id="smtp-user" name="smtpUser" 
+                                   placeholder="your-email@gmail.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="smtp-pass">Email Password</label>
+                            <input type="password" class="form-control" id="smtp-pass" name="smtpPass" 
+                                   placeholder="Your app password" required>
+                            <small class="text-muted">For Gmail, use an App Password</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="from-name">From Name</label>
+                            <input type="text" class="form-control" id="from-name" name="fromName" 
+                                   value="{{event.eventName}} Team" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="from-email">From Email</label>
+                            <input type="email" class="form-control" id="from-email" name="fromEmail" 
+                                   placeholder="noreply@yourdomain.com" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success btn-block">
+                                <i class="fa fa-cog"></i> Save SMTP Settings
+                            </button>
+                            <button type="button" class="btn btn-info btn-block" id="test-smtp">
+                                <i class="fa fa-paper-plane"></i> Test SMTP Connection
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Email Variables Help -->
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h5>Available Variables</h5>
+                </div>
+                <div class="panel-body">
+                    <small>
+                        <strong>Available in emails:</strong><br>
+                        <code>{userName}</code> - Registrant's name<br>
+                        <code>{eventName}</code> - Event name<br>
+                        <code>{eventDate}</code> - Event date<br>
+                        <code>{eventLocation}</code> - Event location<br>
+                        <code>{registrationId}</code> - Registration ID<br>
+                        <code>{registrationDate}</code> - Registration date
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.email-editor {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+}
+
+.editor-toolbar {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    background: #f9f9f9;
+}
+
+.editor-content {
+    min-height: 200px;
+    padding: 15px;
+    outline: none;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.editor-content:focus {
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 0 3px rgba(102,175,233,.6);
+}
+
+#welcome-email-section, #reminder-email-section {
+    margin-left: 20px;
+    padding-left: 20px;
+    border-left: 3px solid #007bff;
+}
+
+.variable-button {
+    margin: 2px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle welcome email section
+    document.getElementById('send-welcome').addEventListener('change', function() {
+        document.getElementById('welcome-email-section').style.display = 
+            this.checked ? 'block' : 'none';
+    });
+    
+    // Toggle reminder email section
+    document.getElementById('send-reminder').addEventListener('change', function() {
+        document.getElementById('reminder-email-section').style.display = 
+            this.checked ? 'block' : 'none';
+    });
+    
+    // Update hidden textareas when content changes
+    document.getElementById('confirmation-template').addEventListener('input', function() {
+        document.getElementById('confirmation-template-hidden').value = this.innerHTML;
+    });
+    
+    document.getElementById('welcome-template').addEventListener('input', function() {
+        document.getElementById('welcome-template-hidden').value = this.innerHTML;
+    });
+    
+    // Initialize hidden textareas
+    document.getElementById('confirmation-template-hidden').value = 
+        document.getElementById('confirmation-template').innerHTML;
+    document.getElementById('welcome-template-hidden').value = 
+        document.getElementById('welcome-template').innerHTML;
+    
+    // Form submissions
+    document.getElementById('email-config-form').addEventListener('submit', saveEmailConfig);
+    document.getElementById('smtp-config-form').addEventListener('submit', saveSMTPConfig);
+    
+    // Test email functionality
+    document.getElementById('test-email').addEventListener('click', sendTestEmail);
+    document.getElementById('test-smtp').addEventListener('click', testSMTPConnection);
+});
+
+function formatText(command) {
+    document.execCommand(command, false, null);
+    document.getElementById('confirmation-template').focus();
+}
+
+function formatWelcomeText(command) {
+    document.execCommand(command, false, null);
+    document.getElementById('welcome-template').focus();
+}
+
+function insertVariable(variable) {
+    let template = document.getElementById('confirmation-template');
+    template.focus();
+    document.execCommand('insertText', false, '{' + variable + '}');
+}
+
+function insertWelcomeVariable(variable) {
+    let template = document.getElementById('welcome-template');
+    template.focus();
+    document.execCommand('insertText', false, '{' + variable + '}');
+}
+
+function saveEmailConfig(e) {
+    e.preventDefault();
+    
+    // Update hidden textareas before submitting
+    document.getElementById('confirmation-template-hidden').value = 
+        document.getElementById('confirmation-template').innerHTML;
+    document.getElementById('welcome-template-hidden').value = 
+        document.getElementById('welcome-template').innerHTML;
+    
+    let formData = new FormData(this);
+    let btn = this.querySelector('button[type="submit"]');
+    let originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
+    
+    fetch('/event/online-registration/{{eventId}}/save-email-config', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', 'Email configuration saved successfully!');
+        } else {
+            showAlert('danger', 'Error saving configuration: ' + data.error);
+        }
+    })
+    .catch(error => {
+        showAlert('danger', 'Network error occurred');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+}
+
+function saveSMTPConfig(e) {
+    e.preventDefault();
+    
+    let formData = new FormData(this);
+    let btn = this.querySelector('button[type="submit"]');
+    let originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
+    
+    fetch('/event/online-registration/{{eventId}}/save-smtp-config', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', 'SMTP settings saved successfully!');
+        } else {
+            showAlert('danger', 'Error saving SMTP settings: ' + data.error);
+        }
+    })
+    .catch(error => {
+        showAlert('danger', 'Network error occurred');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+}
+
+function sendTestEmail() {
+    let btn = this;
+    let originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Sending...';
+    
+    fetch('/event/online-registration/{{eventId}}/send-test-email', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', 'Test email sent successfully!');
+        } else {
+            showAlert('danger', 'Error sending test email: ' + data.error);
+        }
+    })
+    .catch(error => {
+        showAlert('danger', 'Network error occurred');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+}
+
+function testSMTPConnection() {
+    let btn = this;
+    let originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Testing...';
+    
+    // Get SMTP settings from form
+    let formData = new FormData(document.getElementById('smtp-config-form'));
+    
+    fetch('/event/online-registration/{{eventId}}/test-smtp', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', 'SMTP connection successful!');
+        } else {
+            showAlert('danger', 'SMTP connection failed: ' + data.error);
+        }
+    })
+    .catch(error => {
+        showAlert('danger', 'Network error occurred');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+}
+
+function previewEmail() {
+    let template = document.getElementById('confirmation-template').innerHTML;
+    let previewWindow = window.open('', '_blank', 'width=600,height=400');
+    
+    previewWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Email Preview</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                .preview-note { background: #f0f0f0; padding: 10px; margin-bottom: 20px; border-left: 4px solid #007bff; }
+            </style>
+        </head>
+        <body>
+            <div class="preview-note">
+                <strong>Preview:</strong> Variables like {userName} will be replaced with actual data when sent.
+            </div>
+            ${template}
+        </body>
+        </html>
+    `);
+}
+
+function showAlert(type, message) {
+    let alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible`;
+    alertDiv.innerHTML = `
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+        ${message}
+    `;
+    
+    // Insert at top of container
+    let container = document.querySelector('.container-fluid');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+</script>
