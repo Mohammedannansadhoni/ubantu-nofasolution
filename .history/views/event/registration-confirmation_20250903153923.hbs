@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Confirmed - {{event.eventName}}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    /* Use the same page-wrapper styles from the designer */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      border: none;
+      min-height: 100vh;
+    }
+
+    header, footer {
+      background-color: #ffffff;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    footer {
+      border-top: 1px solid #ccc;
+      border-bottom: none;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced header styling */
+    header .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #333;
+    }
+
+    header p {
+      margin: 5px 0 0 0;
+      color: #666;
+    }
+
+    /* Enhanced footer styling */
+    footer .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    footer p {
+      margin: 0;
+      color: #333;
+    }
+
+    .canvas-container {
+      flex: 1;
+      padding: 20px;
+      min-height: 400px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #ffffff;
+      transition: all 0.3s ease;
+    }
+
+    .canvas-content {
+      padding: 20px;
+      color: #000;
+    }
+
+    /* Confirmation page styles */
+    .confirmation-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .confirmation-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      padding: 48px 36px;
+      max-width: 600px;
+      width: 100%;
+      border: 1.5px solid #e0e0e0;
+    }
+
+    .event-logo {
+      max-width: 150px;
+      margin: 0 auto 24px auto;
+      display: block;
+    }
+
+    .confirmation-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+      color: #28a745;
+    }
+
+    .confirmation-message {
+      font-size: 1.1rem;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 24px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .registration-details {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 24px 0;
+      text-align: left;
+    }
+
+    .registration-details h3 {
+      margin-bottom: 16px;
+      color: #333;
+      font-size: 1.2rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #666;
+    }
+
+    .detail-value {
+      color: #333;
+    }
+
+    .confirmation-footer {
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 24px;
+      color: #666;
+      line-height: 1.5;
+    }
+
+    .registration-id {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #007bff;
+      background: #e7f3ff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      border: 2px solid #b3d9ff;
+    }
+
+    @media (max-width: 600px) {
+      .confirmation-card {
+        padding: 24px 16px;
+        max-width: 95vw;
+      }
+    }
+
+    /* Error/Success message styling */
+    .message-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+      margin: 20px auto;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    .message-card.success {
+      border-left: 5px solid #28a745;
+    }
+
+    .message-card.error {
+      border-left: 5px solid #dc3545;
+    }
+
+    .message-card h2 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .message-card.success h2 {
+      color: #28a745;
+    }
+
+    .message-card.error h2 {
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- This is the confirmation page content -->
+  <div class="page-wrapper" id="pageWrapper">
+    
+    {{#if savedConfirmationHtml}}
+      <!-- Render saved confirmation canvas HTML directly -->
+      {{{savedConfirmationHtml}}}
+    {{else}}
+      <!-- Default confirmation structure -->
+  <div class="canvas-container" id="canvas" {{#if customBackground}}
+          const canvas = document.getElementById('canvas');
+          if (canvas) {
+            canvas.style.backgroundImage = 'url({{customBackground}})';
+            console.log("🖼️ Applied custom background to default layout");
+          }
+        {{/if}}style="background-image: url({{customBackground}})"{{/if}}>
+        <div class="canvas-content">
+          <div class="confirmation-container">
+            <div class="confirmation-card">
+               {{#if logoUrl}}
+          const logos = document.querySelectorAll('.event-logo');
+          logos.forEach(logo => {
+            if (logo.src && logo.src.includes('placeholder')) {
+              logo.src = '{{logoUrl}}';
+              console.log("🏷️ Updated logo from database");
+            }
+          });" class="event-logo" alt="{{event.eventName}} Logo">
+              {{else}}
+                <img src="https://via.placeholder.com/150x80?text=Logo" class="event-logo" alt="Event Logo">
+              {{/if}}
+              
+              <div class="confirmation-title">
+                {{#if confirmationTitle}}{{confirmationTitle}}{{else}}Registration Confirmed!{{/if}}
+              </div>
+              
+              <div class="confirmation-message">
+                {{#if confirmationMessage}}
+                  {{confirmationMessage}}
+                {{else}}
+                  Thank you for registering for {{event.eventName}}. Your registration has been successfully submitted.
+                {{/if}}
+              </div>
+
+              {{#if registration}}
+                <div class="registration-id">
+                  Registration ID: REG-{{registration.registrationId}}
+                </div>
+
+                {{#if registration.qrCode}}
+                  <div style="margin: 20px 0;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?data={{registration.qrCode}}&size=120x120" alt="QR Code" />
+                    <div style="font-size: 2rem; color: #000000;">{{registration.qrCode}}</div>
+                  </div>
+                {{/if}}
+
+                {{#if registration.barcode}}
+                  <div style="margin: 20px 0;">
+                      <svg id="barcode" style="width:100%;max-width:300px;"></svg>
+                  </div>
+  <script src="/library/JsBarcode.all.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (document.getElementById('barcode')) {
+        JsBarcode("#barcode", "{{registration.barcode}}", {
+          format: "CODE128",
+          lineColor: "#000",
+          width: 2,
+          height: 60,
+          displayValue: true
+        });
+      }
+    });
+  </script>
+                {{/if}}
+
+                <div class="registration-details">
+                  <h3>Registration Details</h3>
+                  
+                  {{#if registration.fullName}}
+                  <div class="detail-row">
+                    <span class="detail-label">Full Name:</span>
+                    <span class="detail-value">{{registration.fullName}}</span>
+                  </div>
+                  {{/if}}
+                  
+                  {{#if registration.email}}
+                  <div class="detail-row">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">{{registration.email}}</span>
+                  </div>
+                  {{/if}}
+                  
+                  {{#if registration.companyName}}
+                  <div class="detail-row">
+                    <span class="detail-label">Company:</span>
+                    <span class="detail-value">{{registration.companyName}}</span>
+                  </div>
+                  {{/if}}
+                  
+                  {{#if registration.badgeCategory}}
+                  <div class="detail-row">
+                    <span class="detail-label">Badge Type:</span>
+                    <span class="detail-value">{{registration.badgeCategory}}</span>
+                  </div>
+                  {{/if}}
+                  
+                  <div class="detail-row">
+                    <span class="detail-label">Registration Date:</span>
+                    <span class="detail-value">{{formatDate registration.regDate}}</span>
+                  </div>
+                </div>
+              {{/if}}
+
+              <div class="confirmation-footer">
+                {{#if confirmationFooter}}
+                  {{confirmationFooter}}
+                {{else}}
+                  A confirmation email has been sent to your registered email address. Please keep this page for your records.
+                {{/if}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {{/if}}
+    
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("🎉 Loading confirmation page...");
+      console.log("Event ID: {{event._id}}");
+      console.log("Registration: {{#if registration}}{{registration.registrationId}}{{else}}No registration data{{/if}}");
+      console.log("Success: {{success}}");
+      console.log("Message: {{message}}");
+      
+      {{#if savedConfirmationHtml}}
+        console.log("✅ Applying saved confirmation design");
+        // Apply any custom background from database if not in saved HTML
+        {{#if customBackground}}
+          const canvas = document.getElementById('canvas');
+          if (canvas && !canvas.style.backgroundImage) {
+            canvas.style.backgroundImage = 'url({{customBackground}})';
+            console.log("🖼️ Applied custom background from database");
+          }
+        {{/if}}
+        // Update logos with event-specific URLs if needed
+        {{#if logoUrl}}
+          const logos = document.querySelectorAll('.event-logo');
+          logos.forEach(logo => {
+            if (logo.src && logo.src.includes('placeholder')) {
+              logo.src = '{{logoUrl}}';
+              console.log("🏷️ Updated logo from database");
+            }
+          });
+        {{/if}}
+        console.log("🎨 Saved confirmation design successfully applied");
+      {{else}}
+        console.log("ℹ️ No saved confirmation design found, using default layout");
+        // Apply custom background to default layout
+        {{#if customBackground}}
+          const canvas = document.getElementById('canvas');
+          if (canvas) {
+            canvas.style.backgroundImage = 'url({{customBackground}})';
+            console.log("🖼️ Applied custom background to default layout");
+          }
+        {{/if}}
+      {{/if}}
+      
+      // Add some interactive elements
+      const confirmationCard = document.querySelector('.confirmation-card');
+      if (confirmationCard) {
+        confirmationCard.addEventListener('click', function() {
+          this.style.transform = 'scale(1.02)';
+          setTimeout(() => {
+            this.style.transform = 'scale(1)';
+          }, 200);
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>

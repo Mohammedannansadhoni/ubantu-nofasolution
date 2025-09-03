@@ -1,0 +1,820 @@
+{{!-- Load custom fonts --}}
+{{#if customFonts}}
+    {{#each customFonts}}
+        {{#if googleFontApi}}
+            <link href="{{googleFontApi}}" rel="stylesheet">
+        {{/if}}
+        {{#if fontFile}}
+            <style>
+                @font-face { 
+                    font-family: '{{fontFamily}}'; 
+                    src: url('/uploads/fonts/{{fontFile}}'); 
+                }
+            </style>
+        {{/if}}
+    {{/each}}
+{{/if}}
+
+<style>
+.custom-font-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 200px;
+}
+
+.font-display {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    user-select: none;
+}
+
+.font-display:hover {
+    background: #f5f5f5;
+}
+
+.font-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.font-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.font-option:hover {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.font-option:last-child {
+    border-bottom: none;
+}
+</style>
+
+<ol class="breadcrumb">
+  <li><a href="/event">Home</a></li>
+  <li class="active">Event Setup</li>
+</ol>
+
+<div class="stepwizard">
+    <div class="stepwizard-row">
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-default btn-circle">1</button>
+            <p>Event Initials</p>
+        </div>
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-default btn-circle" >2</button>
+            <p>Event Fields</p>
+        </div>
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-default btn-circle">3</button>
+            <p>Badge Categories</p>
+        </div> 
+        <div class="stepwizard-step">
+            <button type="button" class="btn btn-primary btn-circle" >4</button>
+            <p>Badge Layout</p>
+        </div>         
+    </div>
+</div>
+
+<div class="row">
+    <form id="form1" action="/event/badge-layout" method="POST">
+
+    <div class="col-md-4">
+        <h4>Step 4 - Badge Layout</h4>
+        <div class="form-group">
+            <label>Font Family</label>
+            <select id="fontFamily" class="form-control">
+                <option value="Arial" selected="selected">Arial</option>
+                <option value="Calibri">Calibri</option>
+                <option value="Comic Sans MS">Comic Sans MS</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Impact">Impact</option>
+                <option value="Tahoma">Tahoma</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Helvetica">Helvetica</option>
+                <option value="Lucida Sans">Lucida Sans</option>
+                <option value="Broadway">Broadway</option>
+                <option value="Cooper Black">Cooper Black</option>
+                <option value="Arabic Typesetting">Arabic Typesetting</option>
+                <option value="Simplified Arabic">Simplified Arabic</option>
+                <option value="Traditional Arabic">Traditional Arabic</option>
+                {{#if customFonts}}
+                    <optgroup label="Custom Fonts">
+                        {{#each customFonts}}
+                            <option value="{{fontFamily}}">{{fontName}}</option>
+                        {{/each}}
+                    </optgroup>
+                {{/if}}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Font Size</label>
+            <select id="fontSize" class="form-control">
+                <option value="11" selected="selected">11</option>
+                <option value="12">12</option>
+                <option value="14">14</option>
+                <option value="16">16</option>
+                <option value="18">18</option>
+                <option value="20">20</option>
+                <option value="22">22</option>
+                <option value="24">24</option>
+                <option value="26">26</option>
+                <option value="28">28</option>
+                <option value="36">36</option>
+                <option value="48">48</option>
+                <option value="60">60</option>
+                <option value="72">72</option>
+                <option value="84">84</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Font Weight</label>
+            <select id="fontWeight" class="form-control">
+                <option value="normal" selected="selected">normal</option>
+                <option value="bold">bold</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Font Style</label>
+            <select id="fontStyle" class="form-control">
+                <option value="normal" selected="selected">normal</option>
+                <option value="italic">italic</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Text Align</label>
+            <select id="textAlign" class="form-control">
+                <option value="left" selected="selected">left</option>
+                <option value="center">center</option>
+                <option value="right">right</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Width (max 557 pixels)</label>
+            <input type="text" id="textWidth" maxlength="3" class="form-control" onkeypress="textWidth_OnKeyPress(event)">
+        </div>
+
+        <div class="form-group">
+            <label>Rotate (degrees)</label>
+            <input type="text" id="textRotate" maxlength="3" class="form-control" onkeypress="textRotate_OnKeyPress(event)">
+        </div>
+
+        <a href="/event/badge-categories/{{session.eventId}}" style="width:100px" class="btn btn-primary">Previous</a>&nbsp;&nbsp; 
+        <input type="button" onclick="testPrint()" value="Test Print" style="width: 100px" class="btn btn-info ">&nbsp;&nbsp;       
+        <input type="button" onclick="finish()" value="Finish" style="width: 100px" class="btn btn-success"><br><br>
+        <input type="button" onclick="resetLayout()" value="Reset" style="width: 100px" class="btn btn-warning">
+
+    </div>
+    <div class="col-md-8">
+        
+        {{#if hasErrors}}
+            <div class="alert alert-danger">
+                {{#each messages}}
+                    <p>{{this}}</p>
+                {{/each}}
+            </div>
+        {{/if}}
+        
+        <input type="hidden" name="eventIdForPrint" id="eventIdForPrint" value="{{eventIdForPrint}}">
+        <input type="hidden" name="action" id="action" >
+
+        {{#each fields}}
+        <input type="hidden" name="{{this.fieldName}}_top" id="{{this.fieldName}}_top">
+        <input type="hidden" name="{{this.fieldName}}_left" id="{{this.fieldName}}_left">
+        <input type="hidden" name="{{this.fieldName}}_width" id="{{this.fieldName}}_width">
+        <input type="hidden" name="{{this.fieldName}}_fontFamily" id="{{this.fieldName}}_fontFamily">
+        <input type="hidden" name="{{this.fieldName}}_fontSize" id="{{this.fieldName}}_fontSize">
+        <input type="hidden" name="{{this.fieldName}}_fontWeight" id="{{this.fieldName}}_fontWeight">
+        <input type="hidden" name="{{this.fieldName}}_fontStyle" id="{{this.fieldName}}_fontStyle">
+        <input type="hidden" name="{{this.fieldName}}_textAlign" id="{{this.fieldName}}_textAlign">
+        <input type="hidden" name="{{this.fieldName}}_rotate" id="{{this.fieldName}}_rotate">
+        {{/each}}
+
+        <!-- A5 paper size -->
+        <!--
+            Equivalent A5 paper dimensions in pixels at 300 DPI and 72 DPI respectively are: 
+            1748 pixels x 2480 pixels (print resolution) 
+            420 pixels x 595 pixels (screen resolution)
+        -->
+      
+        
+        <div id="badgeCanvas" style="
+            width: 559px;
+            height:794px;
+            border:1px solid #000;
+        ">
+
+            {{#each fields}}
+            <span id="{{this.fieldName}}" class="canvas" style="position:absolute; cursor: move; border:1px solid #888;">
+                {{toUpperCase this.fieldLabel}}
+            </span>
+
+            {{/each}}         
+
+            {{#if showBarcode}}
+            <img id="barcode" src="/images/barcode.png" style="
+            position:absolute;
+            left: {{barcodeLeft}};
+            top: {{barcodeTop}};
+            " >
+            <input type="hidden" name="barcode_top" id="barcode_top">
+            <input type="hidden" name="barcode_left" id="barcode_left">
+            {{/if}}
+
+            {{#if showQrCode}}
+            <div id="qrCode" style="
+            position:absolute;
+            left: {{qrCodeLeft}}px;
+            top: {{qrCodeTop}}px;
+            width: 80px;
+            height: 80px;
+            border: 1px dashed #ccc;
+            "></div>
+            <input type="hidden" name="qrCode_top" id="qrCode_top">
+            <input type="hidden" name="qrCode_left" id="qrCode_left">
+            {{/if}}
+
+            {{#each uploadImageFields}}
+            <img id="{{this.fieldName}}" src="/images/_icon.png" style="
+            position:absolute;
+            left: {{this.fieldLeft}}px;
+            top: {{this.fieldTop}}px;
+            width: {{this.fieldWidth}}px;
+            height: {{this.fieldHeight}}px;
+            border: 1px dashed #ccc;
+            " />
+            <input type="hidden" name="{{this.fieldName}}_top" id="{{this.fieldName}}_top">
+            <input type="hidden" name="{{this.fieldName}}_left" id="{{this.fieldName}}_left">
+            <input type="hidden" name="{{this.fieldName}}_width" id="{{this.fieldName}}_width">
+            <input type="hidden" name="{{this.fieldName}}_height" id="{{this.fieldName}}_height">
+            {{/each}}
+
+            {{#each uploadLogoFields}}
+            <img id="{{this.fieldName}}" src="/images/_icon.png" style="
+            position:absolute;
+            left: {{this.fieldLeft}}px;
+            top: {{this.fieldTop}}px;
+            width: {{this.fieldWidth}}px;
+            height: {{this.fieldHeight}}px;
+            border: 1px dashed #ccc;
+            " />
+            <input type="hidden" name="{{this.fieldName}}_top" id="{{this.fieldName}}_top">
+            <input type="hidden" name="{{this.fieldName}}_left" id="{{this.fieldName}}_left">
+            <input type="hidden" name="{{this.fieldName}}_width" id="{{this.fieldName}}_width">
+            <input type="hidden" name="{{this.fieldName}}_height" id="{{this.fieldName}}_height">
+            {{/each}}
+
+  
+        </div> 
+
+        
+
+
+            
+        
+    </div>
+    </form>
+</div>
+<div class="row">
+    <div>&nbsp;</div>
+</div>
+<div class="row">
+    <div>&nbsp;</div>
+</div>
+
+<script src="/library/jquery-3.3.1.min.js"></script>
+<script src="/library/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+
+    {{#if session.eventIdForPrint}}
+        window.open('/event/print-badge-layout/{{session.eventId}}', '_blank', '');
+    {{/if}}
+
+var fields = [];
+var activeObject=null;
+
+$('.canvas').on('click', function(event){
+    console.log(event.target.style);
+
+    activeObject=event.target;
+
+    $('#fontFamily').val(event.target.style.fontFamily.replace(/"/g, ''));
+    $('#fontSize').val(event.target.style.fontSize.substring(0,2));
+    $('#fontWeight').val(event.target.style.fontWeight);
+    $('#fontStyle').val(event.target.style.fontStyle);
+    $('#textAlign').val(event.target.style.textAlign);
+    $('#textWidth').val(event.target.style.width.replace(/px/g,''));
+
+    var angle = getAngle(activeObject);
+
+    console.log('Rotate: ' + angle + 'deg');
+    $('#textRotate').val(angle);
+});
+
+function getAngle(el){
+    //Get the matrix and calculate the Angle
+    var st = window.getComputedStyle(el, null);
+    var tr = st.getPropertyValue("-webkit-transform") ||
+            st.getPropertyValue("-moz-transform") ||
+            st.getPropertyValue("-ms-transform") ||
+            st.getPropertyValue("-o-transform") ||
+            st.getPropertyValue("transform") ||
+            "FAIL";
+
+    // With rotate(30deg)...
+    // matrix(0.866025, 0.5, -0.5, 0.866025, 0px, 0px)
+    console.log('Matrix: ' + tr);
+    if(tr=='none')
+        return 0;
+
+    // rotation matrix - http://en.wikipedia.org/wiki/Rotation_matrix
+
+    var values = tr.split('(')[1].split(')')[0].split(',');
+    var a = values[0];
+    var b = values[1];
+    var c = values[2];
+    var d = values[3];
+
+    var scale = Math.sqrt(a*a + b*b);
+
+    console.log('Scale: ' + scale);
+
+    // arc sin, convert from radians to degrees, round
+    var sin = b/scale;
+    var angle = Math.round(Math.atan2(b, a) * (180/Math.PI));
+    return angle;
+}
+
+
+// Font family change with hover preview
+var originalFontFamily = null;
+
+$('#fontFamily').on('change', function(){
+    if(activeObject){
+        activeObject.style.fontFamily = this.value;
+        originalFontFamily = null; // Clear backup when actually selected
+    } else {
+        alert('Please select an item on the canvas first');
+    }
+});
+
+// Simple approach: Show font preview on mousedown/click before change event
+$('#fontFamily').on('mousedown', function(){
+    if(activeObject && !originalFontFamily) {
+        originalFontFamily = activeObject.style.fontFamily;
+    }
+});
+
+// Enhanced approach: Convert select to custom dropdown for better hover control
+function initFontFamilyHover() {
+    var $select = $('#fontFamily');
+    var $container = $('<div class="custom-font-dropdown"></div>');
+    var $display = $('<div class="font-display">' + $select.find('option:selected').text() + '</div>');
+    var $options = $('<div class="font-options" style="display:none; position:absolute; background:white; border:1px solid #ccc; max-height:200px; overflow-y:auto; width:100%; z-index:1000;"></div>');
+    
+    // Build options
+    $select.find('option').each(function(){
+        var $option = $('<div class="font-option" data-value="' + this.value + '" style="padding:5px; cursor:pointer;">' + this.text + '</div>');
+        $option.css('font-family', this.value);
+        $options.append($option);
+    });
+    
+    $container.append($display).append($options);
+    $select.hide().after($container);
+    
+    // Show/hide options
+    $display.on('click', function(){
+        $options.toggle();
+    });
+    
+    // Option hover preview
+    $options.on('mouseenter', '.font-option', function(){
+        if(activeObject) {
+            if(!originalFontFamily) {
+                originalFontFamily = activeObject.style.fontFamily;
+            }
+            activeObject.style.fontFamily = $(this).data('value');
+        }
+    });
+    
+    // Option click selection
+    $options.on('click', '.font-option', function(){
+        var value = $(this).data('value');
+        var text = $(this).text();
+        
+        $select.val(value).trigger('change');
+        $display.text(text);
+        $options.hide();
+        originalFontFamily = null;
+    });
+    
+    // Restore on mouse leave
+    $options.on('mouseleave', function(){
+        if(activeObject && originalFontFamily) {
+            activeObject.style.fontFamily = originalFontFamily;
+        }
+    });
+    
+    // Close on outside click
+    $(document).on('click', function(e){
+        if(!$container.is(e.target) && $container.has(e.target).length === 0) {
+            $options.hide();
+            if(activeObject && originalFontFamily) {
+                activeObject.style.fontFamily = originalFontFamily;
+                originalFontFamily = null;
+            }
+        }
+    });
+}
+
+// Initialize when page loads
+$(document).ready(function(){
+    setTimeout(initFontFamilyHover, 1000); // Wait for page to fully load
+});
+
+$('#fontSize').on('change', function(){
+    if(activeObject){
+        activeObject.style.fontSize=this.value + 'px';
+    }
+    else {
+        alert('Please select an item on the canvas first');
+    }
+});
+
+$('#fontWeight').on('change', function(){
+    if(activeObject){
+        activeObject.style.fontWeight=this.value;
+    }
+    else {
+        alert('Please select an item on the canvas first');
+    }
+});
+
+$('#fontStyle').on('change', function(){
+    if(activeObject){
+        activeObject.style.fontStyle=this.value;
+    }
+    else {
+        alert('Please select an item on the canvas first');
+    }
+});
+
+$('#textAlign').on('change', function(){
+    if(activeObject){
+        activeObject.style.textAlign=this.value;
+        
+        /*
+        if(this.value=='center'){
+            activeObject.style.display='inline';
+            activeObject.style.cssFloat='none';
+            activeObject.style.left='16px';
+            activeObject.style.position='absolute';
+            activeObject.style.width='557px';
+        }
+        else if(this.value=='left'){
+            activeObject.style.display='inline';
+            activeObject.style.cssFloat='none';
+            activeObject.style.left='16px';
+            activeObject.style.position='absolute';
+            activeObject.style.width='auto';
+        }
+        else if(this.value=='right'){
+            activeObject.style.display='inline';
+            activeObject.style.cssFloat='none';
+            activeObject.style.left='16px';
+            activeObject.style.position='absolute';
+            activeObject.style.width='557px';
+        }
+        */
+        
+    }
+    else {
+        alert('Please select an item on the canvas first');
+    }
+});
+
+
+function textWidth_OnKeyPress(e){
+    
+    if(e.keyCode === 13){
+        e.preventDefault(); // Ensure it is only this code that rusn
+
+        if(isNaN(e.target.value)){
+            alert(e.target.value + ' is not a number');
+            return;
+        }
+        if(parseInt(e.target.value) > 557){
+            alert('Width cannot be more than 557 pixels');
+            return;
+        }
+
+        if(activeObject){
+            
+            activeObject.style.width=e.target.value + 'px';
+        }
+        else {
+            alert('Please select an item on the canvas first');
+        }
+    }
+}
+
+function textRotate_OnKeyPress(e){
+    
+    if(e.keyCode === 13){
+        e.preventDefault(); // Ensure it is only this code that rusn
+
+        if(isNaN(e.target.value)){
+            alert(e.target.value + ' is not a number');
+            return;
+        }
+        if(parseInt(e.target.value) > 360){
+            alert('Width cannot be more than 360 degrees');
+            return;
+        }
+
+        if(activeObject){
+            
+            activeObject.style.transform='rotate(' + e.target.value + 'deg)';
+        }
+        else {
+            alert('Please select an item on the canvas first');
+        }
+    }
+}
+
+
+var finish = function() {
+    $('#action').val('finish');
+    submitForm();
+}
+
+var testPrint = function(){
+    $('#action').val('testprint');
+    submitForm();
+}
+
+var submitForm = function(){
+    
+    //$('#fullName_top').val(txtFullName.top);
+    //$('#fullName_left').val(txtFullName.left);
+    //$('#fullName_width').val(txtFullName.width);
+
+    for(var i=0; i<fields.length; i++){
+        $('#' + fields[i] + '_top').val( $('#' + fields[i]).css('top').replace(/px/g,'')  );
+        $('#' + fields[i] + '_left').val( $('#' + fields[i]).css('left').replace(/px/g,'')  );
+        
+        if(fields[i]!='barcode' && fields[i]!='qrCode' && fields[i]!='uploadImage' && fields[i]!='uploadLogo'){
+            $('#' + fields[i] + '_width').val( $('#' + fields[i]).css('width').replace(/px/g,'')  );
+            $('#' + fields[i] + '_fontFamily').val( $('#' + fields[i]).css('font-family').replace(/"/g,'')  );
+            $('#' + fields[i] + '_fontSize').val( $('#' + fields[i]).css('font-size').substring(0,2)  );
+            $('#' + fields[i] + '_fontWeight').val( $('#' + fields[i]).css('font-weight')  );
+            $('#' + fields[i] + '_fontStyle').val( $('#' + fields[i]).css('font-style')  );
+            $('#' + fields[i] + '_textAlign').val( $('#' + fields[i]).css('text-align')  );
+
+            var angle = getAngle(document.getElementById(fields[i]));
+            $('#' + fields[i] + '_rotate').val( angle  );
+            
+        } else if(fields[i]=='uploadImage' || fields[i]=='uploadLogo'){
+            // Handle image field dimensions
+            $('#' + fields[i] + '_width').val( $('#' + fields[i]).css('width').replace(/px/g,'')  );
+            $('#' + fields[i] + '_height').val( $('#' + fields[i]).css('height').replace(/px/g,'')  );
+        }
+    }
+
+    $('#form1').submit();
+};
+
+var resetLayout = function(){
+
+    var topIndex=0;
+
+    {{#each fields}}
+    topIndex = {{@index}};
+    $("#{{this.fieldName}}").css('left',10);
+    $("#{{this.fieldName}}").css('top', (topIndex+1) * 20);
+    $("#{{this.fieldName}}").css('font-family', 'Calibri');
+    $("#{{this.fieldName}}").css('font-size', '11px');
+    $("#{{this.fieldName}}").css('font-weight','normal');
+    $("#{{this.fieldName}}").css('font-style', 'normal');
+    $("#{{this.fieldName}}").css('text-align', 'left');
+    $("#{{this.fieldName}}").css('float', 'none');
+    $("#{{this.fieldName}}").css('transform','rotate:(0deg)');
+    {{/each}}
+
+}
+
+$(document).ready(function(){
+
+
+
+    {{#if showBarcode}}
+      JsBarcode("#barcode", "12345678901234", {
+      format: "CODE128",
+      width: 2,
+      height:40,
+      margin: 5,
+      textMargin: 0,
+      fontSize: 16,
+      displayValue: true
+      });
+    {{/if}}
+
+    {{#if showQrCode}}
+      var qrCodeDiv = document.getElementById('qrCode');
+      if(qrCodeDiv && window.QRCode){
+        new QRCode(qrCodeDiv, {
+          text: "Sample QR Code",
+          width: 80,
+          height: 80
+        });
+      }
+    {{/if}}
+    
+    var topIndex=0;
+
+    {{#each fields}}
+    $("#{{this.fieldName}}").css('left', '{{this.fieldLeft}}px' );
+    $("#{{this.fieldName}}").css('top', '{{this.fieldTop}}px'  );
+    $("#{{this.fieldName}}").css('font-family','{{this.fieldFontFamily}}');
+    $("#{{this.fieldName}}").css('font-size','{{this.fieldFontSize}}px' );
+    $("#{{this.fieldName}}").css('font-weight','{{this.fieldFontWeight}}');
+    $("#{{this.fieldName}}").css('font-style','{{this.fieldFontStyle}}');
+    $("#{{this.fieldName}}").css('text-align','{{this.fieldTextAlign}}');
+    $("#{{this.fieldName}}").css('width','{{this.fieldWidth}}px');
+
+    $("#{{this.fieldName}}").css({'transform': 'rotate({{this.fieldRotate}}deg)'  });
+
+    $("#{{this.fieldName}}")
+        .draggable({
+            containment: "#badgeCanvas",
+            scroll: false,
+            stop: function (event, ui) {
+                console.log(ui);
+            }
+        })
+        .resizable({
+            handles: 'all',
+            stop: function(event, ui) {
+                console.log('Resized:', ui.size);
+            }
+        });
+
+    fields.push('{{this.fieldName}}');
+    {{/each}}
+
+    $("#{{this.fieldName}}").css({'transform': 'rotate({{this.fieldRotate}}deg)'  });
+
+
+    /*
+    if('{{this.fieldTextAlign}}'=='center'){
+        $("#{{this.fieldName}}").css('display','inline');
+        $("#{{this.fieldName}}").css('left','16px');
+        $("#{{this.fieldName}}").css('float','none');
+        $("#{{this.fieldName}}").css('position','absolute');
+        $("#{{this.fieldName}}").css('width','557px');
+    }
+    else if('{{this.fieldTextAlign}}'=='left'){
+        $("#{{this.fieldName}}").css('display','inline');
+        $("#{{this.fieldName}}").css('float','none');
+        $("#{{this.fieldName}}").css('position','absolute');
+        $("#{{this.fieldName}}").css('width','auto');
+    }
+    else if('{{this.fieldTextAlign}}'=='right'){
+        $("#{{this.fieldName}}").css('display','inline');
+        $("#{{this.fieldName}}").css('left','16px');
+        $("#{{this.fieldName}}").css('float','none');
+        $("#{{this.fieldName}}").css('position','absolute');
+        $("#{{this.fieldName}}").css('width','557px');
+    }
+    */
+
+
+
+    $("#{{this.fieldName}}").draggable({
+        containment: "#badgeCanvas",
+        scroll: false,
+        stop: function (event, ui) {
+            
+            console.log(ui);
+            
+        }
+    });
+
+    fields.push('{{this.fieldName}}');
+
+    {{/each}}
+
+
+
+    {{#if showBarcode}}
+
+        $("#barcode").css('left', '{{barcodeLeft}}px' );
+        $("#barcode").css('top', '{{barcodeTop}}px'  );
+
+        $("#barcode").draggable({
+            containment: "#badgeCanvas",
+            scroll: false,
+            stop: function (event, ui) {
+                
+                console.log(ui);
+                
+            }
+        });
+
+        fields.push('barcode');
+    {{/if}}
+
+    {{#if showQrCode}}
+
+        $("#qrCode").css('left', '{{qrCodeLeft}}px' );
+        $("#qrCode").css('top', '{{qrCodeTop}}px'  );
+
+        $("#qrCode").draggable({
+            containment: "#badgeCanvas",
+            scroll: false,
+            stop: function (event, ui) {
+                
+                console.log(ui);
+                
+            }
+        });
+
+        fields.push('qrCode');
+    {{/if}}
+
+    {{#each uploadImageFields}}
+        $("#{{this.fieldName}}").css('left', '{{this.fieldLeft}}px' );
+        $("#{{this.fieldName}}").css('top', '{{this.fieldTop}}px'  );
+        $("#{{this.fieldName}}").css('width', '{{this.fieldWidth}}px'  );
+        $("#{{this.fieldName}}").css('height', '{{this.fieldHeight}}px'  );
+
+        $("#{{this.fieldName}}")
+            .draggable({
+                containment: "#badgeCanvas",
+                scroll: false,
+                stop: function (event, ui) {
+                    console.log(ui);
+                }
+            })
+            .resizable({
+                handles: 'all',
+                stop: function(event, ui) {
+                    console.log('Resized:', ui.size);
+                }
+            });
+
+        fields.push('{{this.fieldName}}');
+    {{/each}}
+
+    {{#each uploadLogoFields}}
+        $("#{{this.fieldName}}").css('left', '{{this.fieldLeft}}px' );
+        $("#{{this.fieldName}}").css('top', '{{this.fieldTop}}px'  );
+        $("#{{this.fieldName}}").css('width', '{{this.fieldWidth}}px'  );
+        $("#{{this.fieldName}}").css('height', '{{this.fieldHeight}}px'  );
+
+        $("#{{this.fieldName}}")
+            .draggable({
+                containment: "#badgeCanvas",
+                scroll: false,
+                stop: function (event, ui) {
+                    console.log(ui);
+                }
+            })
+            .resizable({
+                handles: 'all',
+                stop: function(event, ui) {
+                    console.log('Resized:', ui.size);
+                }
+            });
+
+        fields.push('{{this.fieldName}}');
+    {{/each}}
+
+
+});
+
+      
+</script>

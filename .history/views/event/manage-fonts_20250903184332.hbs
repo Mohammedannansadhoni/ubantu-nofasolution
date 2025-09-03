@@ -1,0 +1,109 @@
+<div class="row">
+    <div class="col-md-8 col-md-offset-2">
+        <h2>Manage Fonts</h2>
+        <form id="fontUploadForm" action="/event/manage-fonts" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="name">Font Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <di
+            <div class="form-group">
+                <label for="fontApi">Google Fonts API Link</label>
+                <input type="text" class="form-control" id="fontApi" name="fontApi" placeholder="https://fonts.googleapis.com/css?family=...">
+            </div>
+            <div class="form-group">
+                <label for="fontFile">Or upload font file (.ttf, .woff)</label>
+                <input type="file" class="form-control" id="fontFile" name="fontFile" accept=".ttf,.woff,.woff2">
+            </div>
+            <button type="submit" class="btn btn-success">Add Font</button>
+        </form>
+        <hr>
+        <h3>Font Family List</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Font Name</th>
+                    <th>Type</th>
+                    <th>Preview</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each fonts}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{type}}</td>
+                    <td>
+                        {{#if isGoogleFont}}
+                            <link href="{{url}}" rel="stylesheet">
+                            <span style="font-family: '{{name}}', sans-serif; font-size: 20px;">Sample Text</span>
+                        {{else}}
+                            <style>@font-face { font-family: '{{name}}'; src: url('{{url}}'); }</style>
+                            <span style="font-family: '{{name}}'; font-size: 20px;">Sample Text</span>
+                        {{/if}}
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-font" data-font="{{name}}">Delete</button>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        {{#if uploadSuccess}}
+            <div class="alert alert-success">Font upload successful!</div>
+            <h3>Font Preview</h3>
+            {{#if uploadedFont}}
+                {{#if uploadedFont.url}}
+                    {{#if uploadedFont.type}}
+                        {{!-- Only basic logic: show Google Fonts preview if type is exactly 'Google Fonts API', else show custom font preview --}}
+                        {{#if uploadedFont.isGoogleFont}}
+                            <link href="{{uploadedFont.url}}" rel="stylesheet">
+                            <div style="font-family: '{{uploadedFont.name}}', sans-serif; font-size: 32px;">The quick brown fox jumps over the lazy dog</div>
+                        {{else}}
+                            <style>
+                                @font-face {
+                                    font-family: '{{uploadedFont.name}}';
+                                    src: url('{{uploadedFont.url}}');
+                                }
+                            </style>
+                            <div style="font-family: '{{uploadedFont.name}}'; font-size: 32px;">The quick brown fox jumps over the lazy dog</div>
+                        {{/if}}
+                    {{/if}}
+                {{/if}}
+            {{/if}}
+        {{/if}}
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Delete font functionality
+  var deleteButtons = document.querySelectorAll('.delete-font');
+  deleteButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      var fontName = this.getAttribute('data-font');
+      if(confirm('Are you sure you want to delete font "' + fontName + '"?')) {
+        // Use fetch API instead of jQuery AJAX
+        fetch('/event/delete-font', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: 'fontName=' + encodeURIComponent(fontName)
+        })
+        .then(response => response.json())
+        .then(data => {
+          if(data.success) {
+            location.reload();
+          } else {
+            alert('Error deleting font.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error deleting font.');
+        });
+      }
+    });
+  });
+});
+</script>
